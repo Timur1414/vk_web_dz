@@ -1,5 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+    <div>
+        <p class="d-inline-flex">New Questions</p>
+        <a>Not Questions</a>
+        <div class="d-flex">
+            <div class="p-2 flex-fill">
+                {% for item in items %}
+                {% empty %}
+                    <p>some questions</p>
+                {% endfor %}
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="p-2 flex-fill">
+                <div>
+                    <p>Popular Tags</p>
+                    {% for item in items %}
+                    {% empty %}
+                        <p>some tags</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    <p>Best Members</p>
+                    {% for item in items %}
+                    {% empty %}
+                        <p>some members</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
