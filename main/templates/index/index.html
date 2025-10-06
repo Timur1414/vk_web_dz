@@ -4,13 +4,11 @@
     <div>
         <p class="d-inline-flex">New Questions</p>
         <a>Not Questions</a>
-        <div class="d-flex">
-            <div class="p-2 flex-fill">
-                {% for item in items %}
-                {% empty %}
-                    <p>some questions</p>
-                {% endfor %}
-                <nav aria-label="Page navigation example">
+        {% for item in items %}
+        {% empty %}
+            <p>some questions</p>
+        {% endfor %}
+        <nav aria-label="Page navigation example">
                     <ul class="pagination">
                         <li class="page-item">
                             <a class="page-link" href="#" aria-label="Previous">
@@ -27,23 +25,5 @@
                         </li>
                     </ul>
                 </nav>
-            </div>
-            <div class="p-2 flex-fill">
-                <div>
-                    <p>Popular Tags</p>
-                    {% for item in items %}
-                    {% empty %}
-                        <p>some tags</p>
-                    {% endfor %}
-                </div>
-                <div>
-                    <p>Best Members</p>
-                    {% for item in items %}
-                    {% empty %}
-                        <p>some members</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
     </div>
 {% endblock %}
