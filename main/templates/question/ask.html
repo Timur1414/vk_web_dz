@@ -1,5 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+    <div>
+        <p>New Question</p>
+        <form>
+            {% csrf_token %}
+            <div class="container text-center">
+                <div class="row my-2">
+                    <label class="col" for="title">
+                        Title
+                    </label>
+                    <div class="col-10">
+                        <input id="title" class="form-control" type="text">
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <label class="col" for="text">
+                        Text
+                    </label>
+                    <div class="col-10">
+                        <textarea id="text" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <label class="col" for="tags">
+                        Tags
+                    </label>
+                    <div class="col-10">
+                        <input id="tags" class="form-control" type="text">
+                    </div>
+                </div>
+            </div>
+            <input class="btn btn-secondary" type="submit" value="Ask!">
+        </form>
+    </div>
 {% endblock %}
