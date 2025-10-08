@@ -3,7 +3,7 @@
 {% block content %}
     <div>
         <p class="d-inline-flex">New Questions</p>
-        <a>Not Questions</a>
+        <a href="{% url 'hot_questions' %}">Not Questions</a>
         {% for item in items %}
         {% empty %}
             {% include "question/card.html" %}

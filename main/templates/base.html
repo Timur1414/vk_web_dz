@@ -19,23 +19,23 @@
         <nav class="navbar p-0">
             <div class="d-flex justify-content-between" style="width: 100%">
                 <div>
-                    <a class="navbar-brand">AskPupkin</a>
+                    <a class="navbar-brand" href="{% url 'index' %}">AskPupkin</a>
                 </div>
                 <div>
                     <form class="d-inline-flex" role="search">
                         <input class="form-control me-2" type="text" placeholder="Search">
-                        <a class="btn btn-success">Ask!</a>
+                        <a class="btn btn-success" href="{% url 'ask' %}">Ask!</a>
                     </form>
                 </div>
                 <div>
                     {% if request.user.is_authenticated %}
                         <img src="" alt="avatar">
                         <p>Dr. Pepper</p>
-                        <a>Settings</a>
-                        <a>log out</a>
+                        <a href="{% url 'settings' %}">Settings</a>
+                        <a href="{% url 'logout' %}">log out</a>
                     {% else %}
-                        <a>log in</a>
-                        <a>register</a>
+                        <a href="{% url 'login' %}">log in</a>
+                        <a href="{% url 'django_registration_register' %}">register</a>
                     {% endif %}
                 </div>
             </div>
