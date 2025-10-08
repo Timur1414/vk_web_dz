@@ -24,6 +24,7 @@ urlpatterns = [
     #    path('admin/', admin.site.urls),
     path('', views.index_page, name='index'),
     path('question/', views.question_page, name='question'),
+    path('questions/hot/', views.hot_questions_page, name='hot_questions'),
     path('ask/', views.ask_page, name='ask'),
     path('tag/', views.tag_page, name='tag'),
     path('settings/', views.settings_page, name='settings'),

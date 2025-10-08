@@ -14,6 +14,14 @@ def logout_view(request):
     logout(request)
     return redirect('index')
 
+
+def hot_questions_page(request):
+    context = {
+        'title': 'Hot',
+    }
+    return render(request, 'question/hot_questions.html', context)
+
+
 def question_page(request):
     context = {
         'title': 'Question',
