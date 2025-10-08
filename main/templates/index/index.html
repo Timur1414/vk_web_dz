@@ -6,7 +6,7 @@
         <a>Not Questions</a>
         {% for item in items %}
         {% empty %}
-            <p>some questions</p>
+            {% include "question/card.html" %}
         {% endfor %}
         <nav aria-label="Page navigation example">
             <ul class="pagination">

@@ -31,7 +31,7 @@
         <hr>
         {% for item in items %}
         {% empty %}
-            <p>some comments</p>
+            {% include "question/answer.html" %}
         {% endfor %}
         <hr>
         <form>

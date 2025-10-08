@@ -1,0 +1,22 @@
+<div class="border border-dark border-3 container row mb-5">
+    <div class="col">
+        <img src="" alt="avatar">
+        <button>5</button>
+    </div>
+    <div class="col-8">
+        <p>How to...</p>
+        <p>some text</p>
+        <div class="row mt-4">
+            <div class="col">
+                <p>answer</p>
+            </div>
+            <div class="col">
+                <span>Tags: </span>
+                {% for item in items %}
+                {% empty %}
+                    <span>some tags</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
