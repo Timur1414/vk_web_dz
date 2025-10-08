@@ -28,5 +28,6 @@ urlpatterns = [
     path('tag/', views.tag_page, name='tag'),
     path('settings/', views.settings_page, name='settings'),
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('logout/', views.logout_view, name='logout'),
     path('registration/', include('django_registration.backends.one_step.urls')),
 ]

@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 
 def index_page(request):
@@ -7,6 +9,10 @@ def index_page(request):
     }
     return render(request, 'index/index.html', context)
 
+
+def logout_view(request):
+    logout(request)
+    return redirect('index')
 
 def question_page(request):
     context = {
