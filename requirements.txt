@@ -1,1 +1,2 @@
 Django~=5.2.7
+django-registration~=5.2.1

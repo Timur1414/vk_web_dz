@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <p>Registration</p>
+    {% if form.errors %}
+        <p>Sorry...</p>
+    {% endif %}
+    <form>
+        {% csrf_token %}
+        <div class="container text-center">
+            <div class="row my-2">
+                <label class="col" for="login">
+                    Login
+                </label>
+                <div class="col-10">
+                    <input id="login" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="row my-2">
+                <label class="col" for="email">
+                    Email
+                </label>
+                <div class="col-10">
+                    <input id="email" class="form-control" type="email">
+                </div>
+            </div>
+            <div class="row my-2">
+                <label class="col" for="nickname">
+                    NickName
+                </label>
+                <div class="col-10">
+                    <input id="nickname" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="row my-2">
+                <label class="col" for="password">
+                    Password
+                </label>
+                <div class="col-10">
+                    <input id="password" class="form-control" type="password">
+                </div>
+            </div>
+            <div class="row my-2">
+                <label class="col" for="repeat_password">
+                    Repeat password
+                </label>
+                <div class="col-10">
+                    <input id="repeat_password" class="form-control" type="password">
+                </div>
+            </div>
+            <div class="row my-2">
+                <label class="col" for="avatar">
+                    Avatar
+                </label>
+                <div class="col-10">
+                    <input id="avatar" class="form-control" type="image" alt="avatar">
+                </div>
+            </div>
+        </div>
+        <input class="btn btn-secondary" type="submit" value="Register!">
+    </form>
+{% endblock %}
