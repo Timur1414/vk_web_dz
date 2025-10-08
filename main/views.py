@@ -20,3 +20,17 @@ def ask_page(request):
         'title': 'Ask',
     }
     return render(request, 'question/ask.html', context)
+
+
+def tag_page(request):
+    context = {
+        'title': 'Tag',
+    }
+    return render(request, 'tag/index.html', context)
+
+
+def settings_page(request):
+    context = {
+        'title': 'Settings',
+    }
+    return render(request, 'profile/settings.html', context)

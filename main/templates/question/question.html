@@ -1,5 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+    <div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-auto">
+                    <img src="" alt="avatar">
+                    <p class="my-0">5</p>
+                </div>
+                <div class="col">
+                    <p>How to build...</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis et mattis sem. Cras ex libero,
+                        imperdiet quis leo id, condimentum placerat nulla. Praesent porttitor enim consequat condimentum
+                        mattis. Donec ac tortor quis libero pretium pellentesque. Praesent lectus nisi, rhoncus nec
+                        tristique eget, sollicitudin ac tellus. Vestibulum mi enim, dapibus et velit ut, porttitor
+                        aliquam neque. Etiam accumsan eu tortor ut cursus. Cras scelerisque aliquam felis sed auctor.
+                        Maecenas ultricies varius risus. Aenean pulvinar pulvinar orci, sed aliquet massa congue a.
+                        Vestibulum mollis turpis ac lacus scelerisque, quis tempus nunc tristique. Praesent facilisis
+                        elit nec blandit tempor. Fusce posuere, odio eu sollicitudin tristique, augue nulla luctus
+                        metus, ut venenatis ante orci id urna.</p>
+                    <p class="mb-0">Tags:
+                        {% for item in items %}
+                        {% empty %}
+                            <span>some tags</span>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <hr>
+        {% for item in items %}
+        {% empty %}
+            <p>some comments</p>
+        {% endfor %}
+        <hr>
+        <form>
+            {% csrf_token %}
+            <label class="d-none" for="answer"></label>
+            <textarea id="answer" class="form-control my-2" placeholder="Enter your answer here..."></textarea>
+            <input class="btn btn-secondary" type="submit" value="Answer">
+        </form>
+    </div>
 {% endblock %}
