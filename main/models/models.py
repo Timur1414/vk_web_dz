@@ -36,7 +36,7 @@ class Answer(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(default='default.jpg', upload_to='uploads/')
+    avatar = models.ImageField(default='default.png', upload_to='uploads/')
     rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     popular = PopularManager()
