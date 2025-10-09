@@ -2,10 +2,12 @@
 
 {% block content %}
     <div>
-        <a>Not Questions</a>
-        {% for item in items %}
-        {% empty %}
+        <a href="{% url 'index' %}">New Questions</a>
+        <p class="d-inline-flex">Not Questions</p>
+        {% for question in questions %}
             {% include "question/card.html" %}
+        {% empty %}
+            <p>nothing...</p>
         {% endfor %}
         <nav aria-label="Page navigation example">
             <ul class="pagination">

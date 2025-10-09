@@ -30,8 +30,8 @@
                 </div>
                 <div>
                     {% if request.user.is_authenticated %}
-                        <img src="" alt="avatar">
-                        <p>Dr. Pepper</p>
+                        <img src="{{ profile.avatar.url }}" alt="avatar">
+                        <p>{{ profile.nickname }}</p>
                         <a href="{% url 'settings' %}">Settings</a>
                         <a href="{% url 'logout' %}">log out</a>
                     {% else %}
@@ -51,14 +51,16 @@
             <div class="p-2 flex-fill">
                 <div>
                     <p>Popular Tags</p>
-                    {% for item in items %}
+                    {% for tag in popular_tags %}
+                        <span>{{ tag.text }}</span>
                     {% empty %}
                         <p>some tags</p>
                     {% endfor %}
                 </div>
                 <div>
                     <p>Best Members</p>
-                    {% for item in items %}
+                    {% for profile in popular_profiles %}
+                        <span>{{ profile }}</span>
                     {% empty %}
                         <p>some members</p>
                     {% endfor %}

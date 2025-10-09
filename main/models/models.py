@@ -1,16 +1,26 @@
 from __future__ import annotations
+from typing import Optional, List
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import QuerySet
 
 from main.models.managers import PopularManager, NewManager
 
 
 class Tag(models.Model):
     text = models.CharField(max_length=50)
+    rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     objects = models.Manager()
     popular = PopularManager()
+
+    @staticmethod
+    def get_popular(limit: int = 5) -> QuerySet:
+        return Tag.objects.order_by('-rating')[:limit]
+
+    def __str__(self):
+        return self.text
 
 
 class Question(models.Model):
@@ -25,6 +35,17 @@ class Question(models.Model):
     popular = PopularManager()
     new = NewManager()
 
+    @staticmethod
+    def get_question_by_id(id: int) -> Optional[Question]:
+        try:
+            return Question.objects.get(id)
+        except Question.DoesNotExist:
+            return None
+
+    @staticmethod
+    def get_questions_by_tag(tag: str) -> QuerySet:
+        return Question.objects.filter(tags__text__contains=tag).order_by('-rating')
+
 
 class Answer(models.Model):
     text = models.TextField()
@@ -37,6 +58,10 @@ class Answer(models.Model):
     objects = models.Manager()
     new = NewManager()
 
+    @staticmethod
+    def get_answers_by_question(question: Question) -> QuerySet:
+        return Answer.objects.filter(question=question).order_by('-rating')
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -48,14 +73,30 @@ class Profile(models.Model):
     popular = PopularManager()
 
     @staticmethod
+    def get_popular_users(limit: int = 5) -> list[User]:
+        profiles = Profile.objects.order_by('-rating')[:limit]
+        users = [profile.user for profile in profiles]
+        return users
+
+    @staticmethod
+    def get_popular(limit: int = 5) -> QuerySet:
+        return Profile.objects.order_by('-rating')[:limit]
+
+    @staticmethod
     def create(user: User) -> Profile:
         profile = Profile(user=user)
         profile.save()
         return profile
 
     @staticmethod
-    def get_profile_of_user(user: User) -> Profile:
-        return Profile.objects.get(user=user)
+    def get_profile_of_user(user: User) -> Optional[Profile]:
+        try:
+            return Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            return None
+
+    def __str__(self):
+        return self.nickname
 
 
 class QuestionLike(models.Model):
@@ -74,7 +115,6 @@ class QuestionLike(models.Model):
     def create(user: User, question: Question) -> QuestionLike:
         obj, created = QuestionLike.objects.get_or_create(author=user, question=question)
         return obj
-
 
 
 class AnswerLike(models.Model):

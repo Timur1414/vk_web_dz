@@ -2,10 +2,11 @@
 
 {% block content %}
     <div>
-        <p>Tag: <span>bender</span></p>
-        {% for item in items %}
-        {% empty %}
+        <p>Tag: <span>{{ tag }}</span></p>
+        {% for question in questions %}
             {% include "question/card.html" %}
+        {% empty %}
+            <p>nothing...</p>
         {% endfor %}
         <nav aria-label="Page navigation example">
             <ul class="pagination">

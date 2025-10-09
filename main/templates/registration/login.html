@@ -3,25 +3,25 @@
 {% block content %}
     <p>Log in</p>
     {% if form.errors %}
-        <p>Sorry...</p>
+        <p>{{ form.non_field_errors }}</p>
     {% endif %}
-    <form>
+    <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="container text-center">
             <div class="row my-2">
-                <label class="col" for="login">
+                <label class="col" for="id_username">
                     Login
                 </label>
                 <div class="col-10">
-                    <input id="login" class="form-control" type="text">
+                    <input id="id_username" name="username" class="form-control" type="text" required>
                 </div>
             </div>
             <div class="row my-2">
-                <label class="col" for="password">
+                <label class="col" for="id_password">
                     Password
                 </label>
                 <div class="col-10">
-                    <input id="password" class="form-control" type="password">
+                    <input id="id_password" name="password" class="form-control" type="password" required>
                 </div>
             </div>
         </div>

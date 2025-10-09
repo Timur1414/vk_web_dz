@@ -2,7 +2,7 @@
 
 {% block content %}
     <div>
-        <p>Settings: <span>Dr. Pepper</span></p>
+        <p>Settings: <span>{{ profile.nickname }}</span></p>
         <form>
             {% csrf_token %}
             <div class="container text-center">
@@ -11,7 +11,7 @@
                         Login
                     </label>
                     <div class="col-10">
-                        <input id="login" class="form-control" type="text">
+                        <input id="login" class="form-control" type="text" value="{{ user.username }}">
                     </div>
                 </div>
                 <div class="row my-2">
@@ -19,7 +19,7 @@
                         Email
                     </label>
                     <div class="col-10">
-                        <input id="email" class="form-control" type="text">
+                        <input id="email" class="form-control" type="text" value="{{ user.email }}">
                     </div>
                 </div>
                 <div class="row my-2">
@@ -27,12 +27,12 @@
                         NickName
                     </label>
                     <div class="col-10">
-                        <input id="nickname" class="form-control" type="text">
+                        <input id="nickname" class="form-control" type="text" value="{{ profile.nickname }}">
                     </div>
                 </div>
                 <div class="row my-2">
                     <label class="col" for="avatar">
-                        Avatar
+                        <img src="{{ profile.avatar.url }}" alt="avatar">
                     </label>
                     <div class="col-10">
                         <input id="avatar" class="form-control" type="image" alt="avatar">
