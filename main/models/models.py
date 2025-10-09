@@ -42,6 +42,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(default='default.png', upload_to='uploads/')
     rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    nickname = models.CharField(max_length=50)
 
     objects = models.Manager()
     popular = PopularManager()

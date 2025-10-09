@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from faker import Faker
-from main.models.models import Tag, Question, Answer, AnswerLike, QuestionLike
+from main.models.models import Tag, Question, Answer, AnswerLike, QuestionLike, Profile
 
 
 class Command(BaseCommand):
@@ -11,12 +11,20 @@ class Command(BaseCommand):
 
     def create_users(self, ratio: int, faker: Faker) -> list[User]:
         users = []
+        profiles = []
         for i in range(ratio):
             username = f'{faker.user_name()}_{i}'
             email = f'{i}{faker.email()}'
-            user = User(username=username, email=email, password='qwerty123')
+            user = User(username=username, email=email)
+            user.set_password('qwerty123')
             users.append(user)
-        return User.objects.bulk_create(users)
+
+            nickname = faker.user_name()
+            profile = Profile(user=user, nickname=nickname)
+            profiles.append(profile)
+        users = User.objects.bulk_create(users)
+        Profile.objects.bulk_create(profiles)
+        return users
 
     def create_tags(self, ratio: int, faker: Faker) -> list[Tag]:
         tags = []
