@@ -9,6 +9,7 @@ from main.models.managers import PopularManager, NewManager
 class Tag(models.Model):
     text = models.CharField(max_length=50)
 
+    objects = models.Manager()
     popular = PopularManager()
 
 
@@ -20,6 +21,7 @@ class Question(models.Model):
     tags = models.ManyToManyField(Tag)
     rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
+    objects = models.Manager()
     popular = PopularManager()
     new = NewManager()
 
@@ -32,6 +34,7 @@ class Answer(models.Model):
     rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
+    objects = models.Manager()
     new = NewManager()
 
 
@@ -40,6 +43,7 @@ class Profile(models.Model):
     avatar = models.ImageField(default='default.png', upload_to='uploads/')
     rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
+    objects = models.Manager()
     popular = PopularManager()
 
     @staticmethod
