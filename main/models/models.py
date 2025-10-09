@@ -1,7 +1,8 @@
-# from __future__ import annotations
+from __future__ import annotations
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
+
 from main.models.managers import PopularManager, NewManager
 
 
@@ -41,12 +42,47 @@ class Profile(models.Model):
 
     popular = PopularManager()
 
+    @staticmethod
+    def create(user: User) -> Profile:
+        profile = Profile(user=user)
+        profile.save()
+        return profile
+
+    @staticmethod
+    def get_profile_of_user(user: User) -> Profile:
+        return Profile.objects.get(user=user)
+
 
 class QuestionLike(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'question'],
+            )
+        ]
+
+    @staticmethod
+    def create(user: User, question: Question) -> QuestionLike:
+        obj, created = QuestionLike.objects.get_or_create(author=user, question=question)
+        return obj
+
+
 
 class AnswerLike(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'answer'],
+            )
+        ]
+
+    @staticmethod
+    def create(user: User, answer: Answer) -> AnswerLike:
+        obj, created = AnswerLike.objects.get_or_create(author=user, answer=answer)
+        return obj
