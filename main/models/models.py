@@ -61,6 +61,7 @@ class QuestionLike(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'question'],
+                name='question_like_unique',
             )
         ]
 
@@ -79,6 +80,7 @@ class AnswerLike(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'answer'],
+                name='answer_like_unique',
             )
         ]
 
