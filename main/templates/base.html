@@ -52,7 +52,7 @@
                 <div>
                     <p>Popular Tags</p>
                     {% for tag in popular_tags %}
-                        <span>{{ tag.text }}</span>
+                        <a href="{% url 'tag' tag=tag.text %}">{{ tag }}</a>
                     {% empty %}
                         <p>some tags</p>
                     {% endfor %}

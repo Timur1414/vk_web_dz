@@ -5,15 +5,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-auto">
-                    <img src="" alt="avatar">
-                    <p class="my-0">5</p>
+                    <img src="{{ question.author.profile.avatar.url }}" alt="avatar">
+                    <p class="my-0">{{ question.rating }}</p>
                 </div>
                 <div class="col">
                     <p>{{ question.title }}</p>
                     <p>{{ question.text }}</p>
                     <p class="mb-0">Tags:
                         {% for tag in question.tags.all %}
-                            <span>{{ tag.text }}</span>
+                            <a href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
                         {% empty %}
                             <span>no tags...</span>
                         {% endfor %}
