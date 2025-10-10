@@ -9,15 +9,21 @@ from django.template.loader import render_to_string
 from main.models import Profile, Question, Answer, Tag
 
 
-def create_base_context(request) -> dict[str, Any]:
-    user = request.user
-    profile = Profile.get_profile_of_user(user)
+def create_base_context_for_login() -> dict[str, Any]:
     context = {
-        'user': user,
-        'profile': profile,
         'popular_profiles': Profile.get_popular(),
         'popular_tags': Tag.get_popular(),
     }
+    return context
+
+def create_base_context(request) -> dict[str, Any]:
+    context = create_base_context_for_login()
+    user = request.user
+    profile = Profile.get_profile_of_user(user)
+    context.update({
+        'user': user,
+        'profile': profile,
+    })
     return context
 
 

@@ -6,12 +6,12 @@
             <div class="row">
                 <div class="col-md-auto">
                     <img src="{{ question.author.profile.avatar.url }}" alt="avatar">
-                    <p class="my-0">{{ question.rating }}</p>
+                    <button class="my-0 d-block my-2">{{ question.rating }}</button>
                 </div>
                 <div class="col">
-                    <p>{{ question.title }}</p>
+                    <p class="fs-3">{{ question.title }}</p>
                     <p>{{ question.text }}</p>
-                    <p class="mb-0">Tags:
+                    <p class="mb-0"><span class="fw-semibold">Tags:</span>
                         {% for tag in question.tags.all %}
                             <a href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
                         {% empty %}

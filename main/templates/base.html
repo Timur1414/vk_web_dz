@@ -16,59 +16,64 @@
     <style>{% block extra_css %}{% endblock %}</style>
 </head>
 <body>
-    <header class="p-2">
-        <nav class="navbar p-0">
-            <div class="d-flex justify-content-between" style="width: 100%">
-                <div>
-                    <a class="navbar-brand" href="{% url 'index' %}">AskPupkin</a>
-                </div>
-                <div>
-                    <form class="d-inline-flex" role="search">
-                        <input class="form-control me-2" type="text" placeholder="Search">
-                        <a class="btn btn-success" href="{% url 'ask' %}">Ask!</a>
-                    </form>
-                </div>
-                <div>
-                    {% if request.user.is_authenticated %}
+<header class="p-2">
+    <nav class="navbar p-0">
+        <div class="d-flex justify-content-between" style="width: 100%">
+            <div class="mx-1">
+                <a class="navbar-brand" href="{% url 'index' %}">AskPupkin</a>
+            </div>
+            <div>
+                <form class="d-inline-flex" role="search">
+                    <input class="form-control me-2" type="text" placeholder="Search">
+                    <a class="btn btn-success" href="{% url 'ask' %}">Ask!</a>
+                </form>
+            </div>
+            <div class="row mx-1">
+                {% if request.user.is_authenticated %}
+                    <div class="col">
                         <img src="{{ profile.avatar.url }}" alt="avatar">
-                        <p>{{ profile.nickname }}</p>
-                        <a href="{% url 'settings' %}">Settings</a>
-                        <a href="{% url 'logout' %}">log out</a>
-                    {% else %}
-                        <a href="{% url 'login' %}">log in</a>
-                        <a href="{% url 'django_registration_register' %}">register</a>
-                    {% endif %}
-                </div>
-            </div>
-        </nav>
-        <hr>
-    </header>
-    <main class="p-2">
-        <div class="d-flex">
-            <div class="p-2 flex-grow-1">
-                {% block content %}{% endblock %}
-            </div>
-            <div class="p-2 flex-fill">
-                <div>
-                    <p>Popular Tags</p>
-                    {% for tag in popular_tags %}
-                        <a href="{% url 'tag' tag=tag.text %}">{{ tag }}</a>
-                    {% empty %}
-                        <p>some tags</p>
-                    {% endfor %}
-                </div>
-                <div>
-                    <p>Best Members</p>
-                    {% for profile in popular_profiles %}
-                        <span>{{ profile }}</span>
-                    {% empty %}
-                        <p>some members</p>
-                    {% endfor %}
-                </div>
+                        <p class="text-center">{{ profile.nickname }}</p>
+                    </div>
+                    <div class="col">
+                        <a href="{% url 'settings' %}">settings</a>
+                        <br>
+                        <a class="link-danger" href="{% url 'logout' %}">log out</a>
+                    </div>
+                {% else %}
+                    <a class="link-success" href="{% url 'login' %}">log in</a>
+                    <a href="{% url 'django_registration_register' %}">register</a>
+                {% endif %}
             </div>
         </div>
-    </main>
-    <footer class="bg-secondary p-2">footer</footer>
+    </nav>
+    <hr>
+</header>
+<main class="p-2">
+    <div class="d-flex">
+        <div class="p-2 flex-fill">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="p-2">
+            <div class="mb-4">
+                <p class="m-0 fs-5 fw-semibold">Popular Tags</p>
+                {% for tag in popular_tags %}
+                    <a href="{% url 'tag' tag=tag.text %}">{{ tag }}</a>
+                {% empty %}
+                    <p>some tags</p>
+                {% endfor %}
+            </div>
+            <div>
+                <p class="m-0 fs-5 fw-semibold">Best Members</p>
+                {% for profile in popular_profiles %}
+                    <span>{{ profile }}</span>
+                {% empty %}
+                    <p>some members</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="bg-secondary p-2">footer</footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>

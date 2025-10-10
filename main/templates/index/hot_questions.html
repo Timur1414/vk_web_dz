@@ -2,26 +2,26 @@
 
 {% block content %}
     <div>
-        <a href="{% url 'index' %}">New Questions</a>
-        <p class="d-inline-flex">Not Questions</p>
+        <a class="fs-4" href="{% url 'index' %}">New Questions</a>
+        <p class="fs-3 mx-2 d-inline-flex">Not Questions</p>
         {% for question in questions %}
             {% include "question/card.html" %}
         {% empty %}
             <p>nothing...</p>
         {% endfor %}
-        <nav aria-label="Page navigation example">
+        <nav>
             <ul class="pagination">
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                    <a class="page-link link-dark" href="#">
+                        <span>&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link link-dark" href="#">1</a></li>
+                <li class="page-item"><a class="page-link link-dark" href="#">2</a></li>
+                <li class="page-item"><a class="page-link link-dark" href="#">3</a></li>
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                    <a class="page-link link-dark" href="#">
+                        <span>&raquo;</span>
                     </a>
                 </li>
             </ul>

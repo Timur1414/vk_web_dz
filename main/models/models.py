@@ -90,6 +90,8 @@ class Profile(models.Model):
 
     @staticmethod
     def get_profile_of_user(user: User) -> Optional[Profile]:
+        if user.is_anonymous:
+            return None
         try:
             return Profile.objects.get(user=user)
         except Profile.DoesNotExist:

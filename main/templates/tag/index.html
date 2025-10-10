@@ -2,25 +2,25 @@
 
 {% block content %}
     <div>
-        <p>Tag: <span>{{ tag }}</span></p>
+        <p class="fs-3">Tag: <span class="fw-semibold">{{ tag }}</span></p>
         {% for question in questions %}
             {% include "question/card.html" %}
         {% empty %}
             <p>nothing...</p>
         {% endfor %}
-        <nav aria-label="Page navigation example">
+        <nav>
             <ul class="pagination">
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                    <a class="page-link link-dark" href="#">
+                        <span>&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link link-dark" href="#">1</a></li>
+                <li class="page-item"><a class="page-link link-dark" href="#">2</a></li>
+                <li class="page-item"><a class="page-link link-dark" href="#">3</a></li>
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                    <a class="page-link link-dark" href="#">
+                        <span>&raquo;</span>
                     </a>
                 </li>
             </ul>

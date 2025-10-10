@@ -2,7 +2,7 @@
 
 {% block content %}
     <div>
-        <p>Settings: <span>{{ profile.nickname }}</span></p>
+        <p class="fs-3">Settings: <span>{{ profile.nickname }}</span></p>
         <form>
             {% csrf_token %}
             <div class="container text-center">
@@ -34,7 +34,7 @@
                     <label class="col" for="avatar">
                         <img src="{{ profile.avatar.url }}" alt="avatar">
                     </label>
-                    <div class="col-10">
+                    <div class="col-10 align-self-center">
                         <input id="avatar" class="form-control" type="image" alt="avatar">
                     </div>
                 </div>

@@ -1,18 +1,19 @@
+{% load custom_filters %}
 <a class="text-decoration-none text-dark" href="{% url 'question' id=question.id %}">
-    <div class="border border-dark border-3 container row mb-5">
-        <div class="col">
+    <div class="border border-dark border-3 container row mb-5 py-1">
+        <div class="col my-auto">
             <img src="{{ question.author.profile.avatar.url }}" alt="avatar">
-            <p>{{ question.rating }}</p>
+            <p class="m-0 p-0">{{ question.rating }}</p>
         </div>
-        <div class="col-9">
-            <p>{{ question.title }}</p>
+        <div class="col-10">
+            <p class="fs-4">{{ question.title }}</p>
             <p class="text-truncate">{{ question.text }}</p>
             <div class="row mt-4">
                 <div class="col">
-                    <p>answer</p>
+                    <p>answers ({{ question|count_answers_of_question }})</p>
                 </div>
                 <div class="col-9 text-truncate">
-                    <span>Tags: </span>
+                    <span class="fw-semibold">Tags: </span>
                     {% for tag in question.tags.all %}
                         <span>{{ tag }}</span>
                     {% empty %}
