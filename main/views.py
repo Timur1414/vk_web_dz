@@ -9,15 +9,15 @@ from django.template.loader import render_to_string
 from main.models import Profile, Question, Answer, Tag
 
 
-def create_base_context_for_login() -> dict[str, Any]:
+def create_base_context() -> dict[str, Any]:
     context = {
         'popular_profiles': Profile.get_popular(),
         'popular_tags': Tag.get_popular(),
     }
     return context
 
-def create_base_context(request) -> dict[str, Any]:
-    context = create_base_context_for_login()
+def create_context(request) -> dict[str, Any]:
+    context = create_base_context()
     user = request.user
     profile = Profile.get_profile_of_user(user)
     context.update({
@@ -37,7 +37,7 @@ def render_questions(questions: list, request: WSGIRequest) -> str:
 
 
 def index_page(request: WSGIRequest) -> HttpResponse:
-    context = create_base_context(request)
+    context = create_context(request)
     context['questions'] = Question.new.get_new()
     return render(request, 'index/index.html', context)
 
@@ -48,13 +48,13 @@ def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
 
 
 def hot_questions_page(request: WSGIRequest) -> HttpResponse:
-    context = create_base_context(request)
+    context = create_context(request)
     context['questions'] = Question.popular.get_popular()
     return render(request, 'index/hot_questions.html', context)
 
 
 def question_page(request: WSGIRequest, id: int) -> HttpResponse:
-    context = create_base_context(request)
+    context = create_context(request)
     question = get_object_or_404(Question, id=id)
     context['question'] = question
     context['answers'] = Answer.get_answers_by_question(question)
@@ -63,12 +63,12 @@ def question_page(request: WSGIRequest, id: int) -> HttpResponse:
 
 @login_required()
 def ask_page(request: WSGIRequest) -> HttpResponse:
-    context = create_base_context(request)
+    context = create_context(request)
     return render(request, 'question/ask.html', context)
 
 
 def tag_page(request: WSGIRequest, tag: str) -> HttpResponse:
-    context = create_base_context(request)
+    context = create_context(request)
     context['tag'] = tag
     context['questions'] = Question.get_questions_by_tag(tag)
     return render(request, 'tag/index.html', context)
@@ -76,7 +76,7 @@ def tag_page(request: WSGIRequest, tag: str) -> HttpResponse:
 
 @login_required()
 def settings_page(request: WSGIRequest) -> HttpResponse:
-    context = create_base_context(request)
+    context = create_context(request)
     if request.method == 'POST':
         pass
     return render(request, 'profile/settings.html', context)

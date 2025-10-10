@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>Registration</p>
+    <p class="fs-3">Registration</p>
     {% if form.errors %}
-        <p>Sorry...</p>
+        <ul>
+            {% for field, error in form.errors.items %}
+                <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
-    <form>
+    <form method="POST">
         {% csrf_token %}
         <div class="container text-center">
             <div class="row my-2">
@@ -13,7 +17,7 @@
                     Login
                 </label>
                 <div class="col-10">
-                    <input id="login" class="form-control" type="text">
+                    <input id="login" class="form-control" type="text" name="username">
                 </div>
             </div>
             <div class="row my-2">
@@ -21,7 +25,7 @@
                     Email
                 </label>
                 <div class="col-10">
-                    <input id="email" class="form-control" type="email">
+                    <input id="email" class="form-control" type="email" name="email">
                 </div>
             </div>
             <div class="row my-2">
@@ -37,7 +41,7 @@
                     Password
                 </label>
                 <div class="col-10">
-                    <input id="password" class="form-control" type="password">
+                    <input id="password" class="form-control" type="password" name="password1">
                 </div>
             </div>
             <div class="row my-2">
@@ -45,7 +49,7 @@
                     Repeat password
                 </label>
                 <div class="col-10">
-                    <input id="repeat_password" class="form-control" type="password">
+                    <input id="repeat_password" class="form-control" type="password" name="password2">
                 </div>
             </div>
             <div class="row my-2">
