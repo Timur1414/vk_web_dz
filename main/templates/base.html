@@ -57,7 +57,7 @@
             <div class="mb-4">
                 <p class="m-0 fs-5 fw-semibold">Popular Tags</p>
                 {% for tag in popular_tags %}
-                    <a href="{% url 'tag' tag=tag.text %}">{{ tag }}</a>
+                    <a class="text-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag }}</a>
                 {% empty %}
                     <p>some tags</p>
                 {% endfor %}

@@ -20,7 +20,8 @@ class Command(BaseCommand):
             users.append(user)
 
             nickname = faker.user_name()
-            profile = Profile(user=user, nickname=nickname)
+            rating = randint(1, 100)
+            profile = Profile(user=user, nickname=nickname, rating=rating)
             profiles.append(profile)
         users = User.objects.bulk_create(users)
         Profile.objects.bulk_create(profiles)
@@ -30,7 +31,9 @@ class Command(BaseCommand):
         tags = []
         for i in range(ratio):
             text = f'{faker.word()}_{i}'
-            tag = Tag(text=text)
+            rating = randint(1, 100)
+            color = choice([color[0] for color in Tag.COLORS])
+            tag = Tag(text=text, rating=rating, color=color)
             tags.append(tag)
         return Tag.objects.bulk_create(tags)
 
@@ -40,7 +43,8 @@ class Command(BaseCommand):
             author = choice(users)
             title = faker.sentence()[:100]
             text = faker.text(max_nb_chars=1000)
-            question = Question(author=author, title=title, text=text)
+            rating = randint(0, 100)
+            question = Question(author=author, title=title, text=text, rating=rating)
             questions.append(question)
         questions = Question.objects.bulk_create(questions)
         for question in questions:
@@ -54,7 +58,8 @@ class Command(BaseCommand):
             question = choice(questions)
             author = choice(users)
             text = faker.text(max_nb_chars=1000)
-            answer = Answer(author=author, text=text, question=question)
+            rating = randint(0, 100)
+            answer = Answer(author=author, text=text, question=question, rating=rating)
             answers.append(answer)
         return Answer.objects.bulk_create(answers)
 
@@ -98,5 +103,7 @@ class Command(BaseCommand):
                 answers = self.create_answers(ratio * 100, questions, users, faker)
                 print('answers created')
                 self.create_likes(ratio * 200, questions, answers, users)
+                print('likes created')
+                print('end successfully')
         except Exception as e:
             print(e)

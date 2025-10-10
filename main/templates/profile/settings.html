@@ -3,6 +3,13 @@
 {% block content %}
     <div>
         <p class="fs-3">Settings: <span>{{ profile.nickname }}</span></p>
+        {% if form.errors %}
+            <ul>
+                {% for field, error in form.errors.items %}
+                    <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         <form>
             {% csrf_token %}
             <div class="container text-center">

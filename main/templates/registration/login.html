@@ -3,7 +3,11 @@
 {% block content %}
     <p class="fs-3">Log in</p>
     {% if form.errors %}
-        <p>{{ form.non_field_errors }}</p>
+        <ul>
+            {% for field, error in form.errors.items %}
+                <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
     <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}

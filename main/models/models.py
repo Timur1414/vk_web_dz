@@ -1,19 +1,35 @@
 from __future__ import annotations
-from typing import Optional, List
+from typing import Optional
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import QuerySet
-
+from random import choice
 from main.models.managers import PopularManager, NewManager
 
 
 class Tag(models.Model):
+    COLORS = [
+        ('primary', 'primary'),
+        ('secondary', 'secondary'),
+        ('success', 'success'),
+        ('danger', 'danger'),
+        ('warning', 'warning'),
+        ('info', 'info'),
+        ('dark', 'dark'),
+    ]
+
     text = models.CharField(max_length=50)
     rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    color = models.CharField(max_length=50, choices=COLORS, default='dark')
 
     objects = models.Manager()
     popular = PopularManager()
+
+    def save(self, *args, **kwargs):
+        if not self.color:
+            self.color = choice([color[0] for color in self.COLORS])
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_popular(limit: int = 5) -> QuerySet:
