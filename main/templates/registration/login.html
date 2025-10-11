@@ -9,8 +9,9 @@
             {% endfor %}
         </ul>
     {% endif %}
-    <form method="POST" action="{% url 'login' %}">
+    <form method="POST">
         {% csrf_token %}
+        <input type="hidden" name="continue" value="{{ request.GET.continue }}">
         <div class="container text-center">
             <div class="row my-2">
                 <label class="col" for="id_username">

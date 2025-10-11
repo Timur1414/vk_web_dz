@@ -1,11 +1,13 @@
 from typing import Any
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from main.models import Profile, Question, Answer, Tag
 
 
@@ -16,6 +18,7 @@ def create_base_context() -> dict[str, Any]:
     }
     return context
 
+
 def create_context(request) -> dict[str, Any]:
     context = create_base_context()
     user = request.user
@@ -25,6 +28,25 @@ def create_context(request) -> dict[str, Any]:
         'profile': profile,
     })
     return context
+
+
+class LoginPage(LoginView):
+    template_name = 'registration/login.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(create_base_context())
+        return context
+
+    def get_success_url(self):
+        next_url = self.request.POST.get('continue', '')
+        if next_url:
+            return next_url
+        return reverse_lazy('index')
+
+
+class RegistrationPage:
+    pass
 
 
 def render_questions(questions: list, request: WSGIRequest) -> str:
