@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django_registration.backends.one_step.views import RegistrationView
 from main.models import Profile, Question, Answer, Tag
 
 
@@ -30,6 +31,15 @@ def create_context(request) -> dict[str, Any]:
     return context
 
 
+def render_questions(questions: list, request: WSGIRequest) -> str:
+    if not questions:
+        return '<p>nothing...</p>'
+    html = ''
+    for question in questions:
+        html += render_to_string(request=request, template_name='question/card.html', context={'question': question})
+    return html
+
+
 class LoginPage(LoginView):
     template_name = 'registration/login.html'
 
@@ -45,17 +55,20 @@ class LoginPage(LoginView):
         return reverse_lazy('index')
 
 
-class RegistrationPage:
-    pass
+class RegistrationPage(RegistrationView):
+    template_name = 'django_registration/registration_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(create_base_context())
+        return context
 
-def render_questions(questions: list, request: WSGIRequest) -> str:
-    if not questions:
-        return '<p>nothing...</p>'
-    html = ''
-    for question in questions:
-        html += render_to_string(request=request, template_name='question/card.html', context={'question': question})
-    return html
+    def register(self, form):
+        new_user = super().register(form)
+        new_profile = Profile.get_profile_of_user(new_user)
+        nickname = self.request.POST.get('nickname', 'user')
+        new_profile.update(nickname=nickname)
+        return new_user
 
 
 def index_page(request: WSGIRequest) -> HttpResponse:

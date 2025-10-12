@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional
+from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -93,6 +94,15 @@ class Profile(models.Model):
         profiles = Profile.objects.order_by('-rating')[:limit]
         users = [profile.user for profile in profiles]
         return users
+
+    def update(self, avatar: UploadedFile = None, rating: int = None, nickname: str = None):
+        if avatar:
+            self.avatar.save(avatar.name, avatar)
+        if rating:
+            self.rating = rating
+        if nickname:
+            self.nickname = nickname
+        self.save()
 
     @staticmethod
     def get_popular(limit: int = 5) -> QuerySet:
