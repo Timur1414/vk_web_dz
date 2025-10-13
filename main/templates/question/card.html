@@ -2,7 +2,7 @@
 <a class="text-decoration-none text-dark" href="{% url 'question' id=question.id %}">
     <div class="border border-dark border-3 container row mb-5 py-1">
         <div class="col my-auto">
-            <img src="{{ question.author.profile.avatar.url }}" alt="avatar">
+            <img class="img-fluid" style="max-width: 100px; max-height: 100px;" src="{{ question.author.profile.avatar.url }}" alt="avatar">
             <p class="m-0 p-0">{{ question.rating }}</p>
         </div>
         <div class="col-10">

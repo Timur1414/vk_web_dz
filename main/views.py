@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django_registration.backends.one_step.views import RegistrationView
-from main.forms import AskForm
+from main.forms import AskForm, SettingsForm
 from main.models import Profile, Question, Answer, Tag
 
 
@@ -134,6 +134,18 @@ def tag_page(request: WSGIRequest, tag: str) -> HttpResponse:
 @login_required()
 def settings_page(request: WSGIRequest) -> HttpResponse:
     context = create_context(request)
+    initial = {
+        'username': request.user.username,
+        'email': request.user.email,
+        'nickname': request.user.profile.nickname,
+        'avatar': request.user.profile.avatar,
+    }
+    context['form'] = SettingsForm(initial=initial, instance=request.user)
     if request.method == 'POST':
-        pass
+        form = SettingsForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+        else:
+            context['form'] = form
     return render(request, 'profile/settings.html', context)
