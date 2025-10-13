@@ -13,7 +13,7 @@
                     <p>{{ question.text }}</p>
                     <p class="mb-0"><span class="fw-semibold">Tags:</span>
                         {% for tag in question.tags.all %}
-                            <a href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
+                            <a class="link-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
                         {% empty %}
                             <span>no tags...</span>
                         {% endfor %}
