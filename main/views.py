@@ -1,6 +1,7 @@
 from typing import Any
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -9,13 +10,14 @@ from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django_registration.backends.one_step.views import RegistrationView
+from main.forms import AskForm
 from main.models import Profile, Question, Answer, Tag
 
 
 def create_base_context() -> dict[str, Any]:
     context = {
         'popular_profiles': Profile.get_popular(),
-        'popular_tags': Tag.get_popular(),
+        'popular_tags': Tag.popular.get_popular(),
     }
     return context
 
@@ -99,6 +101,26 @@ def question_page(request: WSGIRequest, id: int) -> HttpResponse:
 @login_required()
 def ask_page(request: WSGIRequest) -> HttpResponse:
     context = create_context(request)
+    context['form'] = AskForm(initial={'author': request.user.id})
+    if request.method == 'POST':
+        form = AskForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['author'] != request.user.id:
+                raise PermissionDenied()
+            title = form.cleaned_data['title']
+            text = form.cleaned_data['text']
+            question = Question.create(title=title, text=text, author=request.user)
+            tags_text = form.cleaned_data['tags'].strip()
+            while '  ' in tags_text:
+                tags_text = tags_text.replace('  ', ' ')
+            tags_text = tags_text.replace(', ', ',')
+            tags_words = tags_text.split(',')
+            for tag_text in tags_words:
+                tag = Tag.get_or_create(tag_text)
+                question.add_tag(tag)
+            return redirect('index')
+        else:
+            context['form'] = form
     return render(request, 'question/ask.html', context)
 
 

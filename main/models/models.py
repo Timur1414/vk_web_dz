@@ -27,14 +27,15 @@ class Tag(models.Model):
     objects = models.Manager()
     popular = PopularManager()
 
+    @staticmethod
+    def get_or_create(text: str) -> Tag:
+        obj, created = Tag.objects.get_or_create(text=text)
+        return obj
+
     def save(self, *args, **kwargs):
         if not self.color:
             self.color = choice([color[0] for color in self.COLORS])
         super().save(*args, **kwargs)
-
-    @staticmethod
-    def get_popular(limit: int = 5) -> QuerySet:
-        return Tag.objects.order_by('-rating')[:limit]
 
     def __str__(self):
         return self.text
@@ -51,6 +52,16 @@ class Question(models.Model):
     objects = models.Manager()
     popular = PopularManager()
     new = NewManager()
+
+    @staticmethod
+    def create(title: str, text: str, author: User) -> Question:
+        question = Question(title=title, text=text, author=author)
+        question.save()
+        return question
+
+    def add_tag(self, tag: Tag):
+        self.tags.add(tag)
+        self.save()
 
     @staticmethod
     def get_question_by_id(id: int) -> Optional[Question]:
