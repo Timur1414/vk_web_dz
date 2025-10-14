@@ -4,7 +4,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from random import choice
 from main.models.managers import PopularManager, NewManager
 
@@ -62,6 +62,10 @@ class Question(models.Model):
     def add_tag(self, tag: Tag):
         self.tags.add(tag)
         self.save()
+
+    @staticmethod
+    def find_by_text(text: str, limit: int = 5) -> QuerySet:
+        return Question.popular.get_queryset().filter(Q(title__icontains=text) | Q(text__icontains=text))[:limit]
 
     @staticmethod
     def get_question_by_id(id: int) -> Optional[Question]:

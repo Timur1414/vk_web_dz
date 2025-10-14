@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
 from django.shortcuts import redirect
@@ -81,7 +81,8 @@ def index_page(request: WSGIRequest) -> HttpResponse:
 
 def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
     logout(request)
-    return redirect('index')
+    referer = request.headers['referer']
+    return redirect(referer)
 
 
 def hot_questions_page(request: WSGIRequest) -> HttpResponse:
@@ -149,3 +150,14 @@ def settings_page(request: WSGIRequest) -> HttpResponse:
         else:
             context['form'] = form
     return render(request, 'profile/settings.html', context)
+
+
+def search_questions(request: WSGIRequest) -> JsonResponse:
+    text = request.GET.get('text', '')
+    questions = Question.find_by_text(text)
+    html = ''
+    for question in questions:
+        html += render_to_string('index/search_item.html', {'question': question})
+    return JsonResponse({
+        'html': html,
+    })
