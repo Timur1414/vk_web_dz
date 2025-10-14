@@ -1,7 +1,15 @@
+{% load custom_filters %}
 <div class="border border-dark border-3 container row mb-5 mx-0 py-1 px-0">
     <div class="col">
-        <img class="img-fluid" style="max-width: 100px; max-height: 100px;" src="{{ answer.author.profile.avatar.url }}" alt="avatar">
-        <button class="d-block my-2">{{ answer.rating }}</button>
+        <img class="img-fluid" style="max-width: 100px; max-height: 100px;" src="{{ answer.author.profile.avatar.url }}"
+             alt="avatar">
+        {% if request.user.is_authenticated %}
+            <button id="answer_like_btn_{{ answer.id }}"
+                    class="btn {% if answer|is_answer_liked:request.user %} btn-success {% else %} btn-outline-secondary {% endif %} d-block my-2"
+                    onclick="answer_like({{ answer.id }})">{{ answer.rating }}</button>
+        {% else %}
+            <p>{{ answer.rating }}</p>
+        {% endif %}
     </div>
     <div class="col-10">
         <p>{{ answer.text }}</p>
@@ -10,14 +18,16 @@
                 <label class="form-check-label" for="correct">
                     Correct
                 </label>
-                <input class="form-check-input" type="checkbox" value="" id="correct" {% if answer.is_correct %}checked{% endif %}>
+                <input class="form-check-input" type="checkbox" value="" id="correct"
+                       {% if answer.is_correct %}checked{% endif %}>
             </div>
         {% else %}
             <div class="form-check">
                 <label class="form-check-label" for="correct">
                     Correct
                 </label>
-                <input class="form-check-input" type="checkbox" value="" id="correct" {% if answer.is_correct %}checked{% endif %} disabled>
+                <input class="form-check-input" type="checkbox" value="" id="correct"
+                       {% if answer.is_correct %}checked{% endif %} disabled>
             </div>
         {% endif %}
     </div>

@@ -22,4 +22,6 @@ urlpatterns = [
     ), name='django_registration_complete'),
 
     path('api/search_questions/', views.search_questions),
+    path('api/question_like/', views.question_like),
+    path('api/answer_like/', views.answer_like),
 ]

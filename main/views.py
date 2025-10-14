@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django_registration.backends.one_step.views import RegistrationView
 from main.forms import AskForm, SettingsForm
-from main.models import Profile, Question, Answer, Tag
+from main.models import Profile, Question, Answer, Tag, QuestionLike, AnswerLike
 
 
 def create_base_context() -> dict[str, Any]:
@@ -95,6 +95,7 @@ def question_page(request: WSGIRequest, id: int) -> HttpResponse:
     context = create_context(request)
     question = get_object_or_404(Question, id=id)
     context['question'] = question
+    context['is_question_liked'] = QuestionLike.is_liked(question, request.user)
     context['answers'] = Answer.get_answers_by_question(question)
     return render(request, 'question/question.html', context)
 
@@ -160,4 +161,38 @@ def search_questions(request: WSGIRequest) -> JsonResponse:
         html += render_to_string('index/search_item.html', {'question': question})
     return JsonResponse({
         'html': html,
-    })
+    }, status=200)
+
+
+def question_like(request: WSGIRequest) -> JsonResponse:
+    user = request.user
+    question_id = request.GET.get('question_id')
+    question = None
+    if not user.is_authenticated:
+        return JsonResponse({}, status=401)
+    try:
+        question_id = int(question_id)
+        question = Question.get_question_by_id(question_id)
+        if question is None:
+            raise ValueError()
+    except ValueError:
+        return JsonResponse({}, status=404)
+    QuestionLike.like(question, user)
+    return JsonResponse({},  status=200)
+
+
+def answer_like(request: WSGIRequest) -> JsonResponse:
+    user = request.user
+    answer_id = request.GET.get('answer_id')
+    answer = None
+    if not user.is_authenticated:
+        return JsonResponse({}, status=401)
+    try:
+        answer_id = int(answer_id)
+        answer = Answer.get_answer_by_id(answer_id)
+        if answer is None:
+            raise ValueError()
+    except ValueError:
+        return JsonResponse({}, status=404)
+    AnswerLike.like(answer, user)
+    return JsonResponse({}, status=200)

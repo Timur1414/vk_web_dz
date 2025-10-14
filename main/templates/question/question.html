@@ -1,12 +1,21 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
     <div>
         <div class="container">
             <div class="row">
                 <div class="col-md-auto">
-                    <img class="img-fluid" style="max-width: 100px; max-height: 100px;" src="{{ question.author.profile.avatar.url }}" alt="avatar">
-                    <button class="my-0 d-block my-2">{{ question.rating }}</button>
+                    <img class="img-fluid" style="max-width: 100px; max-height: 100px;"
+                         src="{{ question.author.profile.avatar.url }}" alt="avatar">
+                    {% if request.user.is_authenticated %}
+                        <button id="like_btn"
+                                class="btn {% if is_question_liked %} btn-success {% else %} btn-outline-secondary {% endif %} my-0 d-block my-2"
+                                onclick="question_like({{ question.id }})">{{ question.rating }}</button>
+                    {% else %}
+                        <p>{{ question.rating }}</p>
+                    {% endif %}
+                    <p id="is_liked" class="d-none">{{ is_question_liked }}</p>
                 </div>
                 <div class="col">
                     <p class="fs-3">{{ question.title }}</p>
@@ -35,4 +44,6 @@
             <input class="btn btn-secondary" type="submit" value="Answer">
         </form>
     </div>
+
+    <script src="{% static 'js/like.js' %}"></script>
 {% endblock %}

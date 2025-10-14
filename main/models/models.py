@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Tuple
 from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
@@ -70,7 +70,7 @@ class Question(models.Model):
     @staticmethod
     def get_question_by_id(id: int) -> Optional[Question]:
         try:
-            return Question.objects.get(id)
+            return Question.objects.get(id=id)
         except Question.DoesNotExist:
             return None
 
@@ -89,6 +89,13 @@ class Answer(models.Model):
 
     objects = models.Manager()
     new = NewManager()
+
+    @staticmethod
+    def get_answer_by_id(id: int) -> Optional[Answer]:
+        try:
+            return Answer.objects.get(id=id)
+        except Answer.DoesNotExist:
+            return None
 
     @staticmethod
     def get_answers_by_question(question: Question) -> QuerySet:
@@ -145,6 +152,7 @@ class Profile(models.Model):
 class QuestionLike(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
@@ -155,14 +163,31 @@ class QuestionLike(models.Model):
         ]
 
     @staticmethod
-    def create(user: User, question: Question) -> QuestionLike:
+    def like(question: Question, user: User) -> Optional[QuestionLike]:
+        if user.is_anonymous:
+            return None
+        like, created = QuestionLike.create(user, question)
+        if not created:
+            like.active = not like.active
+            like.save()
+        return like
+
+    @staticmethod
+    def is_liked(question: Question, user: User) -> bool:
+        if user.is_anonymous:
+            return False
+        return QuestionLike.objects.filter(question=question, author=user, active=True).exists()
+
+    @staticmethod
+    def create(user: User, question: Question) -> tuple[QuestionLike, bool]:
         obj, created = QuestionLike.objects.get_or_create(author=user, question=question)
-        return obj
+        return obj, created
 
 
 class AnswerLike(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
@@ -173,6 +198,22 @@ class AnswerLike(models.Model):
         ]
 
     @staticmethod
-    def create(user: User, answer: Answer) -> AnswerLike:
+    def is_liked(answer: Answer, user: User) -> bool:
+        if user.is_anonymous:
+            return False
+        return AnswerLike.objects.filter(answer=answer, author=user, active=True).exists()
+
+    @staticmethod
+    def like(answer: Answer, user: User) -> Optional[AnswerLike]:
+        if user.is_anonymous:
+            return None
+        like, created = AnswerLike.create(user, answer)
+        if not created:
+            like.active = not like.active
+            like.save()
+        return like
+
+    @staticmethod
+    def create(user: User, answer: Answer) -> tuple[AnswerLike, bool]:
         obj, created = AnswerLike.objects.get_or_create(author=user, answer=answer)
-        return obj
+        return obj, created
