@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
+from django.core.paginator import EmptyPage
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
@@ -12,6 +13,7 @@ from django.urls import reverse_lazy
 from django_registration.backends.one_step.views import RegistrationView
 from main.forms import AskForm, SettingsForm, CreateAnswerForm
 from main.models import Profile, Question, Answer, Tag, QuestionLike, AnswerLike
+from main.paginators import paginate
 
 
 def create_base_context() -> dict[str, Any]:
@@ -31,15 +33,6 @@ def create_context(request) -> dict[str, Any]:
         'profile': profile,
     })
     return context
-
-
-def render_questions(questions: list, request: WSGIRequest) -> str:
-    if not questions:
-        return '<p>nothing...</p>'
-    html = ''
-    for question in questions:
-        html += render_to_string(request=request, template_name='question/card.html', context={'question': question})
-    return html
 
 
 class LoginPage(LoginView):
@@ -75,7 +68,17 @@ class RegistrationPage(RegistrationView):
 
 def index_page(request: WSGIRequest) -> HttpResponse:
     context = create_context(request)
-    context['questions'] = Question.new.get_new()
+    questions = paginate(Question.new.get_queryset(), request)
+    context['questions'] = questions.object_list
+    context['page'] = questions.number
+    try:
+        context['prev'] = questions.previous_page_number()
+    except EmptyPage:
+        context['prev'] = None
+    try:
+        context['next'] = questions.next_page_number()
+    except EmptyPage:
+        context['next'] = None
     return render(request, 'index/index.html', context)
 
 
@@ -87,7 +90,17 @@ def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
 
 def hot_questions_page(request: WSGIRequest) -> HttpResponse:
     context = create_context(request)
-    context['questions'] = Question.popular.get_popular()
+    questions = paginate(Question.popular.get_queryset(), request)
+    context['questions'] = questions.object_list
+    context['page'] = questions.number
+    try:
+        context['prev'] = questions.previous_page_number()
+    except EmptyPage:
+        context['prev'] = None
+    try:
+        context['next'] = questions.next_page_number()
+    except EmptyPage:
+        context['next'] = None
     return render(request, 'index/hot_questions.html', context)
 
 
@@ -142,7 +155,17 @@ def ask_page(request: WSGIRequest) -> HttpResponse:
 def tag_page(request: WSGIRequest, tag: str) -> HttpResponse:
     context = create_context(request)
     context['tag'] = tag
-    context['questions'] = Question.get_questions_by_tag(tag)
+    questions = paginate(Question.get_questions_by_tag(tag), request)
+    context['questions'] = questions.object_list
+    context['page'] = questions.number
+    try:
+        context['prev'] = questions.previous_page_number()
+    except EmptyPage:
+        context['prev'] = None
+    try:
+        context['next'] = questions.next_page_number()
+    except EmptyPage:
+        context['next'] = None
     return render(request, 'tag/index.html', context)
 
 

@@ -1,17 +1,15 @@
-# from django.views.generic import ListView
-from django.core.paginator import Paginator, EmptyPage
+from typing import Any
+from django.core.paginator import Paginator, EmptyPage, Page
 
 
-def paginate(objects_list, request, per_page=10) -> list:
+def paginate(objects_list, request, per_page=10) -> Page[Any]:
     paginator = Paginator(objects_list, per_page)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get('page', '1')
     try:
         page_number = int(page_number)
+        if page_number < 1:
+            raise ValueError()
         page_obj = paginator.get_page(page_number)
-        return page_obj.object_list
+        return page_obj
     except (EmptyPage, ValueError):
-        return []
-
-# class QuestionListView(ListView):
-#     paginate_by = 2
-#     model = Question
+        return paginator.get_page(1)

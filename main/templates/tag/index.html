@@ -10,19 +10,15 @@
         {% endfor %}
         <nav>
             <ul class="pagination">
-                <li class="page-item">
-                    <a class="page-link link-dark" href="#">
-                        <span>&laquo;</span>
-                    </a>
-                </li>
-                <li class="page-item"><a class="page-link link-dark" href="#">1</a></li>
-                <li class="page-item"><a class="page-link link-dark" href="#">2</a></li>
-                <li class="page-item"><a class="page-link link-dark" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link link-dark" href="#">
-                        <span>&raquo;</span>
-                    </a>
-                </li>
+                {% if prev %}
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ prev }}"><span>&laquo;</span></a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ prev }}">{{ prev }}</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ page }}">{{ page }}</a></li>
+                {% if next %}
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ next }}">{{ next }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ next }}"><span>&raquo;</span></a></li>
+                {% endif %}
             </ul>
         </nav>
     </div>
