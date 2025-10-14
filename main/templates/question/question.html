@@ -37,12 +37,16 @@
             <p>nothing...</p>
         {% endfor %}
         <hr>
-        <form>
-            {% csrf_token %}
-            <label class="d-none" for="answer"></label>
-            <textarea id="answer" class="form-control my-2" placeholder="Enter your answer here..."></textarea>
-            <input class="btn btn-secondary" type="submit" value="Answer">
-        </form>
+        {% if request.user.is_authenticated %}
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.text }}
+                {% for field in form.hidden_fields %}
+                    {{ field }}
+                {% endfor %}
+                <input class="btn btn-secondary" type="submit" value="Answer">
+            </form>
+        {% endif %}
     </div>
 
     <script src="{% static 'js/like.js' %}"></script>

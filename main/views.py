@@ -10,7 +10,7 @@ from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django_registration.backends.one_step.views import RegistrationView
-from main.forms import AskForm, SettingsForm
+from main.forms import AskForm, SettingsForm, CreateAnswerForm
 from main.models import Profile, Question, Answer, Tag, QuestionLike, AnswerLike
 
 
@@ -98,6 +98,18 @@ def question_page(request: WSGIRequest, id: int) -> HttpResponse:
     context['question'] = question
     context['is_question_liked'] = QuestionLike.is_liked(question, request.user)
     context['answers'] = Answer.get_answers_by_question(question)
+    initial = {
+        'question': question,
+        'author': request.user,
+    }
+    context['form'] = CreateAnswerForm(initial=initial)
+    if request.method == 'POST':
+        form = CreateAnswerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('question', id=question.id)
+        else:
+            context['form'] = form
     return render(request, 'question/question.html', context)
 
 

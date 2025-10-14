@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 
+from main.models import Answer
+
 
 class AskForm(forms.Form):
     title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Title')
@@ -29,3 +31,14 @@ class SettingsForm(forms.ModelForm):
                 profile.avatar = self.cleaned_data['avatar']
             profile.save()
         return user
+
+
+class CreateAnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ['text', 'author', 'question']
+        widgets = {
+            'text': forms.Textarea(attrs={'class': 'form-control my-2', 'placeholder': 'Enter your answer here...'}),
+            'author': forms.HiddenInput(),
+            'question': forms.HiddenInput(),
+        }
