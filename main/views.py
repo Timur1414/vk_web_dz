@@ -94,6 +94,7 @@ def hot_questions_page(request: WSGIRequest) -> HttpResponse:
 def question_page(request: WSGIRequest, id: int) -> HttpResponse:
     context = create_context(request)
     question = get_object_or_404(Question, id=id)
+    context['is_author'] = request.user == question.author
     context['question'] = question
     context['is_question_liked'] = QuestionLike.is_liked(question, request.user)
     context['answers'] = Answer.get_answers_by_question(question)
@@ -195,4 +196,23 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     except ValueError:
         return JsonResponse({}, status=404)
     AnswerLike.like(answer, user)
+    return JsonResponse({}, status=200)
+
+
+def answer_check(request: WSGIRequest) -> JsonResponse:
+    user = request.user
+    answer_id = request.GET.get('answer_id')
+    answer = None
+    if not user.is_authenticated:
+        return JsonResponse({}, status=401)
+    try:
+        answer_id = int(answer_id)
+        answer = Answer.get_answer_by_id(answer_id)
+        if answer is None:
+            raise ValueError()
+    except ValueError:
+        return JsonResponse({}, status=404)
+    if user != answer.question.author:
+        return JsonResponse({}, status=403)
+    answer.change_correct()
     return JsonResponse({}, status=200)

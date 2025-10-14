@@ -13,22 +13,18 @@
     </div>
     <div class="col-10">
         <p>{{ answer.text }}</p>
-        {% if question.author == request.user %}
+        {% if is_author %}
             <div class="form-check">
                 <label class="form-check-label" for="correct">
                     Correct
                 </label>
-                <input class="form-check-input" type="checkbox" value="" id="correct"
-                       {% if answer.is_correct %}checked{% endif %}>
+                <input id="answer_input_{{ answer.id }}" class="form-check-input" type="checkbox" value="" id="correct"
+                       {% if answer.is_correct %}checked{% endif %} onclick="correct({{ answer.id }})">
             </div>
         {% else %}
-            <div class="form-check">
-                <label class="form-check-label" for="correct">
-                    Correct
-                </label>
-                <input class="form-check-input" type="checkbox" value="" id="correct"
-                       {% if answer.is_correct %}checked{% endif %} disabled>
-            </div>
+            {% if answer.is_correct %}
+                <p class="text-success">Correct</p>
+            {% endif %}
         {% endif %}
     </div>
 </div>

@@ -90,6 +90,10 @@ class Answer(models.Model):
     objects = models.Manager()
     new = NewManager()
 
+    def change_correct(self):
+        self.is_correct = not self.is_correct
+        self.save()
+
     @staticmethod
     def get_answer_by_id(id: int) -> Optional[Answer]:
         try:
