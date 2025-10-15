@@ -3,13 +3,12 @@ from main import views
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
-    path('', views.index_page, name='index'),
-    path('hot/', views.hot_questions_page, name='hot_questions'),
-
-    path('question/<int:id>/', views.question_page, name='question'),
-    path('ask/', views.ask_page, name='ask'),
-    path('tag/<str:tag>/', views.tag_page, name='tag'),
-    path('profile/edit/', views.settings_page, name='settings'),
+    path('', views.IndexPage.as_view(), name='index'),
+    path('hot/', views.HotQuestionsPage.as_view(), name='hot_questions'),
+    path('tag/<str:tag>/', views.TagePage.as_view(), name='tag'),
+    path('question/<int:id>/', views.QuestionPage.as_view(), name='question'),
+    path('ask/', views.AskPage.as_view(), name='ask'),
+    path('profile/edit/', views.SettingsPage.as_view(), name='settings'),
     path('login/', views.LoginPage.as_view(), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.RegistrationPage.as_view(), name='django_registration_register'),

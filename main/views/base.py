@@ -1,6 +1,7 @@
 from typing import Any, Optional
-from django.core.handlers.wsgi import WSGIRequest
 from django.core.paginator import EmptyPage, Page
+from django.http import HttpRequest
+
 from main.models import Tag, Profile, Question, Answer
 
 
@@ -12,7 +13,7 @@ def create_base_context() -> dict[str, Any]:
     return context
 
 
-def create_context(request: WSGIRequest) -> dict[str, Any]:
+def create_context(request: HttpRequest) -> dict[str, Any]:
     context = create_base_context()
     user = request.user
     profile = Profile.get_profile_of_user(user)
