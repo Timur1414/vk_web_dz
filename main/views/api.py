@@ -6,6 +6,18 @@ from main.views.base import check_received_question, check_received_answer
 
 
 def search_questions(request: WSGIRequest) -> JsonResponse:
+    """
+    Returns a JSON response containing HTML of search results.
+
+    Queries the database for questions containing the given text
+    and renders each result as a search item template.
+
+    Args:
+        request (WSGIRequest): The request containing the search text.
+
+    Returns:
+        JsonResponse: A response containing the rendered HTML of search results.
+    """
     text = request.GET.get('text', '')
     questions = Question.find_by_text(text)
     html = ''
@@ -17,6 +29,15 @@ def search_questions(request: WSGIRequest) -> JsonResponse:
 
 
 def question_like(request: WSGIRequest) -> JsonResponse:
+    """
+    Returns a JSON response containing no content.
+
+    Queries the database for the given question and increments/decrements its rating
+    depending on whether the user has liked the question before.
+
+    Args:
+        request (WSGIRequest): The request containing the question_id.
+    """
     user = request.user
     question_id = request.GET.get('question_id')
     if not user.is_authenticated:
@@ -29,6 +50,15 @@ def question_like(request: WSGIRequest) -> JsonResponse:
 
 
 def answer_like(request: WSGIRequest) -> JsonResponse:
+    """
+    Returns a JSON response containing no content.
+
+    Queries the database for the given answer and increments/decrements its rating
+    depending on whether the user has liked the answer before.
+
+    Args:
+        request (WSGIRequest): The request containing the answer_id.
+    """
     user = request.user
     answer_id = request.GET.get('answer_id')
     if not user.is_authenticated:
@@ -41,6 +71,12 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
 
 
 def answer_check(request: WSGIRequest) -> JsonResponse:
+    """
+    Make an answer as correct/incorrect.
+
+    Args:
+        request (WSGIRequest): The request containing the answer_id.
+    """
     user = request.user
     answer_id = request.GET.get('answer_id')
     if not user.is_authenticated:

@@ -5,9 +5,18 @@ from main.models import Answer, Question, Tag
 
 
 class RegistrationForm(UserCreationForm):
+    """
+    Form for user registration.
+    Extends Django's UserCreationForm to include a nickname field.
+    """
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName')
 
 class AskForm(forms.ModelForm):
+    """
+    Form for asking a new question.
+    Includes fields for question title, text, and tags.
+    Tags should be entered as comma-separated values.
+    """
     tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Tags')
 
     class Meta:
@@ -36,6 +45,11 @@ class AskForm(forms.ModelForm):
 
 
 class SettingsForm(forms.ModelForm):
+    """
+    Form for updating user profile settings.
+    Allows users to update their username, email, nickname, and avatar.
+    The avatar field is optional.
+    """
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Login')
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email')
     nickname = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName')
@@ -58,6 +72,10 @@ class SettingsForm(forms.ModelForm):
 
 
 class CreateAnswerForm(forms.ModelForm):
+    """
+    Form for creating a new answer to a question.
+    Includes a text area for the answer content.
+    """
     class Meta:
         model = Answer
         fields = ['text', 'author', 'question']

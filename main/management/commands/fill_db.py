@@ -7,6 +7,19 @@ from main.models.models import Tag, Question, Answer, AnswerLike, QuestionLike, 
 
 
 class Command(BaseCommand):
+    """
+    Management command to populate the database with test data.
+    
+    This command creates random users, tags, questions, answers, and likes
+    to help with development and testing.
+    
+    Usage:
+        python manage.py fill_db <ratio>
+        
+    Where <ratio> is the base number of entities to create. The actual number
+    of created entities will be a multiple of this ratio.
+    """
+
     help = 'Fill database with random data'
 
     def create_users(self, ratio: int, faker: Faker) -> list[User]:

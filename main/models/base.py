@@ -7,6 +7,15 @@ from main.models.managers import PopularManager
 
 
 class RatingModel(models.Model):
+    """
+    Abstract base model that provides rating functionality for inheriting models.
+
+    This model includes a rating field and methods to increment and decrement the rating.
+    It uses a custom manager 'popular' for querying popular items.
+
+    Attributes:
+        rating (int): The current rating of the model instance (default: 0, min: 0)
+    """
     rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     objects = models.Manager()
@@ -25,6 +34,16 @@ class RatingModel(models.Model):
 
 
 class Like(models.Model):
+    """
+    Abstract base model for implementing like functionality.
+
+    This model serves as a base for creating like relationships between users and other models.
+    It must be subclassed with specific implementations for the abstract methods.
+
+    Attributes:
+        active (bool): Indicates if the like is currently active (default: True)
+        author (User): The user who created the like
+    """
     active = models.BooleanField(default=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 

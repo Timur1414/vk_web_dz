@@ -6,6 +6,12 @@ from main.models import Tag, Profile, Question, Answer
 
 
 def create_base_context() -> dict[str, Any]:
+    """
+    Returns a context dictionary containing popular profiles and tags.
+
+    Returns:
+        dict[str, Any]: A context dictionary containing popular profiles and tags.
+    """
     context = {
         'popular_profiles': Profile.popular.get_popular(),
         'popular_tags': Tag.popular.get_popular(),
@@ -14,6 +20,16 @@ def create_base_context() -> dict[str, Any]:
 
 
 def create_context(request: HttpRequest) -> dict[str, Any]:
+    """
+    Returns a context dictionary containing information about the current user.
+    The context dictionary contains the current user and their profile.
+
+    Args:
+        request (HttpRequest): The request containing information about the current user.
+
+    Returns:
+        dict[str, Any]: A context dictionary containing information about the current user.
+    """
     context = create_base_context()
     user = request.user
     profile = Profile.get_profile_of_user(user)
@@ -25,6 +41,15 @@ def create_context(request: HttpRequest) -> dict[str, Any]:
 
 
 def get_paginated_nav_context(questions: Page) -> dict[str, Any]:
+    """
+    Returns a context dictionary containing pagination information for the given page of questions.
+
+    Args:
+        questions (Page): The page of questions for which to generate pagination information.
+
+    Returns:
+        dict[str, Any]: A context dictionary containing pagination information for the given page of questions.
+    """
     context: dict[str, Any] = {
         'questions': questions.object_list,
         'page': questions.number
@@ -41,6 +66,15 @@ def get_paginated_nav_context(questions: Page) -> dict[str, Any]:
 
 
 def check_received_question(question_id: str) -> Optional[Question]:
+    """
+    Returns the question with the given id if it exists, otherwise None.
+
+    Args:
+        question_id (str): The id of the question to retrieve.
+
+    Returns:
+        Optional[Question]: The question with the given id if it exists, otherwise None.
+    """
     try:
         question_id = int(question_id)
         question = Question.get_question_by_id(question_id)
@@ -52,6 +86,15 @@ def check_received_question(question_id: str) -> Optional[Question]:
 
 
 def check_received_answer(answer_id: str) -> Optional[Answer]:
+    """
+    Returns the answer with the given id if it exists, otherwise None.
+
+    Args:
+        answer_id (str): The id of the answer to retrieve.
+
+    Returns:
+        Optional[Answer]: The answer with the given id if it exists, otherwise None.
+    """
     try:
         answer_id = int(answer_id)
         answer = Answer.get_answer_by_id(answer_id)

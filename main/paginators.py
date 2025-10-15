@@ -3,6 +3,10 @@ from django.core.paginator import Paginator, EmptyPage, Page
 
 
 def paginate(objects_list, request, per_page=10) -> Page[Any]:
+    """
+    Returns a page object from the given list of objects, based on the request.
+    The function returns a page object that can be iterated over to get the objects of that page.
+    """
     paginator = Paginator(objects_list, per_page)
     page_number = request.GET.get('page', '1')
     try:

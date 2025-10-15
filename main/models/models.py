@@ -10,6 +10,17 @@ from main.models.base import RatingModel, Like
 
 
 class Tag(RatingModel):
+    """
+    Model representing a tag that can be associated with questions.
+
+    Inherits from RatingModel to support rating functionality.
+    Each tag has a text and a color for display purposes.
+
+    Attributes:
+        COLORS: List of available color choices for tags
+        text (str): The text content of the tag (max 50 chars)
+        color (str): The display color of the tag, chosen from COLORS
+    """
     COLORS = [
         ('primary', 'primary'),
         ('secondary', 'secondary'),
@@ -41,6 +52,19 @@ class Tag(RatingModel):
 
 
 class Question(RatingModel):
+    """
+    Model representing a question.
+
+    Inherits from RatingModel to support rating functionality.
+    Questions can have multiple tags and are associated with an author.
+
+    Attributes:
+        title (str): The title of the question (max 100 chars)
+        text (str): The full text/content of the question
+        author (User): The user who asked
+        created_at (datetime): When the question was created
+        tags (ManyToManyField[Tag]): Tags associated with the question
+    """
     title = models.CharField(max_length=100)
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -76,6 +100,19 @@ class Question(RatingModel):
 
 
 class Answer(RatingModel):
+    """
+    Model representing an answer to a question.
+
+    Inherits from RatingModel to support rating functionality.
+    Each answer is associated with a question and an author.
+
+    Attributes:
+        text (str): The content of the answer
+        author (User): The user who posted the answer
+        created_at (datetime): When the answer was created
+        is_correct (bool): Whether this answer is marked as correct
+        question (Question): The question this answer belongs to
+    """
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -140,6 +177,15 @@ class Profile(RatingModel):
 
 
 class QuestionLike(Like):
+    """
+    Like model specifically for Questions.
+
+    Inherits from the abstract Like model to implement like functionality
+    for questions.
+
+    Attributes:
+        question (Question): The question being liked
+    """
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
     class Meta:
@@ -188,6 +234,15 @@ class QuestionLike(Like):
 
 
 class AnswerLike(Like):
+    """
+    Like model specifically for Answers.
+
+    Inherits from the abstract Like model to implement like functionality
+    for answers.
+
+    Attributes:
+        answer (Answer): The answer being liked
+    """
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
 
     class Meta:

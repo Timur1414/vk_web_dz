@@ -17,6 +17,11 @@ from main.views.base import create_base_context, create_context, get_paginated_n
 
 
 class LoginPage(LoginView):
+    """
+    View for handling user login.
+    Displays the login form and handles authentication. After successful login,
+    redirects to the 'next' URL if provided, otherwise to the home page.
+    """
     template_name = 'registration/login.html'
 
     def get_context_data(self, **kwargs):
@@ -32,12 +37,20 @@ class LoginPage(LoginView):
 
 
 def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
+    """
+    Logout the user and redirect to the referer page.
+    """
     logout(request)
     referer = request.headers['referer']
     return redirect(referer)
 
 
 class RegistrationPage(RegistrationView):
+    """
+    View for handling user registration.
+    Displays the registration form and creates a new user account
+    along with their profile when the form is submitted.
+    """
     template_name = 'django_registration/registration_form.html'
     form_class = RegistrationForm
 
@@ -55,6 +68,10 @@ class RegistrationPage(RegistrationView):
 
 
 class IndexPage(TemplateView):
+    """
+    View for displaying the home page with a list of questions.
+    Shows the most recent questions by default, paginated.
+    """
     template_name = 'index/index.html'
 
     def get_context_data(self, **kwargs):
@@ -66,6 +83,10 @@ class IndexPage(TemplateView):
 
 
 class HotQuestionsPage(TemplateView):
+    """
+    View for displaying the most popular questions.
+    Shows questions ordered by their rating (most popular first), paginated.
+    """
     template_name = 'index/hot_questions.html'
 
     def get_context_data(self, **kwargs):
@@ -77,6 +98,11 @@ class HotQuestionsPage(TemplateView):
 
 
 class QuestionPage(DetailView):
+    """
+    View for displaying a single question and its answers.
+    Shows the question details, all its answers, and provides a form
+    for submitting new answers. Also handles answer submissions.
+    """
     template_name = 'question/question.html'
     model = Question
     context_object_name = 'question'
@@ -115,6 +141,11 @@ class QuestionPage(DetailView):
 
 
 class AskPage(LoginRequiredMixin, CreateView):
+    """
+    View for asking a new question.
+    Displays a form for submitting a new question and handles the form submission.
+    Only accessible to authenticated users.
+    """
     template_name = 'question/ask.html'
     model = Question
     form_class = AskForm
@@ -139,6 +170,10 @@ class AskPage(LoginRequiredMixin, CreateView):
 
 
 class TagePage(TemplateView):
+    """
+    View for displaying questions filtered by a specific tag.
+    Shows all questions that have been tagged with the specified tag, paginated.
+    """
     template_name = 'tag/index.html'
 
     def get_context_data(self, **kwargs):
@@ -152,6 +187,11 @@ class TagePage(TemplateView):
 
 
 class SettingsPage(LoginRequiredMixin, UpdateView):
+    """
+    View for user profile settings.
+    Allows users to update their account information including
+    username, email, nickname, and avatar. Only accessible to the account owner.
+    """
     template_name = 'profile/settings.html'
     model = User
     form_class = SettingsForm
