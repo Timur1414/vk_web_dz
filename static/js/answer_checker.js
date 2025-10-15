@@ -4,10 +4,8 @@ async function correct(answer_id) {
     if (response.status !== 200)
         return
     let correct = input.classList.contains('checked')
-    if (correct) {
+    if (correct)
         input.classList.remove('checked')
-    }
-    else {
+    else
         input.classList.add('checked')
-    }
 }
