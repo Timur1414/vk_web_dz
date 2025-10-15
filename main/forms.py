@@ -10,6 +10,7 @@ class RegistrationForm(UserCreationForm):
     Extends Django's UserCreationForm to include a nickname field.
     """
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName')
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email')
 
 class AskForm(forms.ModelForm):
     """
