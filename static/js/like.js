@@ -11,11 +11,17 @@ async function question_like(question_id) {
         like_btn.classList.remove('btn-success')
         like_btn.classList.add('btn-outline-secondary')
         is_question_liked = false
+        let count_likes = Number(like_btn.innerText)
+        count_likes -= 1
+        like_btn.innerText = String(count_likes)
     }
     else {
         like_btn.classList.add('btn-success')
         like_btn.classList.remove('btn-outline-secondary')
         is_question_liked = true
+        let count_likes = Number(like_btn.innerText)
+        count_likes += 1
+        like_btn.innerText = String(count_likes)
     }
 }
 
@@ -28,9 +34,15 @@ async function answer_like(answer_id) {
     if (liked) {
         btn.classList.remove('btn-success')
         btn.classList.add('btn-outline-secondary')
+        let count_likes = Number(btn.innerText)
+        count_likes -= 1
+        btn.innerText = String(count_likes)
     }
     else {
         btn.classList.add('btn-success')
         btn.classList.remove('btn-outline-secondary')
+        let count_likes = Number(btn.innerText)
+        count_likes += 1
+        btn.innerText = String(count_likes)
     }
 }

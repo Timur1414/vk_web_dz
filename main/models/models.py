@@ -27,6 +27,14 @@ class Tag(models.Model):
     objects = models.Manager()
     popular = PopularManager()
 
+    def increase_rating(self):
+        self.rating += 1
+        self.save()
+
+    def decrease_rating(self):
+        self.rating -= 1
+        self.save()
+
     @staticmethod
     def get_or_create(text: str) -> Tag:
         obj, created = Tag.objects.get_or_create(text=text)
@@ -52,6 +60,14 @@ class Question(models.Model):
     objects = models.Manager()
     popular = PopularManager()
     new = NewManager()
+
+    def increase_rating(self):
+        self.rating += 1
+        self.save()
+
+    def decrease_rating(self):
+        self.rating -= 1
+        self.save()
 
     @staticmethod
     def create(title: str, text: str, author: User) -> Question:
@@ -90,6 +106,14 @@ class Answer(models.Model):
     objects = models.Manager()
     new = NewManager()
 
+    def increase_rating(self):
+        self.rating += 1
+        self.save()
+
+    def decrease_rating(self):
+        self.rating -= 1
+        self.save()
+
     def change_correct(self):
         self.is_correct = not self.is_correct
         self.save()
@@ -114,6 +138,14 @@ class Profile(models.Model):
 
     objects = models.Manager()
     popular = PopularManager()
+
+    def increase_rating(self):
+        self.rating += 1
+        self.save()
+
+    def decrease_rating(self):
+        self.rating -= 1
+        self.save()
 
     @staticmethod
     def get_popular_users(limit: int = 5) -> list[User]:
@@ -166,6 +198,16 @@ class QuestionLike(models.Model):
             )
         ]
 
+    def update_ratings(self):
+        if self.active:
+            self.question.rating += 1
+            self.author.profile.rating += 1
+        else:
+            self.question.rating -= 1
+            self.author.profile.rating -= 1
+        self.question.save()
+        self.author.profile.save()
+
     @staticmethod
     def like(question: Question, user: User) -> Optional[QuestionLike]:
         if user.is_anonymous:
@@ -174,6 +216,7 @@ class QuestionLike(models.Model):
         if not created:
             like.active = not like.active
             like.save()
+        like.update_ratings()
         return like
 
     @staticmethod
@@ -207,6 +250,16 @@ class AnswerLike(models.Model):
             return False
         return AnswerLike.objects.filter(answer=answer, author=user, active=True).exists()
 
+    def update_ratings(self):
+        if self.active:
+            self.answer.rating += 1
+            self.author.profile.rating += 1
+        else:
+            self.answer.rating -= 1
+            self.author.profile.rating -= 1
+        self.answer.save()
+        self.author.profile.save()
+
     @staticmethod
     def like(answer: Answer, user: User) -> Optional[AnswerLike]:
         if user.is_anonymous:
@@ -215,6 +268,7 @@ class AnswerLike(models.Model):
         if not created:
             like.active = not like.active
             like.save()
+        like.update_ratings()
         return like
 
     @staticmethod
