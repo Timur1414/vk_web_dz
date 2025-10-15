@@ -1,14 +1,34 @@
 from django import forms
 from django.contrib.auth.models import User
+from main.models import Answer, Question, Tag
 
-from main.models import Answer
 
-
-class AskForm(forms.Form):
-    title = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Title')
-    text = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), label='Text')
-    author = forms.IntegerField(widget=forms.HiddenInput())
+class AskForm(forms.ModelForm):
     tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Tags')
+
+    class Meta:
+        model = Question
+        fields = ['title', 'text', 'author']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'text': forms.Textarea(attrs={'class': 'form-control'}),
+            'author': forms.HiddenInput(),
+        }
+        labels = {
+            'title': 'Title',
+            'text': 'Text',
+        }
+
+    def save(self, commit=True):
+        question = super().save(commit=commit)
+        tags_text = self.cleaned_data['tags'].strip()
+        while '  ' in tags_text:
+            tags_text = tags_text.replace('  ', ' ')
+        tags_text = tags_text.replace(', ', ',')
+        tags_words = tags_text.split(',')
+        for tag_text in tags_words:
+            tag = Tag.get_or_create(tag_text)
+            question.add_tag(tag)
 
 
 class SettingsForm(forms.ModelForm):

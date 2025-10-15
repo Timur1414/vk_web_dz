@@ -26,6 +26,9 @@ class Tag(RatingModel):
     @staticmethod
     def get_or_create(text: str) -> Tag:
         obj, created = Tag.objects.get_or_create(text=text)
+        if created:
+            obj.color = choice([color[0] for color in Tag.COLORS])
+            obj.save()
         return obj
 
     def save(self, *args, **kwargs):
@@ -69,7 +72,7 @@ class Question(RatingModel):
 
     @staticmethod
     def get_questions_by_tag(tag: str) -> QuerySet:
-        return Question.objects.filter(tags__text__contains=tag).order_by('-rating')
+        return Question.objects.filter(tags__text__contains=tag).order_by('-rating').distinct()
 
 
 class Answer(RatingModel):

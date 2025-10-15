@@ -129,23 +129,13 @@ def question_page(request: WSGIRequest, id: int) -> HttpResponse:
 @login_required()
 def ask_page(request: WSGIRequest) -> HttpResponse:
     context = create_context(request)
-    context['form'] = AskForm(initial={'author': request.user.id})
+    context['form'] = AskForm(initial={'author': request.user})
     if request.method == 'POST':
         form = AskForm(request.POST)
         if form.is_valid():
-            if form.cleaned_data['author'] != request.user.id:
+            if form.cleaned_data['author'] != request.user:
                 raise PermissionDenied()
-            title = form.cleaned_data['title']
-            text = form.cleaned_data['text']
-            question = Question.create(title=title, text=text, author=request.user)
-            tags_text = form.cleaned_data['tags'].strip()
-            while '  ' in tags_text:
-                tags_text = tags_text.replace('  ', ' ')
-            tags_text = tags_text.replace(', ', ',')
-            tags_words = tags_text.split(',')
-            for tag_text in tags_words:
-                tag = Tag.get_or_create(tag_text)
-                question.add_tag(tag)
+            form.save()
             return redirect('index')
         else:
             context['form'] = form
@@ -214,7 +204,7 @@ def question_like(request: WSGIRequest) -> JsonResponse:
     except ValueError:
         return JsonResponse({}, status=404)
     QuestionLike.like(question, user)
-    return JsonResponse({},  status=200)
+    return JsonResponse({}, status=200)
 
 
 def answer_like(request: WSGIRequest) -> JsonResponse:
