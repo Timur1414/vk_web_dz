@@ -4,8 +4,9 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('', views.index_page, name='index'),
-    path('question/<int:id>/', views.question_page, name='question'),
     path('hot/', views.hot_questions_page, name='hot_questions'),
+
+    path('question/<int:id>/', views.question_page, name='question'),
     path('ask/', views.ask_page, name='ask'),
     path('tag/<str:tag>/', views.tag_page, name='tag'),
     path('profile/edit/', views.settings_page, name='settings'),

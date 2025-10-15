@@ -1,38 +1,17 @@
-from typing import Any
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.core.paginator import EmptyPage
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django_registration.backends.one_step.views import RegistrationView
 from main.forms import AskForm, SettingsForm, CreateAnswerForm
-from main.models import Profile, Question, Answer, Tag, QuestionLike, AnswerLike
+from main.models import Profile, Question, Answer, QuestionLike
 from main.paginators import paginate
-
-
-def create_base_context() -> dict[str, Any]:
-    context = {
-        'popular_profiles': Profile.popular.get_popular(),
-        'popular_tags': Tag.popular.get_popular(),
-    }
-    return context
-
-
-def create_context(request) -> dict[str, Any]:
-    context = create_base_context()
-    user = request.user
-    profile = Profile.get_profile_of_user(user)
-    context.update({
-        'user': user,
-        'profile': profile,
-    })
-    return context
+from main.views.base import create_base_context, create_context, get_paginated_nav_context
 
 
 class LoginPage(LoginView):
@@ -48,6 +27,12 @@ class LoginPage(LoginView):
         if next_url:
             return next_url
         return reverse_lazy('index')
+
+
+def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
+    logout(request)
+    referer = request.headers['referer']
+    return redirect(referer)
 
 
 class RegistrationPage(RegistrationView):
@@ -69,40 +54,15 @@ class RegistrationPage(RegistrationView):
 def index_page(request: WSGIRequest) -> HttpResponse:
     context = create_context(request)
     questions = paginate(Question.new.get_queryset(), request)
-    context['questions'] = questions.object_list
-    context['page'] = questions.number
-    try:
-        context['prev'] = questions.previous_page_number()
-    except EmptyPage:
-        context['prev'] = None
-    try:
-        context['next'] = questions.next_page_number()
-    except EmptyPage:
-        context['next'] = None
+    context.update(get_paginated_nav_context(questions))
     return render(request, 'index/index.html', context)
-
-
-def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
-    logout(request)
-    referer = request.headers['referer']
-    return redirect(referer)
 
 
 def hot_questions_page(request: WSGIRequest) -> HttpResponse:
     context = create_context(request)
     questions = paginate(Question.popular.get_queryset(), request)
-    context['questions'] = questions.object_list
-    context['page'] = questions.number
-    try:
-        context['prev'] = questions.previous_page_number()
-    except EmptyPage:
-        context['prev'] = None
-    try:
-        context['next'] = questions.next_page_number()
-    except EmptyPage:
-        context['next'] = None
+    context.update(get_paginated_nav_context(questions))
     return render(request, 'index/hot_questions.html', context)
-
 
 def question_page(request: WSGIRequest, id: int) -> HttpResponse:
     context = create_context(request)
@@ -119,6 +79,8 @@ def question_page(request: WSGIRequest, id: int) -> HttpResponse:
     if request.method == 'POST':
         form = CreateAnswerForm(request.POST)
         if form.is_valid():
+            if form.cleaned_data['author'] != request.user:
+                raise PermissionDenied()
             form.save()
             return redirect('question', id=question.id)
         else:
@@ -146,16 +108,7 @@ def tag_page(request: WSGIRequest, tag: str) -> HttpResponse:
     context = create_context(request)
     context['tag'] = tag
     questions = paginate(Question.get_questions_by_tag(tag), request)
-    context['questions'] = questions.object_list
-    context['page'] = questions.number
-    try:
-        context['prev'] = questions.previous_page_number()
-    except EmptyPage:
-        context['prev'] = None
-    try:
-        context['next'] = questions.next_page_number()
-    except EmptyPage:
-        context['next'] = None
+    context.update(get_paginated_nav_context(questions))
     return render(request, 'tag/index.html', context)
 
 
@@ -177,67 +130,3 @@ def settings_page(request: WSGIRequest) -> HttpResponse:
         else:
             context['form'] = form
     return render(request, 'profile/settings.html', context)
-
-
-def search_questions(request: WSGIRequest) -> JsonResponse:
-    text = request.GET.get('text', '')
-    questions = Question.find_by_text(text)
-    html = ''
-    for question in questions:
-        html += render_to_string('index/search_item.html', {'question': question})
-    return JsonResponse({
-        'html': html,
-    }, status=200)
-
-
-def question_like(request: WSGIRequest) -> JsonResponse:
-    user = request.user
-    question_id = request.GET.get('question_id')
-    question = None
-    if not user.is_authenticated:
-        return JsonResponse({}, status=401)
-    try:
-        question_id = int(question_id)
-        question = Question.get_question_by_id(question_id)
-        if question is None:
-            raise ValueError()
-    except ValueError:
-        return JsonResponse({}, status=404)
-    QuestionLike.like(question, user)
-    return JsonResponse({}, status=200)
-
-
-def answer_like(request: WSGIRequest) -> JsonResponse:
-    user = request.user
-    answer_id = request.GET.get('answer_id')
-    answer = None
-    if not user.is_authenticated:
-        return JsonResponse({}, status=401)
-    try:
-        answer_id = int(answer_id)
-        answer = Answer.get_answer_by_id(answer_id)
-        if answer is None:
-            raise ValueError()
-    except ValueError:
-        return JsonResponse({}, status=404)
-    AnswerLike.like(answer, user)
-    return JsonResponse({}, status=200)
-
-
-def answer_check(request: WSGIRequest) -> JsonResponse:
-    user = request.user
-    answer_id = request.GET.get('answer_id')
-    answer = None
-    if not user.is_authenticated:
-        return JsonResponse({}, status=401)
-    try:
-        answer_id = int(answer_id)
-        answer = Answer.get_answer_by_id(answer_id)
-        if answer is None:
-            raise ValueError()
-    except ValueError:
-        return JsonResponse({}, status=404)
-    if user != answer.question.author:
-        return JsonResponse({}, status=403)
-    answer.change_correct()
-    return JsonResponse({}, status=200)
