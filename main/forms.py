@@ -1,7 +1,11 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from main.models import Answer, Question, Tag
 
+
+class RegistrationForm(UserCreationForm):
+    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName')
 
 class AskForm(forms.ModelForm):
     tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Tags')

@@ -1,17 +1,16 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, CreateView, UpdateView
 from django_registration.backends.one_step.views import RegistrationView
-from main.forms import AskForm, SettingsForm, CreateAnswerForm
+from main.forms import AskForm, SettingsForm, CreateAnswerForm, RegistrationForm
 from main.models import Profile, Question, Answer, QuestionLike
 from main.paginators import paginate
 from main.views.base import create_base_context, create_context, get_paginated_nav_context
@@ -40,6 +39,7 @@ def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
 
 class RegistrationPage(RegistrationView):
     template_name = 'django_registration/registration_form.html'
+    form_class = RegistrationForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,7 +49,7 @@ class RegistrationPage(RegistrationView):
     def register(self, form):
         new_user = super().register(form)
         new_profile = Profile.get_profile_of_user(new_user)
-        nickname = self.request.POST.get('nickname', 'user')
+        nickname = form.cleaned_data['nickname']
         new_profile.update(nickname=nickname)
         return new_user
 

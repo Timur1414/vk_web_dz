@@ -13,7 +13,7 @@
             min-height: 100vh;
         }
     </style>
-    <style>{% block extra_css %}{% endblock %}</style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 <header class="p-2">
@@ -30,7 +30,7 @@
                         <a class="btn btn-success" href="{% url 'ask' %}">Ask!</a>
                     </p>
                     <div id="search_datalist" class="collapse">
-                        
+
                     </div>
                 </form>
             </div>
@@ -85,6 +85,6 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
 <script src="{% static 'js/search.js' %}"></script>
-<script>{% block extra_js %}{% endblock %}</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>
