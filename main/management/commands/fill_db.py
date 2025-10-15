@@ -59,7 +59,8 @@ class Command(BaseCommand):
             author = choice(users)
             text = faker.text(max_nb_chars=1000)
             rating = randint(0, 100)
-            answer = Answer(author=author, text=text, question=question, rating=rating)
+            is_correct = bool(randint(0, 1))
+            answer = Answer(author=author, text=text, question=question, rating=rating, is_correct=is_correct)
             answers.append(answer)
         return Answer.objects.bulk_create(answers)
 
