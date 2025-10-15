@@ -1,0 +1,9 @@
+from django.urls import path
+from main import views
+
+urlpatterns = [
+    path('search_questions/', views.search_questions),
+    path('question_like/', views.question_like),
+    path('answer_like/', views.answer_like),
+    path('answer_check/', views.answer_check),
+]

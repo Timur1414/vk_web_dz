@@ -1,15 +1,15 @@
 from __future__ import annotations
-from typing import Optional, Tuple
+from typing import Optional
 from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import QuerySet, Q
 from random import choice
-from main.models.managers import PopularManager, NewManager
+from main.models.managers import NewManager
+from main.models.base import RatingModel, Like
 
 
-class Tag(models.Model):
+class Tag(RatingModel):
     COLORS = [
         ('primary', 'primary'),
         ('secondary', 'secondary'),
@@ -21,19 +21,7 @@ class Tag(models.Model):
     ]
 
     text = models.CharField(max_length=50)
-    rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     color = models.CharField(max_length=50, choices=COLORS, default='dark')
-
-    objects = models.Manager()
-    popular = PopularManager()
-
-    def increase_rating(self):
-        self.rating += 1
-        self.save()
-
-    def decrease_rating(self):
-        self.rating -= 1
-        self.save()
 
     @staticmethod
     def get_or_create(text: str) -> Tag:
@@ -49,25 +37,14 @@ class Tag(models.Model):
         return self.text
 
 
-class Question(models.Model):
+class Question(RatingModel):
     title = models.CharField(max_length=100)
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag)
-    rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
-    objects = models.Manager()
-    popular = PopularManager()
     new = NewManager()
-
-    def increase_rating(self):
-        self.rating += 1
-        self.save()
-
-    def decrease_rating(self):
-        self.rating -= 1
-        self.save()
 
     @staticmethod
     def create(title: str, text: str, author: User) -> Question:
@@ -95,24 +72,14 @@ class Question(models.Model):
         return Question.objects.filter(tags__text__contains=tag).order_by('-rating')
 
 
-class Answer(models.Model):
+class Answer(RatingModel):
     text = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     is_correct = models.BooleanField(default=False)
-    rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
-    objects = models.Manager()
     new = NewManager()
-
-    def increase_rating(self):
-        self.rating += 1
-        self.save()
-
-    def decrease_rating(self):
-        self.rating -= 1
-        self.save()
 
     def change_correct(self):
         self.is_correct = not self.is_correct
@@ -130,22 +97,10 @@ class Answer(models.Model):
         return Answer.objects.filter(question=question).order_by('-rating')
 
 
-class Profile(models.Model):
+class Profile(RatingModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(default='default.png', upload_to='uploads/')
-    rating = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     nickname = models.CharField(max_length=50)
-
-    objects = models.Manager()
-    popular = PopularManager()
-
-    def increase_rating(self):
-        self.rating += 1
-        self.save()
-
-    def decrease_rating(self):
-        self.rating -= 1
-        self.save()
 
     @staticmethod
     def get_popular_users(limit: int = 5) -> list[User]:
@@ -161,10 +116,6 @@ class Profile(models.Model):
         if nickname:
             self.nickname = nickname
         self.save()
-
-    @staticmethod
-    def get_popular(limit: int = 5) -> QuerySet:
-        return Profile.objects.order_by('-rating')[:limit]
 
     @staticmethod
     def create(user: User) -> Profile:
@@ -185,10 +136,8 @@ class Profile(models.Model):
         return self.nickname
 
 
-class QuestionLike(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+class QuestionLike(Like):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
@@ -202,9 +151,13 @@ class QuestionLike(models.Model):
         if self.active:
             self.question.rating += 1
             self.author.profile.rating += 1
+            for tag in self.question.tags.all():
+                tag.increase_rating()
         else:
             self.question.rating -= 1
             self.author.profile.rating -= 1
+            for tag in self.question.tags.all():
+                tag.decrease_rating()
         self.question.save()
         self.author.profile.save()
 
@@ -231,10 +184,8 @@ class QuestionLike(models.Model):
         return obj, created
 
 
-class AnswerLike(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+class AnswerLike(Like):
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
 
     class Meta:
         constraints = [

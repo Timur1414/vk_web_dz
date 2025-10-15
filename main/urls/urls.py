@@ -20,9 +20,4 @@ urlpatterns = [
         template_name='django_registration/registration_complete.html',
         extra_context=views.create_base_context(),
     ), name='django_registration_complete'),
-
-    path('api/search_questions/', views.search_questions),
-    path('api/question_like/', views.question_like),
-    path('api/answer_like/', views.answer_like),
-    path('api/answer_check/', views.answer_check),
 ]

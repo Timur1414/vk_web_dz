@@ -18,7 +18,7 @@ from main.paginators import paginate
 
 def create_base_context() -> dict[str, Any]:
     context = {
-        'popular_profiles': Profile.get_popular(),
+        'popular_profiles': Profile.popular.get_popular(),
         'popular_tags': Tag.popular.get_popular(),
     }
     return context
