@@ -2,3 +2,4 @@ Django~=5.2.7
 django-registration~=5.2.1
 pillow~=11.3.0
 Faker~=37.11.0
+gunicorn~=23.0.0
