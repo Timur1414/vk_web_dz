@@ -1,0 +1,52 @@
+upstream django_app {
+        server 127.0.0.1:8000;
+}
+
+proxy_cache_path /var/cache/nginx
+        levels=1:2
+        keys_zone=django_cache:5m
+        max_size=100m
+        inactive=10m
+        use_temp_path=off;
+
+server {
+        listen 80;
+        server_name localhost;
+
+        gzip on;
+        gzip_types text/plain text/css application/json application/javascript text/javascript;
+        gzip_comp_level 5;
+
+        proxy_set_header Host $host;
+
+        location /static/ {
+                root /mnt/c/Users/timat/PycharmProjects/vk_dz;
+                expires 1h;
+                add_header Cache-Control "public, no-cache";
+                tcp_nopush on;
+        }
+        location /uploads/ {
+                root /mnt/c/Users/timat/PycharmProjects/vk_dz;
+                expires 1h;
+                add_header Cache-Control "public";
+                tcp_nopush on;
+        }
+        location /api/ {
+                proxy_cache off;
+                proxy_pass http://django_app;
+        }
+        location ~ /\. {
+                deny all;
+        }
+        location ~ /(README\.md|requirements\.txt|\.py$|\.sql$) {
+                deny all;
+        }
+        location / {
+                proxy_cache django_cache;
+                proxy_cache_key "$scheme$request_method$request_uri";
+                proxy_cache_valid 200 10m;
+                proxy_cache_valid any 1m;
+                proxy_cache_use_stale error timeout updating;
+                proxy_pass http://django_app;
+        }
+}

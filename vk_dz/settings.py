@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-12(3d47@nht6rp5(7plv67=wj5#99bxaf=28(1n^o0#3n@+mk5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'django_app',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -120,7 +124,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-MEDIA_URL = 'media/'
+MEDIA_URL = 'uploads/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
 
 # Default primary key field type
