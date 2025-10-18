@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+
+{% load custom_filters %}
 {% load static %}
 
 {% block content %}
@@ -40,7 +42,16 @@
         {% if request.user.is_authenticated %}
             <form method="POST">
                 {% csrf_token %}
-                {{ form.text }}
+                {% if form.text.errors %}
+                    {{ form.text|add_class:"is-invalid form-control" }}
+                    <div class="invalid-feedback">
+                        {% for error in form.text.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.text }}
+                {% endif %}
                 {% for field in form.hidden_fields %}
                     {{ field }}
                 {% endfor %}

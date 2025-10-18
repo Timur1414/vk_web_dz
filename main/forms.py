@@ -11,6 +11,8 @@ class RegistrationForm(UserCreationForm):
     """
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName')
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email')
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False)
+
 
 class AskForm(forms.ModelForm):
     """
