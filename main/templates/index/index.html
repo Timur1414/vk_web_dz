@@ -2,8 +2,10 @@
 
 {% block content %}
     <div>
-        <p class="fs-3 d-inline-flex">New Questions</p>
-        <a class="fs-4 mx-2" href="{% url 'hot_questions' %}">Not Questions</a>
+        <div>
+            <p class="fs-3 d-inline-flex">New Questions</p>
+            <a class="fs-4 mx-2" href="{% url 'hot_questions' %}">Not Questions</a>
+        </div>
         {% for question in questions %}
             {% include "question/card.html" %}
         {% empty %}
