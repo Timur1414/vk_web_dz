@@ -29,7 +29,14 @@
     - ответов = ratio * 100
     - тэгов = ratio
     - лайков = ratio * 200
-4. Запустить сервер:
+4. Запустить gunicorn (backend сервер):
    ```bash
-   python manage.py runserver
+   gunicorn -c gunicorn.conf.py
    ```
+5. Запустить nginx (reverse proxy сервер):
+   ```bash
+   sudo systemctl start nginx
+   ```
+   Конфигурационный файл nginx находится в папке `nginx`.
+   Его нужно скопировать в `/etc/nginx/sites-available/` и создать символическую ссылку в `/etc/nginx/sites-enabled/`.
+   После этого, можно запускать nginx командой выше.
