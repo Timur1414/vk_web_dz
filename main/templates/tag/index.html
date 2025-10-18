@@ -2,7 +2,9 @@
 
 {% block content %}
     <div>
-        <p class="fs-3">Tag: <span class="fw-semibold">{{ tag }}</span></p>
+        <div>
+            <p class="fs-3">Tag: <span class="fw-semibold">{{ tag }}</span></p>
+        </div>
         {% for question in questions %}
             {% include "question/card.html" %}
         {% empty %}

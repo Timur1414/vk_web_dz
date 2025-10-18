@@ -19,3 +19,11 @@ def is_answer_liked(answer, user):
     """
     is_liked = AnswerLike.is_liked(answer, user)
     return is_liked
+
+
+@register.filter
+def add_class(field, css_class):
+    """
+    Adds the given css class to the given field.
+    """
+    return field.as_widget(attrs={"class": css_class})

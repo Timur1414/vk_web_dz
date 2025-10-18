@@ -64,9 +64,12 @@ class RegistrationPage(RegistrationView):
         new_profile = Profile.get_profile_of_user(new_user)
         nickname = form.cleaned_data['nickname']
         email = form.cleaned_data['email']
+        avatar = None
+        if 'avatar' in form.cleaned_data:
+            avatar = form.cleaned_data['avatar']
         new_user.email = email
         new_user.save()
-        new_profile.update(nickname=nickname)
+        new_profile.update(nickname=nickname, avatar=avatar)
         return new_user
 
 

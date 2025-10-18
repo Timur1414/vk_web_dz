@@ -2,14 +2,14 @@
 
 {% block content %}
     <p class="fs-3">Registration</p>
-    {% if form.errors %}
+    {% if form.non_field_errors  %}
         <ul>
-            {% for field, error in form.errors.items %}
-                <li>{{ field }}: {{ error }}</li>
+            {% for error in form.non_field_errors  %}
+                <li>{{ error }}</li>
             {% endfor %}
         </ul>
     {% endif %}
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="container text-center">
             <div class="row my-2">
@@ -17,7 +17,14 @@
                     Login
                 </label>
                 <div class="col-10">
-                    <input id="login" class="form-control" type="text" name="username" required>
+                    <input id="login" class="form-control {% if form.username.errors %} is-invalid {% endif %}" type="text" name="username" required>
+                    {% if form.username.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row my-2">
@@ -25,7 +32,14 @@
                     Email
                 </label>
                 <div class="col-10">
-                    <input id="email" class="form-control" type="email" name="email" required>
+                    <input id="email" class="form-control {% if form.email.errors %} is-invalid {% endif %}" type="email" name="email" required>
+                    {% if form.email.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row my-2">
@@ -33,7 +47,14 @@
                     NickName
                 </label>
                 <div class="col-10">
-                    <input id="nickname" class="form-control" type="text" name="nickname" required>
+                    <input id="nickname" class="form-control {% if form.nickname.errors %} is-invalid {% endif %}" type="text" name="nickname" required>
+                    {% if form.nickname.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.nickname.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row my-2">
@@ -41,7 +62,14 @@
                     Password
                 </label>
                 <div class="col-10">
-                    <input id="password" class="form-control" type="password" name="password1" required>
+                    <input id="password" class="form-control {% if form.password1.errors %} is-invalid {% endif %}" type="password" name="password1" required>
+                    {% if form.password1.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.password1.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row my-2">
@@ -49,7 +77,14 @@
                     Repeat password
                 </label>
                 <div class="col-10">
-                    <input id="repeat_password" class="form-control" type="password" name="password2" required>
+                    <input id="repeat_password" class="form-control {% if form.password2.errors %} is-invalid {% endif %}" type="password" name="password2" required>
+                    {% if form.password2.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.password2.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row my-2">
@@ -57,7 +92,14 @@
                     Avatar
                 </label>
                 <div class="col-10">
-                    <input id="avatar" class="form-control" type="image" alt="avatar">
+                    <input id="avatar" class="form-control {% if form.avatar.errors %} is-invalid {% endif %}" accept="image/*" name="avatar" type="file" alt="avatar">
+                    {% if form.avatar.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.avatar.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
