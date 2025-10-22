@@ -30,14 +30,18 @@ class Command(BaseCommand):
             email = f'{i}{faker.email()}'
             user = User(username=username, email=email)
             user.set_password('qwerty123')
+            user.save()
             users.append(user)
-
+        # users = User.objects.bulk_create(users)
+        for user in users:
+            profile = user.profile
             nickname = faker.user_name()
             rating = randint(1, 100)
-            profile = Profile(user=user, nickname=nickname, rating=rating)
-            profiles.append(profile)
-        users = User.objects.bulk_create(users)
-        Profile.objects.bulk_create(profiles)
+            profile.rating = rating
+            profile.nickname = nickname
+            profile.save()
+            # profiles.append(profile)
+        # Profile.objects.bulk_create(profiles)
         return users
 
     def create_tags(self, ratio: int, faker: Faker) -> list[Tag]:
@@ -47,8 +51,10 @@ class Command(BaseCommand):
             rating = randint(1, 100)
             color = choice([color[0] for color in Tag.COLORS])
             tag = Tag(text=text, rating=rating, color=color)
+            tag.save()
             tags.append(tag)
-        return Tag.objects.bulk_create(tags)
+        # return Tag.objects.bulk_create(tags)
+        return tags
 
     def create_questions(self, ratio: int, users: list[User], tags: list[Tag], faker: Faker) -> list[Question]:
         questions = []
@@ -58,8 +64,9 @@ class Command(BaseCommand):
             text = faker.text(max_nb_chars=1000)
             rating = randint(0, 100)
             question = Question(author=author, title=title, text=text, rating=rating)
+            question.save()
             questions.append(question)
-        questions = Question.objects.bulk_create(questions)
+        # questions = Question.objects.bulk_create(questions)
         for question in questions:
             selected_tags = sample(tags, randint(1, 5))
             question.tags.add(*selected_tags)
@@ -74,8 +81,10 @@ class Command(BaseCommand):
             rating = randint(0, 100)
             is_correct = bool(randint(0, 1))
             answer = Answer(author=author, text=text, question=question, rating=rating, is_correct=is_correct)
+            answer.save()
             answers.append(answer)
-        return Answer.objects.bulk_create(answers)
+        # return Answer.objects.bulk_create(answers)
+        return answers
 
     def create_likes(self, ratio: int, questions: list, answers: list, users: list):
         question_likes = set()

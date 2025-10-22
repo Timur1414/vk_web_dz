@@ -12,7 +12,7 @@ proxy_cache_path /var/cache/nginx
 server {
         listen 80;
         server_name localhost;
-
+        client_max_body_size 20M;
         gzip on;
         gzip_types text/plain text/css application/json application/javascript text/javascript;
         gzip_comp_level 5;

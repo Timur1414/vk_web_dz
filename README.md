@@ -8,33 +8,62 @@
 - Django
 - Gunicorn
 - Nginx
-- PostgreSQL
+- MySQL
+
+### Создание mysql базы данных (если необходимо)
+1. Установить mysql:
+   ```shell
+   sudo apt install mysql-server
+   sudo apt install libmysqlclient-dev python3-dev build-essential
+   ```
+2. Запуск mysql:
+   ```shell
+   sudo systemctl start mysql
+   sudo systemctl enable mysql
+   ```
+3. Вход в cli:
+   ```shell
+   sudo mysql -u root -p
+   ```
+4. Создание базы данных:
+   ```shell
+   CREATE DATABASE name_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE USER 'projectuser'@'localhost' IDENTIFIED BY 'password';
+   GRANT ALL PRIVILEGES ON name_db.* TO 'projectuser'@'localhost';
+   FLUSH PRIVILEGES;
+   EXIT;
+   ```
+5. В settings.py указать:
+   ```shell
+   DATABASES['default'] = DATABASES['main']
+   ```
+6. Прописать креды для подключения к базе данных в `.env` (пример есть в `.env.example`).
 
 ### Инструкция по настройке проекта:
 1. Установить необходимые пакеты в виртуальное окружение:
-   ```bash
+   ```shell
    pip install -r requirements.txt
    ```
 2. Применить миграции к базе данных:
-   ```bash
+   ```shell
    python manage.py migrate
    ```
 3. *Для заполнения базы данных рандомными данными выполнить команду:
-   ```bash
+   ```shell
    python manage.py fill_db [ratio]
    ```
-    где `ratio` - числовой коэффициент, определяющий количество создаваемых объектов:
-    - пользователей = ratio
-    - вопросов = ratio * 10
-    - ответов = ratio * 100
-    - тэгов = ratio
-    - лайков = ratio * 200
+   где `ratio` - числовой коэффициент, определяющий количество создаваемых объектов:
+   - пользователей = ratio
+   - вопросов = ratio * 10
+   - ответов = ratio * 100
+   - тэгов = ratio
+   - лайков = ratio * 200
 4. Запустить gunicorn (backend сервер):
-   ```bash
+   ```shell
    gunicorn -c gunicorn.conf.py
    ```
 5. Запустить nginx (reverse proxy сервер):
-   ```bash
+   ```shell
    sudo systemctl start nginx
    ```
    Конфигурационный файл nginx находится в папке `nginx`.
