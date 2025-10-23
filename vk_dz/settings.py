@@ -97,7 +97,7 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
-DATABASES['default'] = DATABASES['main']
+DATABASES['default'] = DATABASES['lite']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

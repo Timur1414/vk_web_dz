@@ -85,8 +85,16 @@ class IndexPage(TemplateView):
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         select_related = ['author', 'author__profile']
+        prefetch_related = ['tags']
         questions = paginate(Question.new.get_queryset_with_related(
-            select_related=select_related).annotate(answers_count=Count('answer')), self.request)
+            select_related=select_related,
+            prefetch_related=prefetch_related), self.request)
+        questions_ids = [question.id for question in questions.object_list]
+        answer_counts = Question.objects.filter(
+            id__in=questions_ids
+        ).annotate(answers_count=Count('answer')).values('id', 'answers_count')
+        count_dict = {q['id']: q['answers_count'] for q in answer_counts}
+        context['answer_counts'] = count_dict
         context.update(get_paginated_nav_context(questions))
         return context
 
@@ -102,8 +110,16 @@ class HotQuestionsPage(TemplateView):
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         select_related = ['author', 'author__profile']
+        prefetch_related = ['tags']
         questions = paginate(Question.popular.get_queryset_with_related(
-            select_related=select_related).annotate(answers_count=Count('answer')), self.request)
+            select_related=select_related,
+            prefetch_related=prefetch_related), self.request)
+        questions_ids = [question.id for question in questions.object_list]
+        answer_counts = Question.objects.filter(
+            id__in=questions_ids
+        ).annotate(answers_count=Count('answer')).values('id', 'answers_count')
+        count_dict = {q['id']: q['answers_count'] for q in answer_counts}
+        context['answer_counts'] = count_dict
         context.update(get_paginated_nav_context(questions))
         return context
 
@@ -192,7 +208,13 @@ class TagPage(TemplateView):
         context.update(create_context(self.request))
         tag = self.kwargs['tag']
         context['tag'] = tag
-        questions = paginate(Question.get_questions_by_tag(tag).annotate(answers_count=Count('answer')), self.request)
+        questions = paginate(Question.get_questions_by_tag(tag), self.request)
+        questions_ids = [question.id for question in questions.object_list]
+        answer_counts = Question.objects.filter(
+            id__in=questions_ids
+        ).annotate(answers_count=Count('answer')).values('id', 'answers_count')
+        count_dict = {q['id']: q['answers_count'] for q in answer_counts}
+        context['answer_counts'] = count_dict
         context.update(get_paginated_nav_context(questions))
         return context
 

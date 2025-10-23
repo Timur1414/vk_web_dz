@@ -10,7 +10,7 @@
             <p class="text-truncate">{{ question.text }}</p>
             <div class="row mt-4">
                 <div class="col">
-                    <p>answers ({{ question.answers_count }})</p>
+                    <p>answers ({{ answer_counts|get_item:question.id }})</p>
                 </div>
                 <div class="col-9 text-truncate">
                     <span class="fw-semibold">Tags: </span>
