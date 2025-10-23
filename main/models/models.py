@@ -94,8 +94,7 @@ class Question(RatingModel):
         prefetch_related = ['tags']
         return Question.popular.get_queryset_with_related(
             select_related=select_related,
-            prefetch_related=prefetch_related,
-            limit=limit).filter(Q(title__icontains=text) | Q(text__icontains=text))
+            prefetch_related=prefetch_related).filter(Q(title__icontains=text) | Q(text__icontains=text))[:limit]
 
     @staticmethod
     def get_question_by_id(id: int) -> Optional[Question]:
