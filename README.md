@@ -69,3 +69,7 @@
    Конфигурационный файл nginx находится в папке `nginx`.
    Его нужно скопировать в `/etc/nginx/sites-available/` и создать символическую ссылку в `/etc/nginx/sites-enabled/`.
    После этого, можно запускать nginx командой выше.
+6. Выполнить сбор статических файлов:
+   ```shell
+    python manage.py collectstatic
+   ```
