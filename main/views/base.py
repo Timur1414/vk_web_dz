@@ -1,7 +1,6 @@
 from typing import Any, Optional
 from django.core.paginator import EmptyPage, Page
 from django.http import HttpRequest
-
 from main.models import Tag, Profile, Question, Answer
 
 
@@ -13,7 +12,7 @@ def create_base_context() -> dict[str, Any]:
         dict[str, Any]: A context dictionary containing popular profiles and tags.
     """
     context = {
-        'popular_profiles': Profile.popular.get_popular(),
+        'popular_profiles': Profile.popular.get_popular_with_related(select_related=['user']),
         'popular_tags': Tag.popular.get_popular(),
     }
     return context

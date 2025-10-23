@@ -85,7 +85,12 @@ class Question(RatingModel):
 
     @staticmethod
     def find_by_text(text: str, limit: int = 5) -> QuerySet:
-        return Question.popular.get_queryset().filter(Q(title__icontains=text) | Q(text__icontains=text))[:limit]
+        select_related = ['author', 'author__profile']
+        prefetch_related = ['tags']
+        return Question.popular.get_queryset_with_related(
+            select_related=select_related,
+            prefetch_related=prefetch_related,
+            limit=limit).filter(Q(title__icontains=text) | Q(text__icontains=text))
 
     @staticmethod
     def get_question_by_id(id: int) -> Optional[Question]:
@@ -96,7 +101,8 @@ class Question(RatingModel):
 
     @staticmethod
     def get_questions_by_tag(tag: str) -> QuerySet:
-        return Question.objects.filter(tags__text__contains=tag).order_by('-rating').distinct()
+        return (Question.objects.filter(tags__text__contains=tag).order_by('-rating').distinct()
+                .select_related('author', 'author__profile').prefetch_related('tags'))
 
 
 class Answer(RatingModel):
@@ -134,7 +140,7 @@ class Answer(RatingModel):
 
     @staticmethod
     def get_answers_by_question(question: Question) -> QuerySet:
-        return Answer.objects.filter(question=question).order_by('-rating')
+        return Answer.objects.select_related('author', 'author__profile').filter(question=question).order_by('-rating')
 
 
 class Profile(RatingModel):

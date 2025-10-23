@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
@@ -83,7 +84,9 @@ class IndexPage(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
-        questions = paginate(Question.new.get_queryset(), self.request)
+        select_related = ['author', 'author__profile']
+        questions = paginate(Question.new.get_queryset_with_related(
+            select_related=select_related).annotate(answers_count=Count('answer')), self.request)
         context.update(get_paginated_nav_context(questions))
         return context
 
@@ -98,7 +101,9 @@ class HotQuestionsPage(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
-        questions = paginate(Question.popular.get_queryset(), self.request)
+        select_related = ['author', 'author__profile']
+        questions = paginate(Question.popular.get_queryset_with_related(
+            select_related=select_related).annotate(answers_count=Count('answer')), self.request)
         context.update(get_paginated_nav_context(questions))
         return context
 
@@ -175,7 +180,7 @@ class AskPage(LoginRequiredMixin, CreateView):
         return context
 
 
-class TagePage(TemplateView):
+class TagPage(TemplateView):
     """
     View for displaying questions filtered by a specific tag.
     Shows all questions that have been tagged with the specified tag, paginated.
@@ -187,7 +192,7 @@ class TagePage(TemplateView):
         context.update(create_context(self.request))
         tag = self.kwargs['tag']
         context['tag'] = tag
-        questions = paginate(Question.get_questions_by_tag(tag), self.request)
+        questions = paginate(Question.get_questions_by_tag(tag).annotate(answers_count=Count('answer')), self.request)
         context.update(get_paginated_nav_context(questions))
         return context
 

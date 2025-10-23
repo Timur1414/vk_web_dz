@@ -5,7 +5,7 @@ from django.views.generic.base import TemplateView
 urlpatterns = [
     path('', views.IndexPage.as_view(), name='index'),
     path('hot/', views.HotQuestionsPage.as_view(), name='hot_questions'),
-    path('tag/<str:tag>/', views.TagePage.as_view(), name='tag'),
+    path('tag/<str:tag>/', views.TagPage.as_view(), name='tag'),
     path('question/<int:id>/', views.QuestionPage.as_view(), name='question'),
     path('ask/', views.AskPage.as_view(), name='ask'),
     path('profile/edit/', views.SettingsPage.as_view(), name='settings'),
