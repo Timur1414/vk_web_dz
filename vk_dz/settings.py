@@ -95,9 +95,10 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('DB_PORT', '3306'),
+        'CONN_MAX_AGE': 300,
     }
 }
-DATABASES['default'] = DATABASES['lite']
+DATABASES['default'] = DATABASES['main']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

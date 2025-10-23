@@ -73,6 +73,11 @@ class Question(RatingModel):
 
     new = NewManager()
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['-created_at'], name='question_created_at_desc'),
+        ]
+
     @staticmethod
     def create(title: str, text: str, author: User) -> Question:
         question = Question(title=title, text=text, author=author)
@@ -126,6 +131,11 @@ class Answer(RatingModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
     new = NewManager()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['-created_at'], name='answer_created_at_desc'),
+        ]
 
     def change_correct(self):
         self.is_correct = not self.is_correct

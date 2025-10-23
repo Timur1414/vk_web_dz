@@ -23,6 +23,9 @@ class RatingModel(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['-rating'], name='%(class)s_rating_desc'),
+        ]
 
     def increase_rating(self):
         self.rating += 1
