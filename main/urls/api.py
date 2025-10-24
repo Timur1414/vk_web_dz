@@ -6,4 +6,5 @@ urlpatterns = [
     path('question_like/', views.question_like),
     path('answer_like/', views.answer_like),
     path('answer_check/', views.answer_check),
+    path('centrifugo/token/', views.centrifugo_token, name='centrifugo_token'),
 ]

@@ -14,6 +14,7 @@ from django_registration.backends.one_step.views import RegistrationView
 from main.forms import AskForm, SettingsForm, CreateAnswerForm, RegistrationForm
 from main.models import Profile, Question, Answer, QuestionLike
 from main.paginators import paginate
+from main.views.api import publish_answer
 from main.views.base import create_base_context, create_context, get_paginated_nav_context
 
 
@@ -160,7 +161,8 @@ class QuestionPage(DetailView):
         if form.is_valid():
             if form.cleaned_data['author'] != request.user:
                 raise PermissionDenied()
-            form.save()
+            answer = form.save()
+            publish_answer(answer)
             return redirect('question', id=question.id)
         else:
             context['form'] = form

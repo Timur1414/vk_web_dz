@@ -1,8 +1,14 @@
+import json
+import requests
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
-from main.models import Question, QuestionLike, AnswerLike
+from main.models import Question, QuestionLike, AnswerLike, Answer
 from main.views.base import check_received_question, check_received_answer
+from vk_dz import settings
+from vk_dz.centrifugo import generate_centrifugo_token
 
 
 def search_questions(request: WSGIRequest) -> JsonResponse:
@@ -88,3 +94,24 @@ def answer_check(request: WSGIRequest) -> JsonResponse:
         return JsonResponse({}, status=403)
     answer.change_correct()
     return JsonResponse({}, status=200)
+
+
+def publish_answer(answer: Answer):
+    data = {
+        'method': 'publish',
+        'params': {
+            'channel': str(answer.question.id),
+            'data': {'text': answer.text}
+        }
+    }
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'apikey {settings.CENTRIFUGO_API_KEY}'
+    }
+    url = f'{settings.CENTRIFUGO_URL}/api'
+    requests.post(url, headers=headers, data=json.dumps(data))
+
+@login_required
+def centrifugo_token(request):
+    token = generate_centrifugo_token(request.user.id)
+    return JsonResponse({'token': token}, status=200)

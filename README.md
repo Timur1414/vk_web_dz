@@ -73,3 +73,23 @@
    ```shell
     python manage.py collectstatic
    ```
+
+### Запуск centrifugo
+1. Установка Centrifugo:
+   ```shell
+   cd dir/to/install/centrifugo
+   wget https://github.com/centrifugal/centrifugo/releases/download/v5.0.0/centrifugo_5.0.0_linux_amd64.tar.gz
+   tar -xzf centrifugo_5.0.0_linux_amd64.tar.gz
+   sudo mv centrifugo /usr/local/bin/
+   ```
+2. Создание конфигурации:
+   ```shell
+   centrifugo genconfig
+   cat config.json
+   ```
+3. В конфиге будут указаны токены, которые необходимо добавить в `.env`.
+4. Желательно ещё добавить в конфиг строку `"port": "8001"`, чтобы centrifugo не конфликтовал с django.
+5. Запуск centrifugo:
+   ```shell
+   centrifugo -c config.json
+   ```
