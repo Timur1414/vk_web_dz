@@ -96,12 +96,20 @@ def answer_check(request: WSGIRequest) -> JsonResponse:
     return JsonResponse({}, status=200)
 
 
-def publish_answer(answer: Answer):
+def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
+    context = {
+        'answer': answer,
+        'request': request,
+        'is_author': is_author,
+    }
     data = {
         'method': 'publish',
         'params': {
             'channel': str(answer.question.id),
-            'data': {'text': answer.text}
+            'data': {
+                'text': answer.text,
+                'html': render_to_string('question/answer.html', context)
+            },
         }
     }
     headers = {

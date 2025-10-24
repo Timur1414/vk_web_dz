@@ -10,8 +10,10 @@ fetch('/api/centrifugo/token/')
         });
         const subscription = centrifuge.newSubscription(question_id);
 
-        subscription.on('publication', function (ctx) {
-            console.log(ctx)
+        subscription.on('publication', function (message) {
+            console.log(message)
+            card = message.data.html
+            answers_div.innerHTML = card + answers_div.innerHTML
         });
 
         subscription.subscribe();

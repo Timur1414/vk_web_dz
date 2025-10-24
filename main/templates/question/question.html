@@ -33,11 +33,13 @@
             </div>
         </div>
         <hr>
-        {% for answer in answers %}
-            {% include "question/answer.html" %}
-        {% empty %}
-            <p>nothing...</p>
-        {% endfor %}
+        <div id="answers_div">
+            {% for answer in answers %}
+                {% include "question/answer.html" %}
+            {% empty %}
+                <p>nothing...</p>
+            {% endfor %}
+        </div>
         <hr>
         {% if request.user.is_authenticated %}
             <form method="POST">

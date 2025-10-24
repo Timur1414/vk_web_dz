@@ -162,7 +162,8 @@ class QuestionPage(DetailView):
             if form.cleaned_data['author'] != request.user:
                 raise PermissionDenied()
             answer = form.save()
-            publish_answer(answer)
+            is_author = request.user == question.author
+            publish_answer(request, answer, is_author)
             return redirect('question', id=question.id)
         else:
             context['form'] = form
