@@ -12,7 +12,7 @@ fetch('/api/centrifugo/token/')
 
         subscription.on('publication', function (message) {
             console.log(message)
-            card = message.data.html
+            let card = message.data.html
             answers_div.innerHTML = card + answers_div.innerHTML
         });
 
