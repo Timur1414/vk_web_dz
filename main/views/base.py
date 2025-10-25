@@ -1,7 +1,8 @@
 from typing import Any, Optional
 from django.core.paginator import EmptyPage, Page
 from django.http import HttpRequest
-from main.models import Tag, Profile, Question, Answer
+from main.models import Profile, Question, Answer
+from main.cached_data_service import CachedDataService
 
 
 def create_base_context() -> dict[str, Any]:
@@ -11,9 +12,10 @@ def create_base_context() -> dict[str, Any]:
     Returns:
         dict[str, Any]: A context dictionary containing popular profiles and tags.
     """
+    cache = CachedDataService()
     context = {
-        'popular_profiles': Profile.popular.get_popular_with_related(select_related=['user']),
-        'popular_tags': Tag.popular.get_popular(),
+        'popular_profiles': cache.get_cached_users(),
+        'popular_tags': cache.get_cached_tags(),
     }
     return context
 

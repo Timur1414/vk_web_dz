@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'django_crontab',
     'main',
 ]
 
@@ -156,3 +157,17 @@ CENTRIFUGO_URL = os.environ.get('CENTRIFUGO_URL')
 CENTRIFUGO_WS_URL = os.environ.get('CENTRIFUGO_WS_URL')
 CENTRIFUGO_SECRET = os.environ.get('CENTRIFUGO_SECRET')
 CENTRIFUGO_API_KEY = os.environ.get('CENTRIFUGO_API_KEY')
+
+# Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
+    }
+}
+
+# Cron
+CRONTAB_COMMAND_SUFFIX = '2>&1'
+CRONJOBS = [
+    ('0 0 * * 1', 'main.management.commands.update_cache.Command', '>> /var/log/update_cache.log'),
+]
