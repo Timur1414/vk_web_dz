@@ -73,6 +73,11 @@
    ```shell
     python manage.py collectstatic
    ```
+7. Добавить задачу регулярного кэширования в cron:
+   ```shell
+   python manage.py crontab add
+   ```
+
 
 ### Запуск centrifugo
 1. Установка Centrifugo:
