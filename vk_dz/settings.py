@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_crontab',
     'django_ckeditor_5',
+    'csp',
     'main',
 ]
 
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'vk_dz.urls'
@@ -185,6 +187,11 @@ CKEDITOR_5_CONFIGS = {
             'imageUpload', '|',
             'undo', 'redo'
         ],
+        'image': {
+            'toolbar': [
+                'imageStyle:inline', 'imageStyle:block', 'imageStyle:side'
+            ]
+        },
         'codeBlock': {
             'languages': [
                 {'language': 'python', 'label': 'Python'},
@@ -211,3 +218,24 @@ CKEDITOR_5_CONFIGS = {
 }
 CKEDITOR_5_UPLOAD_FILE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', ]
 CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'authenticated'
+
+# CSP settings
+CONTENT_SECURITY_POLICY = {
+    'DIRECTIVES': {
+        'default-src': ["'self'"],
+        'script-src': ["'self'", "unpkg.com", "cdnjs.cloudflare.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net",
+                       "'unsafe-inline'", "'unsafe-eval'"],
+        'style-src': ["'self'", "'unsafe-inline'", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
+        'img-src': ["'self'", "data:", "https:", "blob:"],
+        'font-src': ["'self'", "cdnjs.cloudflare.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
+        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001"],
+        'frame-src': ["'self'"],
+        'media-src': ["'self'", "blob:"],
+
+        'object-src': ["'none'"],
+        'base-uri': ["'self'"],
+        'frame-ancestors': ["'none'"],
+        'form-action': ["'self'"],
+        'report-uri': '/csp/'
+    }
+}
