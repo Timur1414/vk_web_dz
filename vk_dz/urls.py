@@ -20,6 +20,7 @@ from django.urls import path, include
 from vk_dz import settings
 
 urlpatterns = [
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('', include('main.urls')),
     #    path('admin/', admin.site.urls),
 ]

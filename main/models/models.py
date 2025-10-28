@@ -7,6 +7,7 @@ from django.db.models import QuerySet, Q
 from random import choice
 from main.models.managers import NewManager
 from main.models.base import RatingModel, Like
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class Tag(RatingModel):
@@ -66,7 +67,7 @@ class Question(RatingModel):
         tags (ManyToManyField[Tag]): Tags associated with the question
     """
     title = models.CharField(max_length=100)
-    text = models.TextField()
+    text = CKEditor5Field()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag)
@@ -123,7 +124,7 @@ class Answer(RatingModel):
         is_correct (bool): Whether this answer is marked as correct
         question (Question): The question this answer belongs to
     """
-    text = models.TextField()
+    text = CKEditor5Field()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     is_correct = models.BooleanField(default=False)

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     'django_crontab',
+    'django_ckeditor_5',
     'main',
 ]
 
@@ -99,7 +100,7 @@ DATABASES = {
         'CONN_MAX_AGE': 300,
     }
 }
-DATABASES['default'] = DATABASES['main']
+DATABASES['default'] = DATABASES['lite']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -171,3 +172,42 @@ CRONTAB_COMMAND_SUFFIX = '2>&1'
 CRONJOBS = [
     ('0 0 * * 1', 'main.management.commands.update_cache.Command', '>> /var/log/update_cache.log'),
 ]
+
+# Django-ckeditor for safety style questions and answers
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'fontSize', 'fontFamily', 'fontColor', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'link', 'blockQuote', 'codeBlock', '|',
+            'bulletedList', 'numberedList', '|',
+            'outdent', 'indent', '|',
+            'imageUpload', '|',
+            'undo', 'redo'
+        ],
+        'codeBlock': {
+            'languages': [
+                {'language': 'python', 'label': 'Python'},
+                {'language': 'javascript', 'label': 'JavaScript'},
+                {'language': 'html', 'label': 'HTML'},
+                {'language': 'css', 'label': 'CSS'},
+                {'language': 'php', 'label': 'PHP'},
+                {'language': 'java', 'label': 'Java'},
+                {'language': 'cpp', 'label': 'C++'},
+                {'language': 'sql', 'label': 'SQL'},
+                {'language': 'bash', 'label': 'Bash'},
+                {'language': 'json', 'label': 'JSON'},
+                {'language': 'xml', 'label': 'XML'},
+                {'language': 'yaml', 'label': 'YAML'},
+                {'language': 'markdown', 'label': 'Markdown'},
+            ]
+        },
+        'fontSize': {
+            'options': [10, 12, 14, 18, 20, 22]
+        },
+        'language': 'ru',
+        'removePlugins': ['WordCount'],
+    }
+}
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', ]
+CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'authenticated'

@@ -408,3 +408,4 @@ $RECYCLE.BIN/
 /uploads/uploads/*
 /bandit.yml
 /centrifugo_config.json
+/uploads/*

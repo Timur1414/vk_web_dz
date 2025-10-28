@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from main.models import Answer, Question, Tag
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 
 class RegistrationForm(UserCreationForm):
@@ -27,7 +28,6 @@ class AskForm(forms.ModelForm):
         fields = ['title', 'text', 'author']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'text': forms.Textarea(attrs={'class': 'form-control'}),
             'author': forms.HiddenInput(),
         }
         labels = {
@@ -83,7 +83,7 @@ class CreateAnswerForm(forms.ModelForm):
         model = Answer
         fields = ['text', 'author', 'question']
         widgets = {
-            'text': forms.Textarea(attrs={'class': 'form-control my-2', 'placeholder': 'Enter your answer here...'}),
+            'text': CKEditor5Widget(attrs={'placeholder': 'enter answer here...'}),
             'author': forms.HiddenInput(),
             'question': forms.HiddenInput(),
         }

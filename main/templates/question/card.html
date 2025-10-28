@@ -7,7 +7,9 @@
         </div>
         <div class="col-10">
             <p class="fs-4">{{ question.title }}</p>
-            <p class="text-truncate">{{ question.text }}</p>
+            <div style="height: 8vh; overflow: hidden">
+                <p class="text-truncate">{{ question.text|safe }}</p>
+            </div>
             <div class="row mt-4">
                 <div class="col">
                     <p>answers ({{ answer_counts|get_item:question.id }})</p>
