@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block extra_css %}
     <style>
         .image img {
             width: 100%; !important;
             height: 100%; !important;
+        }
+        .question_card:hover {
+            cursor: pointer;
         }
     </style>
 {% endblock %}
@@ -33,4 +38,8 @@
             </ul>
         </nav>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/question_card.js' %}"></script>
 {% endblock %}

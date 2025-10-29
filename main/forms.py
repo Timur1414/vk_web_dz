@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from main.models import Answer, Question, Tag
 from django_ckeditor_5.widgets import CKEditor5Widget
+from main.models import Answer, Question, Tag
 
 
 class RegistrationForm(UserCreationForm):

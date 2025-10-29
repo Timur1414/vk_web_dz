@@ -1,6 +1,6 @@
-from main.models import Tag, Profile
 from django.core.cache import cache
 from django.utils import timezone
+from main.models import Tag, Profile
 
 
 class CachedDataService:
