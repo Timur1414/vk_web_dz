@@ -1,5 +1,9 @@
+import logging
 from typing import Any
 from django.core.paginator import Paginator, EmptyPage, Page
+
+
+logger = logging.getLogger('default')
 
 
 def paginate(objects_list, request, per_page=10) -> Page[Any]:
@@ -12,6 +16,7 @@ def paginate(objects_list, request, per_page=10) -> Page[Any]:
     try:
         page_number = int(page_number)
         if page_number < 1:
+            logger.warning('page number < 1')
             raise ValueError()
         page_obj = paginator.get_page(page_number)
         return page_obj

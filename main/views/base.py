@@ -1,8 +1,12 @@
+import logging
 from typing import Any, Optional
 from django.core.paginator import EmptyPage, Page
 from django.http import HttpRequest
 from main.models import Profile, Question, Answer
 from main.cached_data_service import CachedDataService
+
+
+logger = logging.getLogger('default')
 
 
 def create_base_context() -> dict[str, Any]:
@@ -80,6 +84,7 @@ def check_received_question(question_id: str) -> Optional[Question]:
         question_id = int(question_id)
         question = Question.get_question_by_id(question_id)
         if question is None:
+            logger.error('user tried to use question with id=%s which does not exist.', question_id)
             raise ValueError()
     except ValueError:
         return None
@@ -100,6 +105,7 @@ def check_received_answer(answer_id: str) -> Optional[Answer]:
         answer_id = int(answer_id)
         answer = Answer.get_answer_by_id(answer_id)
         if answer is None:
+            logger.error('user tried to use answer with id=%s which does not exist.', answer_id)
             raise ValueError()
     except ValueError:
         return None

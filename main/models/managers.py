@@ -1,4 +1,8 @@
+import logging
 from django.db import models
+
+
+logger = logging.getLogger('default')
 
 
 class BaseManager(models.Manager):
@@ -29,12 +33,15 @@ class PopularManager(BaseManager):
     """
 
     def get_queryset(self):
+        logger.debug('get queryset by popular')
         return super().get_queryset().order_by('-rating')
 
     def get_popular(self, limit=5):
+        logger.debug('get queryset by popular with limit')
         return self.get_queryset().order_by('-rating')[:limit]
 
     def get_popular_with_related(self, select_related: list = None, prefetch_related: list = None, limit: int = 5):
+        logger.debug('get queryset by popular with related fields')
         if select_related is None and prefetch_related is None:
             return self.get_popular()
         if prefetch_related is None:
@@ -57,12 +64,15 @@ class NewManager(BaseManager):
     """
 
     def get_queryset(self):
+        logger.debug('get queryset by date')
         return super().get_queryset().order_by('-created_at')
 
     def get_new(self, limit=5):
+        logger.debug('get queryset by date with limit')
         return self.get_queryset().order_by('-created_at')[:limit]
 
     def get_new_with_related(self, select_related: list = None, prefetch_related: list = None, limit: int = 5):
+        logger.debug('get queryset by date with related fields')
         if select_related is None and prefetch_related is None:
             return self.get_new()
         if prefetch_related is None:

@@ -239,3 +239,42 @@ CONTENT_SECURITY_POLICY = {
         'report-uri': '/csp/'
     }
 }
+
+# Logging options
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'base': {
+            'format': '[{levelname}] {asctime} {module} (line:{lineno}) | message: {message}',
+            'style': '{',
+        },
+        'with_funcName': {
+            'format': '[{levelname}] {asctime} {module}.{funcName} (line:{lineno}) | message: {message}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+        'file': {
+            'formatter': 'base',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'base',
+        },
+    },
+    'loggers': {
+        'custom_django': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'default': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+    },
+}

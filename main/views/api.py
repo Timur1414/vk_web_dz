@@ -1,4 +1,5 @@
 import json
+import logging
 import requests
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
@@ -9,6 +10,8 @@ from main.views.base import check_received_question, check_received_answer
 from vk_dz import settings
 from django.http import HttpResponse
 from vk_dz.centrifugo import generate_centrifugo_token
+
+logger = logging.getLogger('default')
 
 
 def search_questions(request: WSGIRequest) -> JsonResponse:
@@ -47,9 +50,11 @@ def question_like(request: WSGIRequest) -> JsonResponse:
     user = request.user
     question_id = request.GET.get('question_id')
     if not user.is_authenticated:
+        logger.error('anonymous user tried to like')
         return JsonResponse({}, status=401)
     question = check_received_question(question_id)
     if question is None:
+        logger.error('%s tried to like question (id=%s) which does not exist', request.user.username, question_id)
         return JsonResponse({}, status=404)
     QuestionLike.like(question, user)
     return JsonResponse({}, status=200)
@@ -68,9 +73,11 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     user = request.user
     answer_id = request.GET.get('answer_id')
     if not user.is_authenticated:
+        logger.error('anonymous user tried to like')
         return JsonResponse({}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
+        logger.error('%s tried to like answer (id=%s) which does not exist', request.user.username, answer_id)
         return JsonResponse({}, status=404)
     AnswerLike.like(answer, user)
     return JsonResponse({}, status=200)
@@ -86,11 +93,13 @@ def answer_check(request: WSGIRequest) -> JsonResponse:
     user = request.user
     answer_id = request.GET.get('answer_id')
     if not user.is_authenticated:
+        logger.error('anonymous user tried to make answer correct/incorrect')
         return JsonResponse({}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
         return JsonResponse({}, status=404)
     if user != answer.question.author:
+        logger.error('%s not author of question', request.user.username)
         return JsonResponse({}, status=403)
     answer.change_correct()
     return JsonResponse({}, status=200)
@@ -117,15 +126,19 @@ def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
         'Authorization': f'apikey {settings.CENTRIFUGO_API_KEY}'
     }
     url = f'{settings.CENTRIFUGO_URL}/api'
-    requests.post(url, headers=headers, data=json.dumps(data))
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    if response.status_code != 200:
+        logger.error('failed to publish answer')
+
 
 @login_required
 def centrifugo_token(request):
     token = generate_centrifugo_token(request.user.id)
     return JsonResponse({'token': token}, status=200)
 
+
 def csp_report_view(request):
     if request.method == 'POST':
         report = json.loads(request.body)
-        print(f"CSP Violation: {report}")
+        logger.critical('CSP violation: %s', report)
     return HttpResponse()

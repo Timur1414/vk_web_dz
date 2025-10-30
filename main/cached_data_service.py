@@ -1,6 +1,10 @@
+import logging
 from django.core.cache import cache
 from django.utils import timezone
 from main.models import Tag, Profile
+
+
+logger = logging.getLogger('default')
 
 
 class CachedDataService:
@@ -11,6 +15,7 @@ class CachedDataService:
     }
 
     def update_cache(self):
+        logger.debug('updating cache')
         popular_tags = self.get_popular_tags()
         popular_users = self.get_popular_users()
         cache.set(self.CACHE_KEYS['popular_tags'], popular_tags, None)

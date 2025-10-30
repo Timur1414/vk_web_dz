@@ -1,3 +1,4 @@
+import logging
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
@@ -18,6 +19,9 @@ from main.views.api import publish_answer
 from main.views.base import create_base_context, create_context, get_paginated_nav_context
 
 
+logger = logging.getLogger('default')
+
+
 class LoginPage(LoginView):
     """
     View for handling user login.
@@ -32,6 +36,7 @@ class LoginPage(LoginView):
         return context
 
     def get_success_url(self):
+        logger.info('%s logged in', self.request.user)
         next_url = self.request.POST.get('continue', '')
         if next_url:
             return next_url
@@ -42,6 +47,7 @@ def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
     """
     Logout the user and redirect to the referer page.
     """
+    logger.info('%s logged out', request.user.username)
     logout(request)
     referer = request.headers['referer']
     return redirect(referer)
@@ -72,6 +78,7 @@ class RegistrationPage(RegistrationView):
         new_user.email = email
         new_user.save()
         new_profile.update(nickname=nickname, avatar=avatar)
+        logger.info('%s registered', new_user.username)
         return new_user
 
 
@@ -83,6 +90,7 @@ class IndexPage(TemplateView):
     template_name = 'index/index.html'
 
     def get_context_data(self, **kwargs):
+        logger.info('%s view main page', self.request.user.username)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         select_related = ['author', 'author__profile']
@@ -108,6 +116,7 @@ class HotQuestionsPage(TemplateView):
     template_name = 'index/hot_questions.html'
 
     def get_context_data(self, **kwargs):
+        logger.info('%s view hot page', self.request.user.username)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         select_related = ['author', 'author__profile']
@@ -141,6 +150,7 @@ class QuestionPage(DetailView):
 
 
     def get_context_data(self, **kwargs):
+        logger.info('%s view question (id=%s) page', self.request.user.username, self.kwargs['id'])
         context = super().get_context_data()
         context.update(create_context(self.request))
         question = self.get_object()
@@ -160,12 +170,15 @@ class QuestionPage(DetailView):
         form = CreateAnswerForm(request.POST)
         if form.is_valid():
             if form.cleaned_data['author'] != request.user:
+                logger.error('%s tried to change answer\'s author', self.request.user.username)
                 raise PermissionDenied()
             answer = form.save()
             is_author = request.user == question.author
             publish_answer(request, answer, is_author)
+            logger.info('%s created answer (id=%s) to question (id=%s)', self.request.user.username, answer.id, question.id)
             return redirect('question', id=question.id)
         else:
+            logger.warning('%s failed validation of answer to question (id=%s)', self.request.user.username, question.id)
             context['form'] = form
         return render(request, QuestionPage.template_name, context)
 
@@ -190,10 +203,13 @@ class AskPage(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         if form.instance.author != self.request.user:
+            logger.error('%s tried to change question\'s author', self.request.user.username)
             raise PermissionDenied()
+        logger.info('%s ask new question', self.request.user.username)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
+        logger.info('%s view ask page', self.request.user.username)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         return context
@@ -207,6 +223,7 @@ class TagPage(TemplateView):
     template_name = 'tag/index.html'
 
     def get_context_data(self, **kwargs):
+        logger.info('%s view tag page', self.request.user.username)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         tag = self.kwargs['tag']
@@ -237,6 +254,7 @@ class SettingsPage(LoginRequiredMixin, UpdateView):
         return self.object
 
     def get_success_url(self):
+        logger.info('%s updated settings', self.request.user.username)
         return reverse_lazy('index')
 
     def get_initial(self):
@@ -248,6 +266,7 @@ class SettingsPage(LoginRequiredMixin, UpdateView):
         return initial
 
     def get_context_data(self, **kwargs):
+        logger.info('%s view settings page', self.request.user.username)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         return context

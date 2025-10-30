@@ -1,9 +1,13 @@
 from __future__ import annotations
+import logging
 from typing import Any
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
 from main.models.managers import PopularManager
+
+
+logger = logging.getLogger('default')
 
 
 class RatingModel(models.Model):
@@ -28,10 +32,12 @@ class RatingModel(models.Model):
         ]
 
     def increase_rating(self):
+        logger.debug('increase rating of "%s"', self.__class__.__name__)
         self.rating += 1
         self.save()
 
     def decrease_rating(self):
+        logger.debug('decrease rating of "%s"', self.__class__.__name__)
         self.rating -= 1
         self.save()
 
