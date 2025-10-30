@@ -1,6 +1,9 @@
 from __future__ import annotations
 import logging
+import bleach
+from bleach.css_sanitizer import CSSSanitizer
 from typing import Optional
+from vk_dz import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
 from django.db import models
@@ -84,6 +87,15 @@ class Question(RatingModel):
             models.Index(fields=['-created_at'], name='question_created_at_desc'),
         ]
 
+    def save(self, *args, **kwargs):
+        self.text = bleach.clean(
+            self.text,
+            tags=settings.ALLOWED_TAGS,
+            attributes=settings.ALLOWED_ATTRIBUTES,
+            css_sanitizer=CSSSanitizer(allowed_css_properties=settings.ALLOWED_STYLES),
+        )
+        super().save(*args, **kwargs)
+
     @staticmethod
     def create(title: str, text: str, author: User) -> Question:
         question = Question(title=title, text=text, author=author)
@@ -147,6 +159,15 @@ class Answer(RatingModel):
         indexes = [
             models.Index(fields=['-created_at'], name='answer_created_at_desc'),
         ]
+
+    def save(self, *args, **kwargs):
+        self.text = bleach.clean(
+            self.text,
+            tags=settings.ALLOWED_TAGS,
+            attributes=settings.ALLOWED_ATTRIBUTES,
+            css_sanitizer=CSSSanitizer(allowed_css_properties=settings.ALLOWED_STYLES),
+        )
+        super().save(*args, **kwargs)
 
     def change_correct(self):
         self.is_correct = not self.is_correct

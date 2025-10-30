@@ -278,3 +278,14 @@ LOGGING = {
         },
     },
 }
+
+# Bleach allowed tags and attributes
+ALLOWED_TAGS = ['p', 'span', 'br', 'strong', 'i', 's', 'u', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a',
+                'img', 'blockquote', 'code', 'pre', 'figure']
+ALLOWED_ATTRIBUTES = {
+    'a': ['href', 'title', 'target', 'class'],
+    'img': ['src', 'alt', 'width', 'height', 'style', 'class'],
+    '*': ['style', 'class']
+}
+ALLOWED_STYLES = ['color', 'background-color', 'font-weight', 'font-family', 'font-size', 'text-align', 'aspect-ratio',
+                  'width']
