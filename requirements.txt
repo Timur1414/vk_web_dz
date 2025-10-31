@@ -12,3 +12,5 @@ django-ckeditor-5~=0.2.18
 django-csp~=4.0
 bleach~=6.3.0
 tinycss2~=1.4.0
+bandit~=1.8.6
+pylint~=4.0.2
