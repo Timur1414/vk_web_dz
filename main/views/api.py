@@ -106,6 +106,14 @@ def answer_check(request: WSGIRequest) -> JsonResponse:
 
 
 def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
+    """
+    Publish an answer to Centrifugo.
+
+    Args:
+        request (WSGIRequest): The request containing information about the user.
+        answer (Answer): The answer to publish.
+        is_author (bool): Whether the user is the author of the question.
+    """
     context = {
         'answer': answer,
         'request': request,
@@ -132,12 +140,32 @@ def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
 
 
 @login_required
-def centrifugo_token(request):
+def centrifugo_token(request: WSGIRequest) -> JsonResponse:
+    """
+    Returns a JSON response containing a Centrifugo token.
+
+    The token is generated with the user's id and is used to send messages to Centrifugo.
+
+    Args:
+        request (WSGIRequest): The request containing information about the user.
+
+    Returns:
+        JsonResponse: A response containing the generated Centrifugo token.
+    """
     token = generate_centrifugo_token(request.user.id)
     return JsonResponse({'token': token}, status=200)
 
 
-def csp_report_view(request):
+def csp_report_view(request: WSGIRequest) -> HttpResponse:
+    """
+    A view for receiving CSP violation reports.
+
+    This view is used to receive CSP violation reports from the browser.
+    The report is logged with the CRITICAL level.
+
+    Args:
+        request (WSGIRequest): The request containing the CSP violation report.
+    """
     if request.method == 'POST':
         report = json.loads(request.body)
         logger.critical('CSP violation: %s', report)

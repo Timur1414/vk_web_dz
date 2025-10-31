@@ -8,6 +8,11 @@ logger = logging.getLogger('default')
 
 
 class CachedDataService:
+    """
+    A class for managing cached data operations, particularly popular tags and users to improve application performance.
+    This class provides methods to retrieve and update cached data, with fallback mechanisms
+    to fetch fresh data when the cache is empty or invalid.
+    """
     CACHE_KEYS = {
         'popular_tags': 'popular_tags',
         'popular_users': 'popular_users',

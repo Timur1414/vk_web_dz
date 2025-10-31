@@ -2,6 +2,16 @@ import urllib.parse
 
 
 def application(environ, response):
+    """
+    WSGI application that prints out the HTTP request method, GET parameters, and POST parameters.
+
+    Parameters:
+    environ (dict): A dictionary containing the WSGI environment variables.
+    response (function): A function that takes a status code and a list of response headers as arguments.
+
+    Returns:
+    list: A list containing a single byte string which is the response body.
+    """
     method = environ.get('REQUEST_METHOD', 'GET')
     get_params = urllib.parse.parse_qs(environ.get('QUERY_STRING', ''))
     post_params = {}
