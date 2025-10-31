@@ -5,6 +5,8 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+
 from main.models import Question, QuestionLike, AnswerLike, Answer
 from main.views.base import check_received_question, check_received_answer
 from vk_dz import settings
@@ -156,6 +158,7 @@ def centrifugo_token(request: WSGIRequest) -> JsonResponse:
     return JsonResponse({'token': token}, status=200)
 
 
+@csrf_exempt
 def csp_report_view(request: WSGIRequest) -> HttpResponse:
     """
     A view for receiving CSP violation reports.
