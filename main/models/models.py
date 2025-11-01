@@ -127,6 +127,16 @@ class Question(RatingModel):
             return None
 
     @staticmethod
+    def get_questions_by_author(user: User) -> QuerySet:
+        logger.debug('get questions by author (id=%s)', user.id)
+        select_related = ['author', 'author__profile']
+        prefetch_related = ['tags']
+        return Question.popular.get_queryset_with_related(
+            select_related=select_related,
+            prefetch_related=prefetch_related
+        ).filter(Q(author=user) | Q(answer__author=user)).distinct()
+
+    @staticmethod
     def get_questions_by_tag(tag: str) -> QuerySet:
         logger.debug('get questions by tag=%s', tag)
         return (Question.objects.filter(tags__text__contains=tag).order_by('-rating').distinct()
@@ -182,6 +192,12 @@ class Answer(RatingModel):
         except Answer.DoesNotExist:
             logger.error('no answer with id=%s', id)
             return None
+
+    @staticmethod
+    def get_answers_by_author(user: User) -> QuerySet:
+        logger.debug('get answers by author (id=%s)', user.id)
+        select_related = ['author', 'author__profile', 'question']
+        return Answer.popular.get_queryset_with_related(select_related=select_related).filter(author=user)
 
     @staticmethod
     def get_answers_by_question(question: Question) -> QuerySet:

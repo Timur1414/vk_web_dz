@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_crontab',
     'django_ckeditor_5',
     'csp',
+    'django.contrib.humanize',
     'main',
 ]
 

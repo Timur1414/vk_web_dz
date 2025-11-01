@@ -25,7 +25,8 @@
             <div>
                 <form>
                     <p class="d-inline-flex">
-                        <input id="search_input" class="form-control me-2" type="text" placeholder="Search" oninput="search()">
+                        <input id="search_input" class="form-control me-2" type="text" placeholder="Search"
+                               oninput="search()">
                         <a class="btn btn-success" href="{% url 'ask' %}">Ask!</a>
                     </p>
                     <div id="search_datalist" class="collapse">
@@ -55,26 +56,30 @@
     <hr>
 </header>
 <main class="p-2">
-    <div class="d-flex">
-        <div class="p-2 flex-fill">
-            {% block content %}{% endblock %}
-        </div>
-        <div class="p-2">
-            <div class="mb-4">
-                <p class="m-0 fs-5 fw-semibold">Popular Tags</p>
-                {% for tag in popular_tags %}
-                    <a class="text-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag }}</a>
-                {% empty %}
-                    <p>some tags</p>
-                {% endfor %}
+    <div class="container">
+        <div class="row">
+            <div class="col-10">
+                {% block content %}{% endblock %}
             </div>
-            <div>
-                <p class="m-0 fs-5 fw-semibold">Best Members</p>
-                {% for profile in popular_profiles %}
-                    <span>{{ profile }}</span>
-                {% empty %}
-                    <p>some members</p>
-                {% endfor %}
+            <div class="col">
+                <div class="p-2">
+                    <div class="mb-4">
+                        <p class="m-0 fs-5 fw-semibold">Popular Tags</p>
+                        {% for tag in popular_tags %}
+                            <a class="text-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag }}</a>
+                        {% empty %}
+                            <p>some tags</p>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <p class="m-0 fs-5 fw-semibold">Best Members</p>
+                        {% for profile in popular_profiles %}
+                            <span>{{ profile }}</span>
+                        {% empty %}
+                            <p>some members</p>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

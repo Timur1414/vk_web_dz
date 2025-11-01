@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Count
+from django.db.models import Count, QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
@@ -47,7 +47,7 @@ def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
     """
     Logout the user and redirect to the referer page.
     """
-    logger.info('%s logged out', request.user.username)
+    logger.info('%s logged out', request.user)
     logout(request)
     referer = request.headers['referer']
     return redirect(referer)
@@ -78,7 +78,7 @@ class RegistrationPage(RegistrationView):
         new_user.email = email
         new_user.save()
         new_profile.update(nickname=nickname, avatar=avatar)
-        logger.info('%s registered', new_user.username)
+        logger.info('%s registered', new_user)
         return new_user
 
 
@@ -90,7 +90,7 @@ class IndexPage(TemplateView):
     template_name = 'index/index.html'
 
     def get_context_data(self, **kwargs):
-        logger.info('%s view main page', self.request.user.username)
+        logger.info('%s view main page', self.request.user)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         select_related = ['author', 'author__profile']
@@ -116,7 +116,7 @@ class HotQuestionsPage(TemplateView):
     template_name = 'index/hot_questions.html'
 
     def get_context_data(self, **kwargs):
-        logger.info('%s view hot page', self.request.user.username)
+        logger.info('%s view hot page', self.request.user)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         select_related = ['author', 'author__profile']
@@ -150,7 +150,7 @@ class QuestionPage(DetailView):
 
 
     def get_context_data(self, **kwargs):
-        logger.info('%s view question (id=%s) page', self.request.user.username, self.kwargs['id'])
+        logger.info('%s view question (id=%s) page', self.request.user, self.kwargs['id'])
         context = super().get_context_data()
         context.update(create_context(self.request))
         question = self.get_object()
@@ -170,15 +170,15 @@ class QuestionPage(DetailView):
         form = CreateAnswerForm(request.POST)
         if form.is_valid():
             if form.cleaned_data['author'] != request.user:
-                logger.error('%s tried to change answer\'s author', self.request.user.username)
+                logger.error('%s tried to change answer\'s author', self.request.user)
                 raise PermissionDenied()
             answer = form.save()
             is_author = request.user == question.author
             publish_answer(request, answer, is_author)
-            logger.info('%s created answer (id=%s) to question (id=%s)', self.request.user.username, answer.id, question.id)
+            logger.info('%s created answer (id=%s) to question (id=%s)', self.request.user, answer.id, question.id)
             return redirect('question', id=question.id)
         else:
-            logger.warning('%s failed validation of answer to question (id=%s)', self.request.user.username, question.id)
+            logger.warning('%s failed validation of answer to question (id=%s)', self.request.user, question.id)
             context['form'] = form
         return render(request, QuestionPage.template_name, context)
 
@@ -203,13 +203,13 @@ class AskPage(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         if form.instance.author != self.request.user:
-            logger.error('%s tried to change question\'s author', self.request.user.username)
+            logger.error('%s tried to change question\'s author', self.request.user)
             raise PermissionDenied()
-        logger.info('%s ask new question', self.request.user.username)
+        logger.info('%s ask new question', self.request.user)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
-        logger.info('%s view ask page', self.request.user.username)
+        logger.info('%s view ask page', self.request.user)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         return context
@@ -223,7 +223,7 @@ class TagPage(TemplateView):
     template_name = 'tag/index.html'
 
     def get_context_data(self, **kwargs):
-        logger.info('%s view tag page', self.request.user.username)
+        logger.info('%s view tag page', self.request.user)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         tag = self.kwargs['tag']
@@ -254,7 +254,7 @@ class SettingsPage(LoginRequiredMixin, UpdateView):
         return self.object
 
     def get_success_url(self):
-        logger.info('%s updated settings', self.request.user.username)
+        logger.info('%s updated settings', self.request.user)
         return reverse_lazy('index')
 
     def get_initial(self):
@@ -266,7 +266,31 @@ class SettingsPage(LoginRequiredMixin, UpdateView):
         return initial
 
     def get_context_data(self, **kwargs):
-        logger.info('%s view settings page', self.request.user.username)
+        logger.info('%s view settings page', self.request.user)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
+        return context
+
+
+class ProfilePage(DetailView):
+    template_name = 'profile/index.html'
+    model = Profile
+    context_object_name = 'object'
+
+    def get_object(self, queryset = ...):
+        self.object = get_object_or_404(Profile, user=self.kwargs['id'])
+        return self.object
+
+    def get_context_data(self, **kwargs):
+        logger.info('%s view profile page', self.request.user)
+        context = super().get_context_data(**kwargs)
+        context.update(create_context(self.request))
+        context['is_author'] = self.request.user == self.object.user
+        context['questions'] = Question.get_questions_by_author(self.object.user)
+        questions_ids = [question.id for question in context['questions']]
+        answer_counts = Question.objects.filter(
+            id__in=questions_ids
+        ).annotate(answers_count=Count('answer')).values('id', 'answers_count')
+        count_dict = {q['id']: q['answers_count'] for q in answer_counts}
+        context['answer_counts'] = count_dict
         return context

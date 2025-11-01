@@ -1,5 +1,9 @@
 {% load custom_filters %}
-<div class="border rounded border-secondary border-3 container row mb-5 mx-0 py-1 px-0">
+<div class="border rounded border-secondary border-3 container row mb-5 mx-0 py-1 px-0" style="overflow: hidden">
+    <p class="text-secondary">
+        Author: <a class="link-secondary" href="{% url 'profile' id=answer.author.id %}">{{ answer.author.profile }}</a> |
+        Date: {{ answer.created_at.astimezone|date:"d.m.Y" }}
+    </p>
     <div class="col">
         <img class="img-fluid" style="max-width: 100px; max-height: 100px;" src="{{ answer.author.profile.avatar.url }}"
              alt="avatar">
