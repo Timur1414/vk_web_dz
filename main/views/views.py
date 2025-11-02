@@ -273,6 +273,10 @@ class SettingsPage(LoginRequiredMixin, UpdateView):
 
 
 class ProfilePage(DetailView):
+    """
+    View for user profile.
+    Displays the profile of a specific user, including their questions and answers.
+    """
     template_name = 'profile/index.html'
     model = Profile
     context_object_name = 'object'

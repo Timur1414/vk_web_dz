@@ -10,9 +10,9 @@
         {% if request.user.is_authenticated %}
             <button id="answer_like_btn_{{ answer.id }}"
                     class="btn {% if answer|is_answer_liked:request.user %} btn-success {% else %} btn-outline-secondary {% endif %} d-block my-2"
-                    onclick="answer_like({{ answer.id }})">{{ answer.rating }}</button>
+                    onclick="answer_like({{ answer.id }})">👍: {{ answer.rating }}</button>
         {% else %}
-            <p>{{ answer.rating }}</p>
+            <p>👍: {{ answer.rating }}</p>
         {% endif %}
     </div>
     <div class="col-10">

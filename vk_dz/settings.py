@@ -193,6 +193,9 @@ CKEDITOR_5_CONFIGS = {
                 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side'
             ]
         },
+        'link': {
+            'addTargetToExternalLinks': True,
+        },
         'codeBlock': {
             'languages': [
                 {'language': 'python', 'label': 'Python'},

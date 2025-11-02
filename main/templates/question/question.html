@@ -26,9 +26,9 @@
                     {% if request.user.is_authenticated %}
                         <button id="like_btn"
                                 class="btn {% if is_question_liked %} btn-success {% else %} btn-outline-secondary {% endif %} my-0 d-block my-2"
-                                onclick="question_like({{ question.id }})">{{ question.rating }}</button>
+                                onclick="question_like({{ question.id }})">👍: {{ question.rating }}</button>
                     {% else %}
-                        <p>{{ question.rating }}</p>
+                        <p>👍: {{ question.rating }}</p>
                     {% endif %}
                     <p id="is_liked" class="d-none">{{ is_question_liked }}</p>
                 </div>
