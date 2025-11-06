@@ -98,3 +98,6 @@
    ```shell
    centrifugo -c config.json
    ```
+
+## Диаграмма базы данных
+[ссылка](https://dbdiagram.io/d/690d0ed46735e11170a2094f)
