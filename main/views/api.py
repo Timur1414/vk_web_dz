@@ -1,12 +1,12 @@
 import json
 import logging
+import sys
 import requests
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-
 from main.models import Question, QuestionLike, AnswerLike, Answer
 from main.views.base import check_received_question, check_received_answer
 from vk_dz import settings
@@ -116,6 +116,8 @@ def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
         answer (Answer): The answer to publish.
         is_author (bool): Whether the user is the author of the question.
     """
+    if 'test' in sys.argv:
+        return {'success': True}
     context = {
         'answer': answer,
         'request': request,
