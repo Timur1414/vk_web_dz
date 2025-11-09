@@ -82,6 +82,23 @@ class RegistrationPage(RegistrationView):
         return new_user
 
 
+class ClosedRegistrationPage(TemplateView):
+    template_name = 'django_registration/registration_closed.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(create_base_context())
+        return context
+
+
+class RegistrationCompletePage(TemplateView):
+    template_name = 'django_registration/registration_complete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(create_base_context())
+        return context
+
 class IndexPage(TemplateView):
     """
     View for displaying the home page with a list of questions.
