@@ -69,13 +69,13 @@ class HotPageTestCase(TestCase):
         self.assertInHTML('<a class="fs-4" href="/">New Questions</a>', response.content.decode())
 
     def test_anonymous_user(self):
-        response = self.client.get('/')
+        response = self.client.get('/hot/')
         self.assertNotContains(response, 'log out')
         self.assertContains(response, 'log in')
 
     def test_authenticated_user(self):
         self.client.force_login(self.user)
-        response = self.client.get('/')
+        response = self.client.get('/hot/')
         self.assertContains(response, 'log out')
         self.assertContains(response, self.user.profile.nickname)
         self.assertNotContains(response, 'log in')
