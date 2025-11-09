@@ -136,9 +136,12 @@ def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
         'Authorization': f'apikey {settings.CENTRIFUGO_API_KEY}'
     }
     url = f'{settings.CENTRIFUGO_URL}/api'
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-    if response.status_code != 200:
-        logger.error('failed to publish answer')
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        if response.status_code != 200:
+            logger.error('failed to publish answer')
+    except requests.exceptions.ConnectionError:
+        logger.critical('failed to publish answer (don\'t working centrifugo)')
 
 
 @login_required

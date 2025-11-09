@@ -25,10 +25,9 @@ class AskForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['title', 'text', 'author']
+        fields = ['title', 'text']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'author': forms.HiddenInput(),
         }
         labels = {
             'title': 'Title',
@@ -81,9 +80,7 @@ class CreateAnswerForm(forms.ModelForm):
     """
     class Meta:
         model = Answer
-        fields = ['text', 'author', 'question']
+        fields = ['text']
         widgets = {
             'text': CKEditor5Widget(attrs={'placeholder': 'enter answer here...'}),
-            'author': forms.HiddenInput(),
-            'question': forms.HiddenInput(),
         }

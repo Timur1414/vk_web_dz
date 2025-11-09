@@ -148,7 +148,6 @@ class QuestionPage(DetailView):
         self.object = get_object_or_404(Question, id=self.kwargs['id'])
         return self.object
 
-
     def get_context_data(self, **kwargs):
         logger.info('%s view question (id=%s) page', self.request.user, self.kwargs['id'])
         context = super().get_context_data()
@@ -157,21 +156,18 @@ class QuestionPage(DetailView):
         context['is_author'] = self.request.user == question.author
         context['is_question_liked'] = QuestionLike.is_liked(question, self.request.user)
         context['answers'] = Answer.get_answers_by_question(question)
-        initial = {
-            'question': question,
-            'author': self.request.user,
-        }
-        context['form'] = CreateAnswerForm(initial=initial)
+        context['form'] = CreateAnswerForm()
         return context
 
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            raise PermissionDenied()
         question = self.get_object()
         context = self.get_context_data(**kwargs)
         form = CreateAnswerForm(request.POST)
         if form.is_valid():
-            if form.cleaned_data['author'] != request.user:
-                logger.error('%s tried to change answer\'s author', self.request.user)
-                raise PermissionDenied()
+            form.instance.author = request.user
+            form.instance.question = question
             answer = form.save()
             is_author = request.user == question.author
             publish_answer(request, answer, is_author)
@@ -196,15 +192,8 @@ class AskPage(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('index')
 
-    def get_initial(self):
-        initial = super().get_initial()
-        initial['author'] = self.request.user
-        return initial
-
     def form_valid(self, form):
-        if form.instance.author != self.request.user:
-            logger.error('%s tried to change question\'s author', self.request.user)
-            raise PermissionDenied()
+        form.instance.author = self.request.user
         logger.info('%s ask new question', self.request.user)
         return super().form_valid(form)
 
