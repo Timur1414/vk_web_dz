@@ -11,6 +11,10 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.12]
+    env:
+      SECRET_KEY: 'secret-key-for-testing-12345'
+      DEBUG: 'False'
+      DJANGO_SETTINGS_MODULE: 'vk_dz.settings'
 
     steps:
     - uses: actions/checkout@v4
@@ -22,6 +26,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Run Migrations
+      run: |
+        python manage.py migrate
     - name: Run Tests
       run: |
         python manage.py test
