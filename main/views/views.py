@@ -1,7 +1,7 @@
 import logging
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Count, QuerySet
@@ -42,6 +42,23 @@ class LoginPage(LoginView):
             return next_url
         return reverse_lazy('index')
 
+
+class PasswordChangePage(PasswordChangeView):
+    template_name = 'registration/password_change_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(create_context(self.request))
+        return context
+
+
+class PasswordChangeDonePage(PasswordChangeDoneView):
+    template_name = 'registration/password_change_done.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(create_context(self.request))
+        return context
 
 def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
     """

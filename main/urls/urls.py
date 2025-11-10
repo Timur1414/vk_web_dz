@@ -14,5 +14,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.RegistrationPage.as_view(), name='django_registration_register'),
     path('registration/closed/', views.ClosedRegistrationPage.as_view(), name='django_registration_disallowed'),
-    path('registration/complete/', views.RegistrationCompletePage.as_view(), name='django_registration_complete')
+    path('registration/complete/', views.RegistrationCompletePage.as_view(), name='django_registration_complete'),
+    path('password_change/', views.PasswordChangePage.as_view(), name='password_change'),
+    path('password_change/done/', views.PasswordChangeDonePage.as_view(), name='password_change_done'),
 ]
