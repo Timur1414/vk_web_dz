@@ -73,12 +73,14 @@ class Question(RatingModel):
         author (User): The user who asked
         created_at (datetime): When the question was created
         tags (ManyToManyField[Tag]): Tags associated with the question
+        count_answers (int): Number of answers associated with the question
     """
     title = models.CharField(max_length=100)
     text = CKEditor5Field()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag)
+    count_answers = models.IntegerField(default=0)
 
     new = NewManager()
 
@@ -177,6 +179,8 @@ class Answer(RatingModel):
             attributes=settings.ALLOWED_ATTRIBUTES,
             css_sanitizer=CSSSanitizer(allowed_css_properties=settings.ALLOWED_STYLES),
         )
+        self.question.count_answers += 1
+        self.question.save()
         super().save(*args, **kwargs)
 
     def change_correct(self):

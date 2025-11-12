@@ -5,7 +5,7 @@
     <div class="col my-auto">
         <img class="img-fluid" style="max-width: 100px; max-height: 100px;" src="{{ question.author.profile.avatar.url }}" alt="avatar">
         <p class="m-0 p-0"><span class="fs-4">👍</span>: {{ question.rating }}</p>
-        <p>answers: {{ answer_counts|get_item:question.id }}</p>
+        <p>answers: {{ question.count_answers }}</p>
     </div>
     <div class="col-10">
         <p class="fs-4">{{ question.title }}</p>

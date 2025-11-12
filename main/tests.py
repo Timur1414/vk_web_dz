@@ -148,7 +148,9 @@ class QuestionPageTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Answer.objects.count(), 1)
         answer = Answer.objects.get(id=1)
+        self.question.refresh_from_db()
         self.assertEqual(answer.text, 'text')
+        self.assertEqual(self.question.count_answers, 1)
 
     def test_add_invalid_answer(self):
         self.client.force_login(self.user)
@@ -158,8 +160,10 @@ class QuestionPageTestCase(TestCase):
         response = self.client.post(f'/question/{self.question.id}/', data)
         self.assertEqual(response.status_code, 200)
         form = response.context['form']
+        self.question.refresh_from_db()
         self.assertNotEqual(form.errors, {})
         self.assertEqual(Answer.objects.count(), 0)
+        self.assertEqual(self.question.count_answers, 0)
 
     def test_add_anonymous_answer(self):
         data = {
@@ -167,7 +171,9 @@ class QuestionPageTestCase(TestCase):
         }
         response = self.client.post(f'/question/{self.question.id}/', data)
         self.assertEqual(response.status_code, 403)
+        self.question.refresh_from_db()
         self.assertEqual(Answer.objects.count(), 0)
+        self.assertEqual(self.question.count_answers, 0)
 
 
 class AskPageTestCase(TestCase):
