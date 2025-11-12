@@ -98,29 +98,29 @@ class QuestionPageTestCase(TestCase):
         )
 
     def test_status_code(self):
-        response = self.client.get(f'/question/{self.question.id}/')
+        response = self.client.get(f'/question/{self.question.pk}/')
         self.assertEqual(response.status_code, 200)
 
     def test_templates(self):
-        response = self.client.get(f'/question/{self.question.id}/')
+        response = self.client.get(f'/question/{self.question.pk}/')
         self.assertTemplateUsed(response, 'question/question.html')
 
     def test_content(self):
-        response = self.client.get(f'/question/{self.question.id}/')
+        response = self.client.get(f'/question/{self.question.pk}/')
         self.assertContains(response, 'title')
         self.assertContains(response, 'text')
         self.assertInHTML('<p class="fs-3">title</p>', response.content.decode())
         self.assertInHTML('<p>text</p>', response.content.decode())
 
     def test_anonymous_user(self):
-        response = self.client.get(f'/question/{self.question.id}/')
+        response = self.client.get(f'/question/{self.question.pk}/')
         self.assertNotContains(response, 'log out')
         self.assertContains(response, 'log in')
         self.assertNotContains(response, 'button')
 
     def test_authenticated_user(self):
         self.client.force_login(self.user)
-        response = self.client.get(f'/question/{self.question.id}/')
+        response = self.client.get(f'/question/{self.question.pk}/')
         self.assertContains(response, 'log out')
         self.assertContains(response, self.user.profile.nickname)
         self.assertNotContains(response, 'log in')
@@ -128,15 +128,15 @@ class QuestionPageTestCase(TestCase):
         self.assertContains(response, '👍: 0')
 
     def test_wrong_id(self):
-        response = self.client.get(f'/question/2/')
+        response = self.client.get('/question/2/')
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(f'/question/0/')
+        response = self.client.get('/question/0/')
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(f'/question/-1/')
+        response = self.client.get('/question/-1/')
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(f'/question/abc/')
+        response = self.client.get('/question/abc/')
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(f'/question//')
+        response = self.client.get('/question//')
         self.assertEqual(response.status_code, 404)
 
     def test_add_valid_answer(self):
@@ -144,7 +144,7 @@ class QuestionPageTestCase(TestCase):
         data = {
             'text': 'text',
         }
-        response = self.client.post(f'/question/{self.question.id}/', data)
+        response = self.client.post(f'/question/{self.question.pk}/', data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Answer.objects.count(), 1)
         answer = Answer.objects.get(id=1)
@@ -157,7 +157,7 @@ class QuestionPageTestCase(TestCase):
         data = {
             'text': '',
         }
-        response = self.client.post(f'/question/{self.question.id}/', data)
+        response = self.client.post(f'/question/{self.question.pk}/', data)
         self.assertEqual(response.status_code, 200)
         form = response.context['form']
         self.question.refresh_from_db()
@@ -169,7 +169,7 @@ class QuestionPageTestCase(TestCase):
         data = {
             'text': 'text',
         }
-        response = self.client.post(f'/question/{self.question.id}/', data)
+        response = self.client.post(f'/question/{self.question.pk}/', data)
         self.assertEqual(response.status_code, 403)
         self.question.refresh_from_db()
         self.assertEqual(Answer.objects.count(), 0)

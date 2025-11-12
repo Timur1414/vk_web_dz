@@ -409,3 +409,5 @@ $RECYCLE.BIN/
 /centrifugo_config.json
 /uploads/*
 /.wsl_venv/*
+/pylint_report.txt
+/bandit_report.txt
