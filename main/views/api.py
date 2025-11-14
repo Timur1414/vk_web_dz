@@ -139,7 +139,7 @@ def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
     }
     url = f'{settings.CENTRIFUGO_URL}/api'
     try:
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+        response = requests.post(url, headers=headers, data=json.dumps(data), timeout=5)
         if response.status_code != 200:
             logger.error('failed to publish answer')
     except requests.exceptions.ConnectionError:
