@@ -165,6 +165,7 @@ class Answer(RatingModel):
     class Meta:
         indexes = [
             models.Index(fields=['-created_at'], name='answer_created_at_desc'),
+            models.Index(fields=['-rating', '-created_at'], name='answer_rating_created_at_desc'),
         ]
 
     def save(self, *args, **kwargs):
@@ -200,7 +201,7 @@ class Answer(RatingModel):
     @staticmethod
     def get_answers_by_question(question: Question) -> QuerySet:
         logger.debug('get answers by question=%s', question.id)
-        return Answer.objects.select_related('author', 'author__profile').filter(question=question).order_by('-rating')
+        return Answer.objects.select_related('author', 'author__profile').filter(question=question).order_by('-rating', '-created_at')
 
 
 class Profile(RatingModel):
