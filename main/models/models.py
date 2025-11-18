@@ -112,12 +112,10 @@ class Question(RatingModel):
 
     @staticmethod
     def find_by_text(text: str, limit: int = 5) -> QuerySet:
-        select_related = ['author', 'author__profile']
-        prefetch_related = ['tags']
         logger.debug('find questions by text=%s', text)
-        return Question.popular.get_queryset_with_related(
-            select_related=select_related,
-            prefetch_related=prefetch_related).filter(Q(title__icontains=text) | Q(text__icontains=text))[:limit]
+        return (Question.popular.get_queryset()
+                    .select_related('author', 'author__profile')
+                    .prefetch_related('tags').filter(Q(title__icontains=text) | Q(text__icontains=text))[:limit])
 
     @staticmethod
     def get_question_by_id(id: int) -> Optional[Question]:
@@ -131,12 +129,9 @@ class Question(RatingModel):
     @staticmethod
     def get_questions_by_author(user: User) -> QuerySet:
         logger.debug('get questions by author (id=%s)', user.id)
-        select_related = ['author', 'author__profile']
-        prefetch_related = ['tags']
-        return Question.popular.get_queryset_with_related(
-            select_related=select_related,
-            prefetch_related=prefetch_related
-        ).filter(Q(author=user) | Q(answer__author=user)).distinct()
+        return (Question.popular.get_queryset()
+                .select_related('author', 'author__profile')
+                .prefetch_related('tags').filter(Q(author=user) | Q(answer__author=user)).distinct())
 
     @staticmethod
     def get_questions_by_tag(tag: str) -> QuerySet:
@@ -200,8 +195,7 @@ class Answer(RatingModel):
     @staticmethod
     def get_answers_by_author(user: User) -> QuerySet:
         logger.debug('get answers by author (id=%s)', user.id)
-        select_related = ['author', 'author__profile', 'question']
-        return Answer.popular.get_queryset_with_related(select_related=select_related).filter(author=user)
+        return Answer.popular.get_queryset().select_related('author', 'author__profile', 'question').filter(author=user)
 
     @staticmethod
     def get_answers_by_question(question: Question) -> QuerySet:

@@ -127,11 +127,9 @@ class IndexPage(TemplateView):
         logger.info('%s view main page', self.request.user)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
-        select_related = ['author', 'author__profile']
-        prefetch_related = ['tags']
-        questions = paginate(Question.new.get_queryset_with_related(
-            select_related=select_related,
-            prefetch_related=prefetch_related), self.request)
+        questions = paginate(Question.new.get_queryset()
+                             .select_related('author', 'author__profile')
+                             .prefetch_related('tags'), self.request)
         context.update(get_paginated_nav_context(questions))
         return context
 
@@ -147,11 +145,9 @@ class HotQuestionsPage(TemplateView):
         logger.info('%s view hot page', self.request.user)
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
-        select_related = ['author', 'author__profile']
-        prefetch_related = ['tags']
-        questions = paginate(Question.popular.get_queryset_with_related(
-            select_related=select_related,
-            prefetch_related=prefetch_related), self.request)
+        questions = paginate(Question.popular.get_queryset()
+                             .select_related('author', 'author__profile')
+                             .prefetch_related('tags'), self.request)
         context.update(get_paginated_nav_context(questions))
         return context
 
