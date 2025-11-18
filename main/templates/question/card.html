@@ -8,7 +8,7 @@
         <p>answers: {{ question.count_answers }}</p>
     </div>
     <div class="col-10">
-        <p class="fs-4">{{ question.title }}</p>
+        <p class="fs-4 text-truncate">{{ question.title }}</p>
         <div style="height: 8vh; overflow: hidden">
             <p class="text-truncate">{{ question.text|safe }}</p>
         </div>
