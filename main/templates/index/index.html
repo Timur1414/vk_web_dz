@@ -15,6 +15,15 @@
 {% endblock %}
 
 {% block content %}
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div>
         <div>
             <p class="fs-3 d-inline-flex">New Questions</p>
@@ -28,29 +37,36 @@
         <nav>
             <ul class="pagination">
                 {% if prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ prev }}"><span>&laquo;</span></a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ prev }}"><span>&laquo;</span></a>
+                    </li>
                 {% endif %}
                 {% if first != page and first != prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ first }}">{{ first }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark"
+                                             href="{% url 'index' %}?page={{ first }}">{{ first }}</a></li>
                 {% endif %}
                 {% if first_ellipsis %}
                     <li class="page-item text-bottom"><a class="page-link link-dark disabled">...</a></li>
                 {% endif %}
                 {% if prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ prev }}">{{ prev }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark"
+                                             href="{% url 'index' %}?page={{ prev }}">{{ prev }}</a></li>
                 {% endif %}
-                <li class="page-item active"><a class="page-link link-white" href="{% url 'index' %}?page={{ page }}">{{ page }}</a></li>
+                <li class="page-item active"><a class="page-link link-white"
+                                                href="{% url 'index' %}?page={{ page }}">{{ page }}</a></li>
                 {% if next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ next }}">{{ next }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark"
+                                             href="{% url 'index' %}?page={{ next }}">{{ next }}</a></li>
                 {% endif %}
                 {% if last_ellipsis %}
                     <li class="page-item"><a class="page-link link-dark disabled">...</a></li>
                 {% endif %}
                 {% if last != page and last != next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ last }}">{{ last }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark"
+                                             href="{% url 'index' %}?page={{ last }}">{{ last }}</a></li>
                 {% endif %}
                 {% if next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ next }}"><span>&raquo;</span></a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'index' %}?page={{ next }}"><span>&raquo;</span></a>
+                    </li>
                 {% endif %}
             </ul>
         </nav>
@@ -59,4 +75,5 @@
 
 {% block extra_js %}
     <script src="{% static 'js/question_card.js' %}"></script>
+    <script src="{% static 'js/close_massage.js' %}"></script>
 {% endblock %}

@@ -5,6 +5,7 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordCha
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Count, QuerySet
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
@@ -45,15 +46,16 @@ class LoginPage(LoginView):
 
 class PasswordChangePage(PasswordChangeView):
     template_name = 'registration/password_change_form.html'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.INFO, 'Password changed successfully')
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         return context
-
-
-def password_change_done(request: WSGIRequest) -> HttpResponseRedirect:
-    return redirect('index')
 
 def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
     """
@@ -73,6 +75,7 @@ class RegistrationPage(RegistrationView):
     """
     template_name = 'django_registration/registration_form.html'
     form_class = RegistrationForm
+    success_url = reverse_lazy('index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -102,9 +105,6 @@ class ClosedRegistrationPage(TemplateView):
         context.update(create_base_context())
         return context
 
-
-def registration_complete(request: WSGIRequest) -> HttpResponseRedirect:
-    return redirect('index')
 
 class IndexPage(TemplateView):
     """
