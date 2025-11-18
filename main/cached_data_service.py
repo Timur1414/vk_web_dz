@@ -33,7 +33,7 @@ class CachedDataService:
 
     @staticmethod
     def get_popular_tags():
-        return Tag.popular.get_popular()
+        return Tag.popular
 
     def get_cached_tags(self):
         popular_tags = cache.get(self.CACHE_KEYS['popular_tags'])
@@ -43,7 +43,7 @@ class CachedDataService:
 
     @staticmethod
     def get_popular_users():
-        return Profile.popular.get_popular_with_related(select_related=['user'])
+        return Profile.popular.select_related('user')
 
     def get_cached_users(self):
         popular_users = cache.get(self.CACHE_KEYS['popular_users'])

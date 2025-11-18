@@ -52,13 +52,8 @@ class PasswordChangePage(PasswordChangeView):
         return context
 
 
-class PasswordChangeDonePage(PasswordChangeDoneView):
-    template_name = 'registration/password_change_done.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(create_context(self.request))
-        return context
+def password_change_done(request: WSGIRequest) -> HttpResponseRedirect:
+    return redirect('index')
 
 def logout_view(request: WSGIRequest) -> HttpResponseRedirect:
     """
@@ -108,13 +103,8 @@ class ClosedRegistrationPage(TemplateView):
         return context
 
 
-class RegistrationCompletePage(TemplateView):
-    template_name = 'django_registration/registration_complete.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(create_base_context())
-        return context
+def registration_complete(request: WSGIRequest) -> HttpResponseRedirect:
+    return redirect('index')
 
 class IndexPage(TemplateView):
     """
