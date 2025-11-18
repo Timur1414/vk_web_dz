@@ -33,7 +33,7 @@ class CachedDataService:
 
     @staticmethod
     def get_popular_tags():
-        return Tag.popular
+        return Tag.popular.get_queryset()
 
     def get_cached_tags(self):
         popular_tags = cache.get(self.CACHE_KEYS['popular_tags'])
