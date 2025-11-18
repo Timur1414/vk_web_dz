@@ -15,6 +15,10 @@
         .profile_block:hover {
             cursor: pointer;
         }
+        #search_datalist {
+            background-color: aliceblue;
+            border-radius: 4px;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -32,7 +36,7 @@
                                oninput="search()">
                         <a class="btn btn-success" href="{% url 'ask' %}">Ask!</a>
                     </p>
-                    <div id="search_datalist" class="collapse">
+                    <div id="search_datalist" class="collapse position-absolute p-2">
 
                     </div>
                 </form>
