@@ -67,6 +67,10 @@ def get_paginated_nav_context(questions: Page) -> dict[str, Any]:
         context['next'] = questions.next_page_number()
     except EmptyPage:
         context['next'] = None
+    context['first'] = 1
+    context['first_ellipsis'] = context['page'] - context['first'] > 2
+    context['last'] = questions.paginator.num_pages
+    context['last_ellipsis'] = context['last'] - context['page'] > 2
     return context
 
 
