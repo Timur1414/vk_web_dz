@@ -7,3 +7,7 @@
     cursor: pointer;
     box-shadow: 3px 3px 10px 0 cornflowerblue;
 }
+
+.tag:hover {
+    background-color: rgba(225, 236, 244, 0.75);
+}

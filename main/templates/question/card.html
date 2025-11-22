@@ -16,7 +16,7 @@
             <div class="col-7 text-truncate">
                 <span class="fw-semibold">Tags: </span>
                 {% for tag in question.tags.all %}
-                    <span class="text-{{ tag.color }}">{{ tag }}</span>
+                    <span class="tag p-1 text-{{ tag.color }}" onclick="open_tag(event, '{{ tag.text }}')">{{ tag }}</span>
                 {% empty %}
                     <span>nothing...</span>
                 {% endfor %}
