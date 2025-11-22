@@ -201,7 +201,7 @@ class Answer(RatingModel):
     @staticmethod
     def get_answers_by_question(question: Question) -> QuerySet:
         logger.debug('get answers by question=%s', question.id)
-        return Answer.objects.select_related('author', 'author__profile').filter(question=question).order_by('-rating', '-created_at')
+        return Answer.objects.filter(question=question).order_by('-rating', '-created_at').select_related('author', 'author__profile').prefetch_related('answerlike_set')
 
 
 class Profile(RatingModel):

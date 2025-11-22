@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Count, QuerySet
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
 from django.shortcuts import redirect
@@ -153,14 +153,17 @@ class QuestionPage(DetailView):
     context_object_name = 'question'
 
     def get_object(self, queryset = ...):
-        self.object = get_object_or_404(Question, id=self.kwargs['id'])
+        # self.object = get_object_or_404(Question, id=self.kwargs['id'])
+        self.object = Question.objects.filter(id=self.kwargs['id']).select_related('author', 'author__profile').prefetch_related('tags', 'questionlike_set').first()
+        if self.object is None:
+            raise Http404()
         return self.object
 
     def get_context_data(self, **kwargs):
         logger.info('%s view question (id=%s) page', self.request.user, self.kwargs['id'])
         context = super().get_context_data()
         context.update(create_context(self.request))
-        question = self.get_object()
+        question = self.object
         context['is_author'] = self.request.user == question.author
         context['is_question_liked'] = QuestionLike.is_liked(question, self.request.user)
         context['answers'] = Answer.get_answers_by_question(question)
