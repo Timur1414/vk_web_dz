@@ -17,35 +17,7 @@
         {% empty %}
             <p>nothing...</p>
         {% endfor %}
-        <nav>
-            <ul class="pagination">
-                {% if prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'hot_questions' %}?page={{ prev }}"><span>&laquo;</span></a></li>
-                {% endif %}
-                {% if first != page and first != prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'hot_questions' %}?page={{ first }}">{{ first }}</a></li>
-                {% endif %}
-                {% if first_ellipsis %}
-                    <li class="page-item text-bottom"><a class="page-link link-dark disabled">...</a></li>
-                {% endif %}
-                {% if prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'hot_questions' %}?page={{ prev }}">{{ prev }}</a></li>
-                {% endif %}
-                <li class="page-item active"><a class="page-link link-white" href="{% url 'hot_questions' %}?page={{ page }}">{{ page }}</a></li>
-                {% if next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'hot_questions' %}?page={{ next }}">{{ next }}</a></li>
-                {% endif %}
-                {% if last_ellipsis %}
-                    <li class="page-item"><a class="page-link link-dark disabled">...</a></li>
-                {% endif %}
-                {% if last != page and last != next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'hot_questions' %}?page={{ last }}">{{ last }}</a></li>
-                {% endif %}
-                {% if next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'hot_questions' %}?page={{ next }}"><span>&raquo;</span></a></li>
-                {% endif %}
-            </ul>
-        </nav>
+        {% include "includes/pagination_nav.html" %}
     </div>
 {% endblock %}
 
