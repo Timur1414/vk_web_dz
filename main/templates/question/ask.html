@@ -24,7 +24,7 @@
                         <div class="col-10">
                             {% if field.errors %}
                                 {{ field|add_class:"is-invalid form-control" }}
-                                <div class="invalid-feedback">
+                                <div class="invalid-feedback text-start">
                                     {% for error in field.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
