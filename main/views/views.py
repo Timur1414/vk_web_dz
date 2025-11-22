@@ -14,7 +14,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, CreateView, UpdateView
 from django_registration.backends.one_step.views import RegistrationView
 from main.forms import AskForm, SettingsForm, CreateAnswerForm, RegistrationForm
-from main.models import Profile, Question, Answer, QuestionLike
+from main.models import Profile, Question, Answer, QuestionLike, Tag
 from main.paginators import paginate
 from main.views.api import publish_answer
 from main.views.base import create_base_context, create_context, get_paginated_nav_context
@@ -153,8 +153,9 @@ class QuestionPage(DetailView):
     context_object_name = 'question'
 
     def get_object(self, queryset = ...):
-        # self.object = get_object_or_404(Question, id=self.kwargs['id'])
-        self.object = Question.objects.filter(id=self.kwargs['id']).select_related('author', 'author__profile').prefetch_related('tags', 'questionlike_set').first()
+        self.object = (Question.objects.filter(id=self.kwargs['id'])
+                       .select_related('author', 'author__profile')
+                       .prefetch_related('tags', 'questionlike_set').first())
         if self.object is None:
             raise Http404()
         return self.object
@@ -227,7 +228,8 @@ class TagPage(TemplateView):
         context = super().get_context_data(**kwargs)
         context.update(create_context(self.request))
         tag = self.kwargs['tag']
-        context['tag'] = tag
+        context['tag_text'] = tag
+        context['tag'] = Tag.get(tag)
         questions = paginate(Question.get_questions_by_tag(tag), self.request)
         context.update(get_paginated_nav_context(questions))
         return context

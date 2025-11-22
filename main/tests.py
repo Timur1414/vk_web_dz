@@ -259,6 +259,7 @@ class TagPageTestCase(TestCase):
         )
         self.user.profile.nickname = 'nickname'
         self.user.profile.save()
+        self.tag = Tag.get_or_create('abc')
 
     def test_status_code(self):
         response = self.client.get('/tag/abc/')
@@ -271,7 +272,7 @@ class TagPageTestCase(TestCase):
     def test_content(self):
         response = self.client.get('/tag/abc/')
         self.assertContains(response, 'abc')
-        self.assertInHTML('<span class="fw-semibold">abc</span>', response.content.decode())
+        self.assertInHTML(f'<span class="fw-semibold text-{self.tag.color}">abc</span>', response.content.decode())
 
     def test_anonymous_user(self):
         response = self.client.get('/tag/abc/')

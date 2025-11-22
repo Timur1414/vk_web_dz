@@ -3,21 +3,14 @@
 {% load static %}
 
 {% block extra_css %}
-    <style>
-        .image img {
-            width: 100%; !important;
-            height: 100%; !important;
-        }
-        .question_card:hover {
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/question_card.css' %}">
 {% endblock %}
 
 {% block content %}
     <div>
+        {% if tag %}
         <div>
-            <p class="fs-3">Tag: <span class="fw-semibold">{{ tag }}</span></p>
+            <p class="fs-3">Tag: <span class="fw-semibold text-{{ tag.color }}">{{ tag.text }}</span></p>
         </div>
         {% for question in questions %}
             {% include "question/card.html" %}
@@ -27,32 +20,36 @@
         <nav>
             <ul class="pagination">
                 {% if prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ prev }}"><span>&laquo;</span></a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag.text %}?page={{ prev }}"><span>&laquo;</span></a></li>
                 {% endif %}
                 {% if first != page and first != prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ first }}">{{ first }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag.text %}?page={{ first }}">{{ first }}</a></li>
                 {% endif %}
                 {% if first_ellipsis %}
                     <li class="page-item text-bottom"><a class="page-link link-dark disabled">...</a></li>
                 {% endif %}
                 {% if prev %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ prev }}">{{ prev }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag.text %}?page={{ prev }}">{{ prev }}</a></li>
                 {% endif %}
-                <li class="page-item active"><a class="page-link link-white" href="{% url 'tag' tag=tag %}?page={{ page }}">{{ page }}</a></li>
+                <li class="page-item active"><a class="page-link link-white" href="{% url 'tag' tag=tag.text %}?page={{ page }}">{{ page }}</a></li>
                 {% if next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ next }}">{{ next }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag.text %}?page={{ next }}">{{ next }}</a></li>
                 {% endif %}
                 {% if last_ellipsis %}
                     <li class="page-item"><a class="page-link link-dark disabled">...</a></li>
                 {% endif %}
                 {% if last != page and last != next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ last }}">{{ last }}</a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag.text %}?page={{ last }}">{{ last }}</a></li>
                 {% endif %}
                 {% if next %}
-                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag %}?page={{ next }}"><span>&raquo;</span></a></li>
+                    <li class="page-item"><a class="page-link link-dark" href="{% url 'tag' tag=tag.text %}?page={{ next }}"><span>&raquo;</span></a></li>
                 {% endif %}
             </ul>
         </nav>
+        {% else %}
+            <p class="fs-3">Tag: <span class="fw-semibold">{{ tag_text }}</span></p>
+            <p>nothing...</p>
+        {% endif %}
     </div>
 {% endblock %}
 

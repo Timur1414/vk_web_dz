@@ -35,9 +35,9 @@
                     </div>
                 {% endfor %}
             </div>
-            <input class="btn btn-secondary" type="submit" value="Save">
+            <input class="btn btn-primary" type="submit" value="Save">
         </form>
         <a class="btn btn-info mt-4" href="{% url 'password_change' %}">Change password</a> <br>
-        <a class="btn btn-primary mt-4" href="{% url 'profile' id=request.user.id %}">My profile</a>
+        <a class="btn btn-info mt-1" href="{% url 'profile' id=request.user.id %}">My profile</a>
     </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% load custom_filters %}
 {% load humanize %}
 
-<div class="question_card border rounded border-dark border-3 container row mb-5 py-1" onclick="open_card({{ question.id }})">
+<div class="question_card border rounded border-info border-3 container row mb-2 py-1" onclick="open_card({{ question.id }})">
     <div class="col my-auto">
         <img class="img-fluid" style="max-width: 100px; max-height: 100px;" src="{{ question.author.profile.avatar.url }}" alt="avatar">
         <p class="m-0 p-0"><span class="fs-4">👍</span>: {{ question.rating }}</p>

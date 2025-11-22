@@ -1,5 +1,5 @@
 {% load custom_filters %}
-<div class="border rounded border-secondary border-3 container row mb-5 mx-0 py-1 px-0" style="overflow: hidden">
+<div class="border rounded {% if answer.is_correct %} border-success border-3 {% else %} border-secondary border-2 {% endif %} container row mb-2 mx-0 py-1 px-0" style="overflow: hidden">
     <p class="text-secondary">
         Author: <a class="link-secondary" href="{% url 'profile' id=answer.author.id %}">{{ answer.author.profile }}</a> |
         Date: {{ answer.created_at.astimezone|date:"d.m.Y" }}
@@ -27,7 +27,7 @@
             </div>
         {% else %}
             {% if answer.is_correct %}
-                <p class="text-success">Correct</p>
+                <p class="text-success mb-1">Correct</p>
             {% endif %}
         {% endif %}
     </div>

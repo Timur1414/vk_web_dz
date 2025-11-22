@@ -51,6 +51,14 @@ class Tag(RatingModel):
             logger.debug('created new tag (id=%s)', obj.id)
         return obj
 
+    @staticmethod
+    def get(text: str) -> Optional[Tag]:
+        try:
+            return Tag.objects.get(text=text)
+        except Tag.DoesNotExist:
+            logger.error('no tag with text=%s', text)
+            return None
+
     def save(self, *args, **kwargs):
         if not self.color:
             self.color = choice([color[0] for color in self.COLORS])
@@ -164,8 +172,7 @@ class Answer(RatingModel):
 
     class Meta:
         indexes = [
-            models.Index(fields=['-created_at'], name='answer_created_at_desc'),
-            models.Index(fields=['-rating', '-created_at'], name='answer_rating_created_at_desc'),
+            models.Index(fields=['-rating', '-is_correct', '-created_at'], name='answer_rating_created_at_desc'),
         ]
 
     def save(self, *args, **kwargs):
@@ -201,13 +208,16 @@ class Answer(RatingModel):
     @staticmethod
     def get_answers_by_question(question: Question) -> QuerySet:
         logger.debug('get answers by question=%s', question.id)
-        return Answer.objects.filter(question=question).order_by('-rating', '-created_at').select_related('author', 'author__profile').prefetch_related('answerlike_set')
+        return (Answer.objects.filter(question=question)
+                .order_by('-rating', '-is_correct', '-created_at')
+                .select_related('author', 'author__profile')
+                .prefetch_related('answerlike_set'))
 
 
 class Profile(RatingModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(default='default.png', upload_to='uploads/')
-    nickname = models.CharField(max_length=50)
+    nickname = models.CharField(max_length=50, unique=True)
 
     @staticmethod
     def get_popular_users(limit: int = 5) -> list[User]:

@@ -10,8 +10,8 @@ class RegistrationForm(UserCreationForm):
     Form for user registration.
     Extends Django's UserCreationForm to include a nickname field.
     """
-    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName')
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email')
+    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName*')
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email*')
     avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False)
 
 
@@ -21,7 +21,7 @@ class AskForm(forms.ModelForm):
     Includes fields for question title, text, and tags.
     Tags should be entered as comma-separated values.
     """
-    tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Tags')
+    tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'tag1, tag2, tag3...'}), label='Tags*')
 
     class Meta:
         model = Question
@@ -30,8 +30,8 @@ class AskForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control'}),
         }
         labels = {
-            'title': 'Title',
-            'text': 'Text',
+            'title': 'Title*',
+            'text': 'Text*',
         }
 
     def save(self, commit=True):
@@ -52,9 +52,9 @@ class SettingsForm(forms.ModelForm):
     Allows users to update their username, email, nickname, and avatar.
     The avatar field is optional.
     """
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Login')
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email')
-    nickname = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName')
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Login*')
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email*')
+    nickname = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName*')
     avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False)
 
     class Meta:
