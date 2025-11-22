@@ -16,7 +16,7 @@
         {% endif %}
     </div>
     <div class="col-10">
-        <p>{{ answer.text|safe }}</p>
+        <div class="text-break">{{ answer.text|safe }}</div>
         {% if is_author %}
             <div class="form-check">
                 <label class="form-check-label" for="correct">

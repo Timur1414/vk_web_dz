@@ -33,8 +33,8 @@
                     <p id="is_liked" class="d-none">{{ is_question_liked }}</p>
                 </div>
                 <div class="col">
-                    <p class="fs-3">{{ question.title }}</p>
-                    <p>{{ question.text|safe }}</p>
+                    <p class="fs-3 text-break">{{ question.title }}</p>
+                    <div class="text-break">{{ question.text|safe }}</div>
                     <p class="mb-0"><span class="fw-semibold">Tags:</span>
                         {% for tag in question.tags.all %}
                             <a class="link-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
