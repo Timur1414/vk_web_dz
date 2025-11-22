@@ -273,7 +273,7 @@ class QuestionLike(Like):
 
     def update_ratings(self):
         logger.debug('update ratings of question (id=%s) and components', self.question.id)
-        if self.active:
+        if self.is_active:
             self.question.rating += 1
             self.author.profile.rating += 1
             for tag in self.question.tags.all():
@@ -293,7 +293,7 @@ class QuestionLike(Like):
         logger.debug('like question (id=%s)', question.id)
         like, created = QuestionLike.create(user, question)
         if not created:
-            like.active = not like.active
+            like.is_active = not like.is_active
             like.save()
         like.update_ratings()
         return like
@@ -302,7 +302,7 @@ class QuestionLike(Like):
     def is_liked(question: Question, user: User) -> bool:
         if user.is_anonymous:
             return False
-        return QuestionLike.objects.filter(question=question, author=user, active=True).exists()
+        return QuestionLike.objects.filter(question=question, author=user, is_active=True).exists()
 
     @staticmethod
     def create(user: User, question: Question) -> tuple[QuestionLike, bool]:
@@ -336,11 +336,11 @@ class AnswerLike(Like):
     def is_liked(answer: Answer, user: User) -> bool:
         if user.is_anonymous:
             return False
-        return AnswerLike.objects.filter(answer=answer, author=user, active=True).exists()
+        return AnswerLike.objects.filter(answer=answer, author=user, is_active=True).exists()
 
     def update_ratings(self):
         logger.debug('update ratings of answer (id=%s) and components', self.answer.id)
-        if self.active:
+        if self.is_active:
             self.answer.rating += 1
             self.author.profile.rating += 1
         else:
@@ -356,7 +356,7 @@ class AnswerLike(Like):
         logger.debug('like answer (id=%s)', answer.id)
         like, created = AnswerLike.create(user, answer)
         if not created:
-            like.active = not like.active
+            like.is_active = not like.is_active
             like.save()
         like.update_ratings()
         return like

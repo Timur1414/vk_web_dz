@@ -50,10 +50,10 @@ class Like(models.Model):
     It must be subclassed with specific implementations for the abstract methods.
 
     Attributes:
-        active (bool): Indicates if the like is currently active (default: True)
+        is_active (bool): Indicates if the like is currently active (default: True)
         author (User): The user who created the like
     """
-    active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:

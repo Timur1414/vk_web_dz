@@ -109,8 +109,8 @@ class QuestionPageTestCase(TestCase):
         response = self.client.get(f'/question/{self.question.pk}/')
         self.assertContains(response, 'title')
         self.assertContains(response, 'text')
-        self.assertInHTML('<p class="fs-3">title</p>', response.content.decode())
-        self.assertInHTML('<p>text</p>', response.content.decode())
+        self.assertInHTML('<p class="fs-3 text-break">title</p>', response.content.decode())
+        self.assertInHTML('<div class="text-break">text</div>', response.content.decode())
 
     def test_anonymous_user(self):
         response = self.client.get(f'/question/{self.question.pk}/')
