@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load static %}
 {% load custom_filters %}
 
 {% block content %}
@@ -49,63 +50,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        const theme_btn = document.getElementById('theme_btn');
-        {#let currentTheme = document.getElementById('color_theme').value#}
-        let currentTheme = localStorage.getItem('theme') || 'light';
-        saveThemeOnServer(currentTheme);
-
-        theme_btn.addEventListener('click', async function() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            await applyTheme(currentTheme);
-            localStorage.setItem('theme', currentTheme);
-        });
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        async function saveThemeOnServer(theme) {
-            try {
-                await fetch('/api/toggle_theme/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({theme: theme})
-                });
-            }
-            catch (err) {
-                console.log('Theme not saved on server:', err)
-            }
-        }
-
-        async function applyTheme(theme) {
-            document.documentElement.setAttribute('data-bs-theme', theme);
-            {#document.documentElement.setAttribute('data-bs-theme', theme);#}
-            await saveThemeOnServer(theme)
-            if (theme === 'dark') {
-                theme_btn.classList.add('btn-light')
-                theme_btn.classList.remove('btn-dark')
-                theme_btn.innerText = 'Светлая тема'
-            }
-            else {
-                theme_btn.classList.add('btn-dark')
-                theme_btn.classList.remove('btn-light')
-                theme_btn.innerText = 'Тёмная тема'
-            }
-        }
-    </script>
+    <script src="{% static 'js/toggle_theme.js' %}"></script>
 {% endblock %}

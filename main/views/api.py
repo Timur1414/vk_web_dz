@@ -87,7 +87,7 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     return JsonResponse({}, status=200)
 
 
-def answer_check(request: WSGIRequest) -> JsonResponse:
+def mark_answer(request: WSGIRequest) -> JsonResponse:
     """
     Make an answer as correct/incorrect.
 
