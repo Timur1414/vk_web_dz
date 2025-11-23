@@ -116,12 +116,9 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         {#let currentTheme = document.getElementById('color_theme').value#}
-        let currentTheme = localStorage.getItem('theme');
-        applyTheme(currentTheme);
-
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-bs-theme', theme);
-        }
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', currentTheme);
+        {#document.documentElement.setAttribute('data-bs-theme', theme);#}
     });
 </script>
 {% block extra_js %}{% endblock %}

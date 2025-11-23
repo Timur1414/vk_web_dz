@@ -94,6 +94,7 @@
 
         async function applyTheme(theme) {
             document.documentElement.setAttribute('data-bs-theme', theme);
+            {#document.documentElement.setAttribute('data-bs-theme', theme);#}
             await saveThemeOnServer(theme)
             if (theme === 'dark') {
                 theme_btn.classList.add('btn-light')
