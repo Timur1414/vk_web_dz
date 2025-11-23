@@ -8,7 +8,7 @@
 
 {% block content %}
     <div class="text-center border rounded border-3 pt-2">
-        <img style="max-width: 500px; max-height: 500px;" src="{{ object.avatar.url }}" alt="avatar">
+        <img class="rounded" style="max-width: 500px; max-height: 500px;" src="{{ object.avatar.url }}" alt="avatar">
         <p class="fs-2">{{ object.nickname }}</p>
         <p>Rating: {{ object.rating }}</p>
         <p>Member since: {{ object.user.date_joined }}</p>

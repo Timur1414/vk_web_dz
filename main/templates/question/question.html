@@ -10,6 +10,7 @@
             height: 100%; !important;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'css/question_card.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -21,7 +22,7 @@
             </p>
             <div class="row">
                 <div class="col-md-auto">
-                    <img class="img-fluid" style="max-width: 100px; max-height: 100px;"
+                    <img class="img-fluid rounded" style="max-width: 100px; max-height: 100px;"
                          src="{{ question.author.profile.avatar.url }}" alt="avatar">
                     {% if request.user.is_authenticated %}
                         <button id="like_btn"
@@ -37,7 +38,7 @@
                     <div class="text-break">{{ question.text|safe }}</div>
                     <p class="mb-0"><span class="fw-semibold">Tags:</span>
                         {% for tag in question.tags.all %}
-                            <a class="link-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
+                            <a class="tag rounded px-1 link-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
                         {% empty %}
                             <span>no tags...</span>
                         {% endfor %}

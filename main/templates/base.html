@@ -44,7 +44,7 @@
             <div class="row mx-1">
                 {% if request.user.is_authenticated %}
                     <div class="col profile_block p-0 mx-3">
-                        <img onclick="open_profile({{ request.user.id }})" class="img-fluid" style="max-width: 100px; max-height: 100px;"
+                        <img onclick="open_profile({{ request.user.id }})" class="img-fluid rounded" style="max-width: 100px; max-height: 100px;"
                              src="{{ profile.avatar.url }}" alt="avatar">
                         <p class="text-center m-0">{{ profile.nickname }}</p>
                     </div>
