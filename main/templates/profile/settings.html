@@ -37,7 +37,74 @@
             </div>
             <input class="btn btn-primary" type="submit" value="Save">
         </form>
+        {% if color_theme == 'light' %}
+            <button id="theme_btn" class="btn btn-dark">Тёмная тема</button>
+        {% else %}
+            <button id="theme_btn" class="btn btn-light">Светлая тема</button>
+        {% endif %}
+        <br>
         <a class="btn btn-info mt-4" href="{% url 'password_change' %}">Change password</a> <br>
         <a class="btn btn-info mt-1" href="{% url 'profile' id=request.user.id %}">My profile</a>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        const theme_btn = document.getElementById('theme_btn');
+        let currentTheme = document.getElementById('color_theme').value
+        {#let currentTheme = localStorage.getItem('theme') || 'light';#}
+        saveThemeOnServer(currentTheme);
+
+        theme_btn.addEventListener('click', async function() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            await applyTheme(currentTheme);
+            localStorage.setItem('theme', currentTheme);
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function saveThemeOnServer(theme) {
+            try {
+                await fetch('/api/toggle_theme/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({theme: theme})
+                });
+            }
+            catch (err) {
+                console.log('Theme not saved on server:', err)
+            }
+        }
+
+        async function applyTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+            await saveThemeOnServer(theme)
+            if (theme === 'dark') {
+                theme_btn.classList.add('btn-light')
+                theme_btn.classList.remove('btn-dark')
+                theme_btn.innerText = 'Светлая тема'
+            }
+            else {
+                theme_btn.classList.add('btn-dark')
+                theme_btn.classList.remove('btn-light')
+                theme_btn.innerText = 'Тёмная тема'
+            }
+        }
+    </script>
 {% endblock %}

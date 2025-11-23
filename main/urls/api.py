@@ -7,4 +7,5 @@ urlpatterns = [
     path('answer_like/', views.answer_like),
     path('answer_check/', views.answer_check),
     path('centrifugo/token/', views.centrifugo_token, name='centrifugo_token'),
+    path('toggle_theme/', views.toggle_theme),
 ]

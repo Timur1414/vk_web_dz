@@ -7,6 +7,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
 from main.models import Question, QuestionLike, AnswerLike, Answer
 from main.views.base import check_received_question, check_received_answer
 from vk_dz import settings
@@ -178,3 +180,17 @@ def csp_report_view(request: WSGIRequest) -> HttpResponse:
         report = json.loads(request.body)
         logger.critical('CSP violation: %s', report)
     return HttpResponse()
+
+
+@require_POST
+# @csrf_exempt
+def toggle_theme(request: WSGIRequest) -> JsonResponse:
+    try:
+        data = json.loads(request.body)
+        theme = data.get('theme')
+        if theme in ['light', 'dark']:
+            request.session['color_theme'] = theme
+            return JsonResponse({}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({'message': 'wrong data'}, status=400)
+    return JsonResponse({}, status=400)

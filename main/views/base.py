@@ -20,6 +20,7 @@ def create_base_context() -> dict[str, Any]:
     context = {
         'popular_profiles': cache.get_cached_users(),
         'popular_tags': cache.get_cached_tags(),
+        'color_theme': 'light',
     }
     return context
 
@@ -42,6 +43,7 @@ def create_context(request: HttpRequest) -> dict[str, Any]:
         'user': user,
         'profile': profile,
     })
+    context['color_theme'] = request.session.get('color_theme', 'light')
     return context
 
 

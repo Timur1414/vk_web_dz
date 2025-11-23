@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-bs-theme="{{ color_theme }}">
 <head>
     <meta charset="UTF-8">
     <title>AskPupkin</title>
@@ -23,6 +23,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+<input id="color_theme" type="hidden" value="{{ color_theme }}">
 <header class="p-2">
     <nav class="navbar p-0">
         <div class="d-flex justify-content-between" style="width: 100%">
@@ -112,6 +113,16 @@
     function open_profile(user_id) {
         window.location = `/profile/${user_id}`
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentTheme = document.getElementById('color_theme').value
+        {#let currentTheme = localStorage.getItem('theme');#}
+        applyTheme(currentTheme);
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        }
+    });
 </script>
 {% block extra_js %}{% endblock %}
 </body>

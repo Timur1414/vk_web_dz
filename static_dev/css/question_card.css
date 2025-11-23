@@ -9,5 +9,5 @@
 }
 
 .tag:hover {
-    background-color: rgba(225, 236, 244, 0.75);
+    border: 3px solid rgba(205, 206, 255, 1);
 }
