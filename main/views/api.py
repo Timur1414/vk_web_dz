@@ -183,7 +183,6 @@ def csp_report_view(request: WSGIRequest) -> HttpResponse:
 
 
 @require_POST
-# @csrf_exempt
 def toggle_theme(request: WSGIRequest) -> JsonResponse:
     try:
         data = json.loads(request.body)

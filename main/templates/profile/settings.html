@@ -51,8 +51,8 @@
 {% block extra_js %}
     <script>
         const theme_btn = document.getElementById('theme_btn');
-        let currentTheme = document.getElementById('color_theme').value
-        {#let currentTheme = localStorage.getItem('theme') || 'light';#}
+        {#let currentTheme = document.getElementById('color_theme').value#}
+        let currentTheme = localStorage.getItem('theme') || 'light';
         saveThemeOnServer(currentTheme);
 
         theme_btn.addEventListener('click', async function() {
