@@ -21,6 +21,27 @@
         }
     </style>
     {% block extra_css %}{% endblock %}
+    <script>
+        function open_profile(user_id) {
+            window.location = `/profile/${user_id}`
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            {#let currentTheme = document.getElementById('color_theme').value#}
+            let currentTheme = localStorage.getItem('theme') || 'light'
+            document.documentElement.setAttribute('data-bs-theme', currentTheme)
+            switchCkEditorTheme(currentTheme)
+        });
+
+        function switchCkEditorTheme(theme) {
+            const editors = document.querySelectorAll('.ck-editor-container')
+            console.log(editors)
+
+            editors.forEach(editor => {
+                editor.setAttribute('data-theme', theme)
+            });
+        }
+    </script>
 </head>
 <body>
 {#<input id="color_theme" type="hidden" value="{{ color_theme }}">#}
@@ -109,17 +130,6 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
 <script src="{% static 'js/search.js' %}"></script>
-<script>
-    function open_profile(user_id) {
-        window.location = `/profile/${user_id}`
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        {#let currentTheme = document.getElementById('color_theme').value#}
-        let currentTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-bs-theme', currentTheme);
-    });
-</script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

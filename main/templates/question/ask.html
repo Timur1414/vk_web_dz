@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
+{% load static %}
 {% load custom_filters %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/ckeditor-themes.css' %}">
+{% endblock %}
 
 {% block content %}
     <div>
