@@ -36,11 +36,10 @@ class Tag(RatingModel):
         ('danger', 'danger'),
         ('warning', 'warning'),
         ('info', 'info'),
-        ('dark', 'dark'),
     ]
 
     text = models.CharField(max_length=50)
-    color = models.CharField(max_length=50, choices=COLORS, default='dark')
+    color = models.CharField(max_length=50, choices=COLORS, default='primary')
 
     @staticmethod
     def get_or_create(text: str) -> Tag:
@@ -240,7 +239,7 @@ class Profile(RatingModel):
 
     @staticmethod
     def create(user: User) -> Profile:
-        profile = Profile(user=user)
+        profile = Profile(user=user, nickname=user.username)
         profile.save()
         logger.debug('created new profile (id=%s)', profile.id)
         return profile
