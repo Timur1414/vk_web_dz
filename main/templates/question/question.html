@@ -57,23 +57,21 @@
         </div>
         <hr>
         {% if request.user.is_authenticated %}
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" onsubmit="disable_btn()">
                 {% csrf_token %}
                 {{ form.media }}
+                {{ form.text }}
                 {% if form.text.errors %}
-                    {{ form.text|add_class:"is-invalid form-control" }}
-                    <div class="invalid-feedback">
+                    <div class="alert alert-danger mt-2">
                         {% for error in form.text.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
-                {% else %}
-                    {{ form.text }}
                 {% endif %}
                 {% for field in form.hidden_fields %}
                     {{ field }}
                 {% endfor %}
-                <input class="btn btn-info my-2" type="submit" value="Answer">
+                <input id="answer_btn" class="btn btn-info my-2" type="submit" value="Answer">
             </form>
         {% endif %}
     </div>

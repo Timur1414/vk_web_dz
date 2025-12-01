@@ -232,7 +232,7 @@ CONTENT_SECURITY_POLICY = {
         'style-src': ["'self'", "'unsafe-inline'", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
         'img-src': ["'self'", "data:", "https:", "blob:"],
         'font-src': ["'self'", "cdnjs.cloudflare.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
-        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001", "cdn.jsdelivr.net"],
+        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001", "cdn.jsdelivr.net", "unpkg.com"],
         'frame-src': ["'self'"],
         'media-src': ["'self'", "blob:"],
 

@@ -3,6 +3,9 @@ import logging
 import bleach
 from bleach.css_sanitizer import CSSSanitizer
 from typing import Optional
+
+from django.core.validators import MaxLengthValidator
+
 from vk_dz import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
@@ -161,7 +164,7 @@ class Answer(RatingModel):
         is_correct (bool): Whether this answer is marked as correct
         question (Question): The question this answer belongs to
     """
-    text = CKEditor5Field()
+    text = CKEditor5Field(validators=[MaxLengthValidator(5000)])
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     is_correct = models.BooleanField(default=False)

@@ -9,3 +9,8 @@ async function correct(answer_id) {
     else
         input.classList.add('checked')
 }
+
+function disable_btn() {
+    let answer_btn = document.getElementById('answer_btn')
+    answer_btn.disabled = true
+}
