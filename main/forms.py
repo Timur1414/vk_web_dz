@@ -21,7 +21,7 @@ class AskForm(forms.ModelForm):
     Includes fields for question title, text, and tags.
     Tags should be entered as comma-separated values.
     """
-    tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'tag1, tag2, tag3...'}), label='Tags*')
+    tags = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'tag1, tag2, tag3...'}), label='Tags*', max_length=100)
 
     class Meta:
         model = Question
@@ -34,13 +34,21 @@ class AskForm(forms.ModelForm):
             'text': 'Text*',
         }
 
-    def save(self, commit=True):
-        question = super().save(commit=commit)
+    def clean_tags(self):
         tags_text = self.cleaned_data['tags'].strip()
         while '  ' in tags_text:
             tags_text = tags_text.replace('  ', ' ')
         tags_text = tags_text.replace(', ', ',')
         tags_words = tags_text.split(',')
+        tags_words = [tag_word for tag_word in tags_words if tag_word]
+        for tag_text in tags_words:
+            if len(tag_text) > 50:
+                raise forms.ValidationError('Tag too long')
+        return ','.join(tags_words)
+
+    def save(self, commit=True):
+        question = super().save(commit=commit)
+        tags_words = self.cleaned_data['tags'].split(',')
         for tag_text in tags_words:
             tag = Tag.get_or_create(tag_text)
             question.add_tag(tag)
