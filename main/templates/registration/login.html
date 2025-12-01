@@ -11,7 +11,7 @@
     {% endif %}
     <form method="POST">
         {% csrf_token %}
-        <input type="hidden" name="continue" value="{{ request.GET.continue }}">
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
         <div class="container text-center">
             <div class="row my-2">
                 <label class="col" for="id_username">

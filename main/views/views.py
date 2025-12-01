@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
+from django.db import transaction
 from django.db.models import Count, QuerySet
 from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404
@@ -38,7 +39,7 @@ class LoginPage(LoginView):
 
     def get_success_url(self):
         logger.info('%s logged in', self.request.user)
-        next_url = self.request.POST.get('continue', '')
+        next_url = self.request.POST.get('next', '')
         if next_url:
             return next_url
         return reverse_lazy('index')
@@ -83,18 +84,19 @@ class RegistrationPage(RegistrationView):
         return context
 
     def register(self, form):
-        new_user = super().register(form)
-        new_profile = Profile.get_profile_of_user(new_user)
-        nickname = form.cleaned_data['nickname']
-        email = form.cleaned_data['email']
-        avatar = None
-        if 'avatar' in form.cleaned_data:
-            avatar = form.cleaned_data['avatar']
-        new_user.email = email
-        new_user.save()
-        new_profile.update(nickname=nickname, avatar=avatar)
-        logger.info('%s registered', new_user)
-        return new_user
+        with transaction.atomic():
+            new_user = super().register(form)
+            new_profile = Profile.get_profile_of_user(new_user)
+            nickname = form.cleaned_data['nickname']
+            email = form.cleaned_data['email']
+            avatar = None
+            if 'avatar' in form.cleaned_data:
+                avatar = form.cleaned_data['avatar']
+            new_user.email = email
+            new_user.save()
+            new_profile.update(nickname=nickname, avatar=avatar)
+            logger.info('%s registered', new_user)
+            return new_user
 
 
 class ClosedRegistrationPage(TemplateView):

@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.db import transaction
 from django_ckeditor_5.widgets import CKEditor5Widget
-from main.models import Answer, Question, Tag
+from main.models import Answer, Question, Tag, Profile
 
 
 class RegistrationForm(UserCreationForm):
@@ -10,9 +11,25 @@ class RegistrationForm(UserCreationForm):
     Form for user registration.
     Extends Django's UserCreationForm to include a nickname field.
     """
-    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName*')
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email*')
+    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName*', max_length=50)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email*', max_length=50)
     avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False)
+
+    def clean_nickname(self):
+        nickname = self.cleaned_data['nickname']
+        if len(nickname) > 50:
+            raise forms.ValidationError('Nickname must be between 50 characters')
+        if Profile.objects.filter(nickname=nickname).exists():
+            raise forms.ValidationError('Nickname already exists')
+        return nickname
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if len(email) > 50:
+            raise forms.ValidationError('Email must be between 50 characters')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('Email already exists')
+        return email
 
 
 class AskForm(forms.ModelForm):
@@ -47,11 +64,12 @@ class AskForm(forms.ModelForm):
         return ','.join(tags_words)
 
     def save(self, commit=True):
-        question = super().save(commit=commit)
-        tags_words = self.cleaned_data['tags'].split(',')
-        for tag_text in tags_words:
-            tag = Tag.get_or_create(tag_text)
-            question.add_tag(tag)
+        with transaction.atomic():
+            question = super().save(commit=commit)
+            tags_words = self.cleaned_data['tags'].split(',')
+            for tag_text in tags_words:
+                tag = Tag.get_or_create(tag_text)
+                question.add_tag(tag)
 
 
 class SettingsForm(forms.ModelForm):
