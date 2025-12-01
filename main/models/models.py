@@ -86,7 +86,7 @@ class Question(RatingModel):
         count_answers (int): Number of answers associated with the question
     """
     title = models.CharField(max_length=100)
-    text = CKEditor5Field()
+    text = CKEditor5Field(validators=[MaxLengthValidator(5000)])
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag)
