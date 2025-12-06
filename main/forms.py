@@ -67,9 +67,11 @@ class AskForm(forms.ModelForm):
         with transaction.atomic():
             question = super().save(commit=commit)
             tags_words = self.cleaned_data['tags'].split(',')
-            for tag_text in tags_words:
-                tag = Tag.get_or_create(tag_text)
-                question.add_tag(tag)
+            existing_tags_names = Tag.objects.filter(text__in=tags_words).values_list('text', flat=True)
+            new_tags = [Tag(text=tag_text) for tag_text in tags_words if tag_text not in existing_tags_names]
+            Tag.bulk_create_with_color(new_tags)
+            tags = Tag.objects.filter(text__in=tags_words)
+            question.add_tags(tags)
 
 
 class SettingsForm(forms.ModelForm):

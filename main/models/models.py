@@ -63,8 +63,14 @@ class Tag(RatingModel):
 
     def save(self, *args, **kwargs):
         if not self.color:
-            self.color = choice([color[0] for color in self.COLORS])
+            self.color = choice([color[0] for color in Tag.COLORS])
         super().save(*args, **kwargs)
+
+    @classmethod
+    def bulk_create_with_color(cls, tags):
+        for tag in tags:
+            tag.color = choice([color[0] for color in Tag.COLORS])
+        return cls.objects.bulk_create(tags)
 
     def __str__(self):
         return self.text
@@ -119,6 +125,12 @@ class Question(RatingModel):
         self.tags.add(tag)
         self.save()
         logger.debug('added tag (id=%s) to question (id=%s)', tag.id, self.id)
+
+    def add_tags(self, tags: QuerySet[Tag]):
+        self.tags.add(*tags)
+        self.save()
+        tags_id = ','.join([str(tag.id) for tag in tags])
+        logger.debug('added tags (id=%s) to question (id=%s)', tags_id, self.id)
 
     @staticmethod
     def find_by_text(text: str, limit: int = 5) -> QuerySet:
