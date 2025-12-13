@@ -149,6 +149,8 @@ MEDIA_ROOT = BASE_DIR / 'uploads'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MAX_UPLOAD_SIZE = 5242880  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE
 
 # Login and registration
 LOGIN_URL = 'login'
@@ -220,8 +222,10 @@ CKEDITOR_5_CONFIGS = {
         'removePlugins': ['WordCount'],
     }
 }
-CKEDITOR_5_UPLOAD_FILE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', ]
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp',]
 CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'authenticated'
+CKEDITOR_5_MAX_UPLOAD_FILE_SIZE = 5  # MB
+CKEDITOR_5_MAX_FILE_SIZE = 5  # MB
 
 # CSP settings
 CONTENT_SECURITY_POLICY = {
