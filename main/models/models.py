@@ -1,6 +1,9 @@
 from __future__ import annotations
 import logging
+import os
+
 import bleach
+from PIL import Image
 from bleach.css_sanitizer import CSSSanitizer
 from typing import Optional
 
@@ -270,6 +273,17 @@ class Profile(RatingModel):
         except Profile.DoesNotExist:
             logger.error('no profile with user=%s', user.id)
             return None
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        image = Image.open(self.avatar.path)
+        original_path = self.avatar.name
+        name, ext = os.path.splitext(original_path)
+        thumbnail_path = f'uploads/{name}_thumbnail{ext}'
+        if image.height > 300 or image.width > 300:
+            image.thumbnail((300, 300))
+            image.save(self.avatar.path)
+            # image.save(f'{thumbnail_path}')
 
     def __str__(self):
         return self.nickname
