@@ -232,12 +232,12 @@ CKEDITOR_5_FILE_STORAGE = 'vk_dz.storage.CustomStorage'
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'default-src': ["'self'"],
-        'script-src': ["'self'", "unpkg.com", "cdnjs.cloudflare.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net",
+        'script-src': ["'self'",
                        "'unsafe-inline'", "'unsafe-eval'"],
-        'style-src': ["'self'", "'unsafe-inline'", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
+        'style-src': ["'self'", "'unsafe-inline'",],
         'img-src': ["'self'", "data:", "https:", "blob:"],
-        'font-src': ["'self'", "cdnjs.cloudflare.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
-        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001", "cdn.jsdelivr.net", "unpkg.com"],
+        'font-src': ["'self'",],
+        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001",],
         'frame-src': ["'self'"],
         'media-src': ["'self'", "blob:"],
 

@@ -10,7 +10,6 @@ async function question_like(question_id) {
         alert(data.message)
         return
     }
-    console.log(data.count)
     let count_likes = data.count
     if (is_question_liked) {
         like_btn.classList.remove('btn-success')
