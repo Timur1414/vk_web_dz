@@ -100,15 +100,15 @@ def mark_answer(request: WSGIRequest) -> JsonResponse:
     answer_id = request.GET.get('answer_id')
     if not user.is_authenticated:
         logger.error('anonymous user tried to make answer correct/incorrect')
-        return JsonResponse({}, status=401)
+        return JsonResponse({'message': 'Log in to mark answer.'}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
-        return JsonResponse({}, status=404)
+        return JsonResponse({'message': 'This answer do not exist.'}, status=404)
     if user != answer.question.author:
         logger.error('%s not author of question', request.user.username)
-        return JsonResponse({}, status=403)
+        return JsonResponse({'message': 'Only author can mark answer.'}, status=403)
     answer.change_correct()
-    return JsonResponse({}, status=200)
+    return JsonResponse({'message': 'ok.'}, status=200)
 
 
 def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
