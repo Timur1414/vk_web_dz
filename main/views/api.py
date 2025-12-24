@@ -55,13 +55,14 @@ def question_like(request: WSGIRequest) -> JsonResponse:
     question_id = request.GET.get('question_id')
     if not user.is_authenticated:
         logger.error('anonymous user tried to like')
-        return JsonResponse({}, status=401)
+        return JsonResponse({'message': 'Log in to like.'}, status=401)
     question = check_received_question(question_id)
     if question is None:
         logger.error('%s tried to like question (id=%s) which does not exist', request.user.username, question_id)
-        return JsonResponse({}, status=404)
+        return JsonResponse({'message': 'This question do not exist.'}, status=404)
     QuestionLike.like(question, user)
-    return JsonResponse({}, status=200)
+    question.refresh_from_db()
+    return JsonResponse({'count': question.rating, 'message': 'ok.'}, status=200)
 
 
 def answer_like(request: WSGIRequest) -> JsonResponse:
@@ -78,13 +79,14 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     answer_id = request.GET.get('answer_id')
     if not user.is_authenticated:
         logger.error('anonymous user tried to like')
-        return JsonResponse({}, status=401)
+        return JsonResponse({'message': 'Log in to like.'}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
         logger.error('%s tried to like answer (id=%s) which does not exist', request.user.username, answer_id)
-        return JsonResponse({}, status=404)
+        return JsonResponse({'message': 'This answer do not exist.'}, status=404)
     AnswerLike.like(answer, user)
-    return JsonResponse({}, status=200)
+    answer.refresh_from_db()
+    return JsonResponse({'count': answer.rating, 'message': 'ok.'}, status=200)
 
 
 def mark_answer(request: WSGIRequest) -> JsonResponse:

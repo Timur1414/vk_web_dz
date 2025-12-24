@@ -15,7 +15,7 @@ from django.core.validators import MaxLengthValidator
 from vk_dz import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from django.db.models import QuerySet, Q
 from random import choice
 from main.models.managers import NewManager
@@ -329,28 +329,27 @@ class QuestionLike(Like):
     def update_ratings(self):
         logger.debug('update ratings of question (id=%s) and components', self.question.id)
         if self.is_active:
-            self.question.rating += 1
-            self.author.profile.rating += 1
+            self.question.increase_rating()
+            self.author.profile.increase_rating()
             for tag in self.question.tags.all():
                 tag.increase_rating()
         else:
-            self.question.rating -= 1
-            self.author.profile.rating -= 1
+            self.question.decrease_rating()
+            self.author.profile.decrease_rating()
             for tag in self.question.tags.all():
                 tag.decrease_rating()
-        self.question.save()
-        self.author.profile.save()
 
     @staticmethod
     def like(question: Question, user: User) -> Optional[QuestionLike]:
         if user.is_anonymous:
             return None
         logger.debug('like question (id=%s)', question.id)
-        like, created = QuestionLike.create(user, question)
-        if not created:
-            like.is_active = not like.is_active
-            like.save()
-        like.update_ratings()
+        with transaction.atomic():
+            like, created = QuestionLike.create(user, question)
+            if not created:
+                like.is_active = not like.is_active
+                like.save()
+            like.update_ratings()
         return like
 
     @staticmethod
