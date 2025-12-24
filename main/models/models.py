@@ -408,11 +408,12 @@ class AnswerLike(Like):
         if user.is_anonymous:
             return None
         logger.debug('like answer (id=%s)', answer.id)
-        like, created = AnswerLike.create(user, answer)
-        if not created:
-            like.is_active = not like.is_active
-            like.save()
-        like.update_ratings()
+        with transaction.atomic():
+            like, created = AnswerLike.create(user, answer)
+            if not created:
+                like.is_active = not like.is_active
+                like.save()
+            like.update_ratings()
         return like
 
     @staticmethod
