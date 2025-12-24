@@ -13,19 +13,17 @@ class CachedDataService:
     This class provides methods to retrieve and update cached data, with fallback mechanisms
     to fetch fresh data when the cache is empty or invalid.
     """
-    CACHE_KEYS = {
-        'popular_tags': 'popular_tags',
-        'popular_users': 'popular_users',
-        'last_updated': 'last_updated'
-    }
+    POPULAR_TAGS_KEY = 'popular_tags'
+    POPULAR_USERS_KEY = 'popular_users'
+    LAST_UPDATED_KEY = 'last_updated'
 
     def update_cache(self):
         logger.debug('updating cache')
         popular_tags = self.get_popular_tags()
         popular_users = self.get_popular_users()
-        cache.set(self.CACHE_KEYS['popular_tags'], popular_tags, None)
-        cache.set(self.CACHE_KEYS['popular_users'], popular_users, None)
-        cache.set(self.CACHE_KEYS['last_updated'], timezone.now(), None)
+        cache.set(self.POPULAR_TAGS_KEY, popular_tags, None)
+        cache.set(self.POPULAR_USERS_KEY, popular_users, None)
+        cache.set(self.LAST_UPDATED_KEY, timezone.now(), None)
         return {
             'popular_tags': popular_tags,
             'popular_users': popular_users,
@@ -36,7 +34,7 @@ class CachedDataService:
         return Tag.popular.get_queryset()
 
     def get_cached_tags(self):
-        popular_tags = cache.get(self.CACHE_KEYS['popular_tags'])
+        popular_tags = cache.get(self.POPULAR_TAGS_KEY)
         if not popular_tags:
             return self.update_cache()['popular_tags']
         return popular_tags
@@ -46,7 +44,7 @@ class CachedDataService:
         return Profile.popular.select_related('user')
 
     def get_cached_users(self):
-        popular_users = cache.get(self.CACHE_KEYS['popular_users'])
+        popular_users = cache.get(self.POPULAR_USERS_KEY)
         if not popular_users:
             return self.update_cache()['popular_users']
         return popular_users

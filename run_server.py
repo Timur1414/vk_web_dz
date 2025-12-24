@@ -1,3 +1,4 @@
+import json
 import urllib.parse
 
 
@@ -18,10 +19,17 @@ def application(environ, response):
     try:
         content_length = int(environ.get('CONTENT_LENGTH', 0))
         if content_length > 0:
-            post_data = environ['wsgi.input'].read(content_length)
-            post_params = urllib.parse.parse_qs(post_data.decode('utf-8'))
-    except (ValueError, KeyError):
+            data = environ['wsgi.input'].read(content_length).decode()
+            if data[0] == '{' and data[-1] == '}':
+                post_params = json.loads(data)
+            else:
+                pairs = data.split('&')
+                for pair in pairs:
+                    key, value = pair.split('=')
+                    post_params[key] = value
+    except (ValueError, KeyError, UnicodeDecodeError):
         pass
+
     output = f'Method: {method}\n\n'
     output += "GET Parameters:\n"
     for key, values in get_params.items():
@@ -29,9 +37,8 @@ def application(environ, response):
             output += f"  {key}: {value}\n"
 
     output += "\nPOST Parameters:\n"
-    for key, values in post_params.items():
-        for value in values:
-            output += f"  {key}: {value}\n"
+    for key, value in post_params.items():
+        output += f"  {key}: {value}\n"
 
     status = '200 OK'
     response_headers = [
