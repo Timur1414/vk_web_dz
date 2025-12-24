@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import io
 import logging
 import os
 
@@ -7,6 +9,7 @@ from PIL import Image
 from bleach.css_sanitizer import CSSSanitizer
 from typing import Optional
 
+from django.core.files.base import ContentFile
 from django.core.validators import MaxLengthValidator
 
 from vk_dz import settings
@@ -233,7 +236,8 @@ class Answer(RatingModel):
 
 class Profile(RatingModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(default='default.png', upload_to='uploads/')
+    avatar = models.ImageField(default='default.png', upload_to='avatars/')
+    thumbnail_avatar = models.ImageField(default='default.png', upload_to='thumbnails/')
     nickname = models.CharField(max_length=50, unique=True)
 
     @staticmethod
@@ -274,16 +278,29 @@ class Profile(RatingModel):
             logger.error('no profile with user=%s', user.id)
             return None
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    def thumbnail(self):
         image = Image.open(self.avatar.path)
-        original_path = self.avatar.name
-        name, ext = os.path.splitext(original_path)
-        thumbnail_path = f'uploads/{name}_thumbnail{ext}'
-        if image.height > 300 or image.width > 300:
-            image.thumbnail((300, 300))
-            image.save(self.avatar.path)
-            # image.save(f'{thumbnail_path}')
+        thumbnail_path = f'{self.avatar.name}'
+        file_extension = image.format
+        image.thumbnail((100, 100))
+        img_io = io.BytesIO()
+        image.save(img_io, format=file_extension)
+        self.thumbnail_avatar.save(thumbnail_path, ContentFile(img_io.getvalue()))
+
+    def save(self, *args, **kwargs):
+        need_to_thumbnail = False
+        if self.id:
+            try:
+                old_instance = Profile.objects.get(id=self.id)
+                if old_instance.avatar != self.avatar:
+                    need_to_thumbnail = True
+            except Profile.DoesNotExist:
+                need_to_thumbnail = True
+        else:
+            need_to_thumbnail = True
+        super().save(*args, **kwargs)
+        if need_to_thumbnail:
+            self.thumbnail()
 
     def __str__(self):
         return self.nickname

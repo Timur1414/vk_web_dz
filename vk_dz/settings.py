@@ -226,6 +226,7 @@ CKEDITOR_5_UPLOAD_FILE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp',]
 CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'authenticated'
 CKEDITOR_5_MAX_UPLOAD_FILE_SIZE = 5  # MB
 CKEDITOR_5_MAX_FILE_SIZE = 5  # MB
+CKEDITOR_5_FILE_STORAGE = 'vk_dz.storage.CustomStorage'
 
 # CSP settings
 CONTENT_SECURITY_POLICY = {
