@@ -8,9 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
 from main.models import Question, QuestionLike, AnswerLike, Answer
-from main.views.base import check_received_question, check_received_answer
+from main.views.base import check_received_question, check_received_answer, api_login_required
 from vk_dz import settings
 from django.http import HttpResponse
 from vk_dz.centrifugo import generate_centrifugo_token
@@ -41,6 +40,7 @@ def search_questions(request: WSGIRequest) -> JsonResponse:
     }, status=200)
 
 
+@api_login_required
 def question_like(request: WSGIRequest) -> JsonResponse:
     """
     Returns a JSON response containing no content.
@@ -53,9 +53,6 @@ def question_like(request: WSGIRequest) -> JsonResponse:
     """
     user = request.user
     question_id = request.GET.get('question_id')
-    if not user.is_authenticated:
-        logger.error('anonymous user tried to like')
-        return JsonResponse({'message': 'Log in to like.'}, status=401)
     question = check_received_question(question_id)
     if question is None:
         logger.error('%s tried to like question (id=%s) which does not exist', request.user.username, question_id)
@@ -65,6 +62,7 @@ def question_like(request: WSGIRequest) -> JsonResponse:
     return JsonResponse({'count': question.rating, 'message': 'ok.'}, status=200)
 
 
+@api_login_required
 def answer_like(request: WSGIRequest) -> JsonResponse:
     """
     Returns a JSON response containing no content.
@@ -77,9 +75,6 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     """
     user = request.user
     answer_id = request.GET.get('answer_id')
-    if not user.is_authenticated:
-        logger.error('anonymous user tried to like')
-        return JsonResponse({'message': 'Log in to like.'}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
         logger.error('%s tried to like answer (id=%s) which does not exist', request.user.username, answer_id)
@@ -89,6 +84,7 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     return JsonResponse({'count': answer.rating, 'message': 'ok.'}, status=200)
 
 
+@api_login_required
 def mark_answer(request: WSGIRequest) -> JsonResponse:
     """
     Make an answer as correct/incorrect.
@@ -98,9 +94,6 @@ def mark_answer(request: WSGIRequest) -> JsonResponse:
     """
     user = request.user
     answer_id = request.GET.get('answer_id')
-    if not user.is_authenticated:
-        logger.error('anonymous user tried to make answer correct/incorrect')
-        return JsonResponse({'message': 'Log in to mark answer.'}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
         return JsonResponse({'message': 'This answer do not exist.'}, status=404)
