@@ -5,6 +5,7 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordCha
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.db import transaction
+from django.db.models import Value
 from django.db.models import Count, QuerySet, Exists, OuterRef
 from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404
@@ -169,7 +170,10 @@ class QuestionPage(DetailView):
         question = self.object
         context['is_author'] = self.request.user == question.author
         context['is_question_liked'] = QuestionLike.is_liked(question, self.request.user)
-        context['answers'] = Answer.get_answers_by_question(question).annotate(is_liked=Exists(AnswerLike.objects.filter(answer=OuterRef('id'), author=self.request.user)))
+        if self.request.user.is_authenticated:
+            context['answers'] = Answer.get_answers_by_question(question).annotate(is_liked=Exists(AnswerLike.objects.filter(answer=OuterRef('pk'), author=self.request.user)))
+        else:
+            context['answers'] = Answer.get_answers_by_question(question).annotate(is_liked=Value(False))
         context['form'] = CreateAnswerForm()
         return context
 
