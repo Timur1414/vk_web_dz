@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     'django_app',
     'localhost',
     '127.0.0.1',
+    'temirov',
 ]
 
 # Application definition
@@ -232,8 +233,7 @@ CKEDITOR_5_FILE_STORAGE = 'vk_dz.storage.CustomStorage'
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'default-src': ["'self'"],
-        'script-src': ["'self'",
-                       "'unsafe-inline'", "'unsafe-eval'"],
+        'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         'style-src': ["'self'", "'unsafe-inline'",],
         'img-src': ["'self'", "data:", "https:", "blob:"],
         'font-src': ["'self'",],
