@@ -14,7 +14,7 @@ class RegistrationForm(UserCreationForm):
     """
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName*', max_length=50)
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email*', max_length=50)
-    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False, max_length=settings.MAX_UPLOAD_SIZE)
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False)
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
@@ -90,7 +90,7 @@ class SettingsForm(forms.ModelForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='Login*')
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}), label='Email*')
     nickname = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}), label='NickName*')
-    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False, max_length=settings.MAX_UPLOAD_SIZE)
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control'}), label='Avatar', required=False)
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
