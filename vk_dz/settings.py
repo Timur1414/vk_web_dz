@@ -104,7 +104,7 @@ DATABASES = {
         'CONN_MAX_AGE': 300,
     }
 }
-DATABASES['default'] = DATABASES['lite']
+DATABASES['default'] = DATABASES[os.environ.get('DB_TYPE', 'lite')]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
