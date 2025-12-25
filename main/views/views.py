@@ -5,7 +5,7 @@ from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordCha
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.db import transaction
-from django.db.models import Count, QuerySet
+from django.db.models import Count, QuerySet, Exists, OuterRef
 from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
@@ -15,7 +15,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, CreateView, UpdateView
 from django_registration.backends.one_step.views import RegistrationView
 from main.forms import AskForm, SettingsForm, CreateAnswerForm, RegistrationForm
-from main.models import Profile, Question, Answer, QuestionLike, Tag
+from main.models import Profile, Question, Answer, QuestionLike, Tag, AnswerLike
 from main.paginators import paginate
 from main.views.api import publish_answer
 from main.views.base import create_base_context, create_context, get_paginated_nav_context
@@ -169,7 +169,7 @@ class QuestionPage(DetailView):
         question = self.object
         context['is_author'] = self.request.user == question.author
         context['is_question_liked'] = QuestionLike.is_liked(question, self.request.user)
-        context['answers'] = Answer.get_answers_by_question(question)
+        context['answers'] = Answer.get_answers_by_question(question).annotate(is_liked=Exists(AnswerLike.objects.filter(answer=OuterRef('id'), author=self.request.user)))
         context['form'] = CreateAnswerForm()
         return context
 
