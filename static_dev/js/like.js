@@ -1,10 +1,32 @@
+function get_cookie(name) {
+    let cookie_value = null
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';')
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim()
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookie_value = decodeURIComponent(cookie.substring(name.length + 1))
+                break
+            }
+        }
+    }
+    return cookie_value;
+}
+
+
 let is_question_liked = false
 if (is_liked.innerText === 'True')
     is_question_liked = true
 
 
 async function question_like(question_id) {
-    let response = await fetch(`/api/question_like/?question_id=${question_id}`)
+    let response = await fetch(`/api/question_like/?question_id=${question_id}`, {
+        method: 'POST',
+        headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': get_cookie('csrftoken'),
+        },
+    })
     let data = await response.json()
     if (response.status !== 200) {
         alert(data.message)
@@ -26,7 +48,13 @@ async function question_like(question_id) {
 
 async function answer_like(answer_id) {
     let btn = document.getElementById(`answer_like_btn_${answer_id}`)
-    let response = await fetch(`/api/answer_like/?answer_id=${answer_id}`)
+    let response = await fetch(`/api/answer_like/?answer_id=${answer_id}`, {
+        method: 'POST',
+        headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': get_cookie('csrftoken'),
+        },
+    })
     let data = await response.json()
     if (response.status !== 200) {
         alert(data.message)

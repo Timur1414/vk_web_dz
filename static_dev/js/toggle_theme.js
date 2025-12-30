@@ -8,7 +8,7 @@ theme_btn.addEventListener('click', async function () {
     localStorage.setItem('theme', current_theme)
 });
 
-function getCookie(name) {
+function get_cookie(name) {
     let cookie_value = null
     if (document.cookie && document.cookie !== '') {
         const cookies = document.cookie.split(';')
@@ -29,7 +29,7 @@ async function save_theme_on_server(theme) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken'),
+                'X-CSRFToken': get_cookie('csrftoken'),
             },
             body: JSON.stringify({theme: theme})
         });
