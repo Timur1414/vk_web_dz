@@ -57,7 +57,8 @@ def question_like(request: WSGIRequest) -> JsonResponse:
     if question is None:
         logger.error('%s tried to like question (id=%s) which does not exist', request.user.username, question_id)
         return JsonResponse({'message': 'This question do not exist.'}, status=404)
-    QuestionLike.like(question, user)
+    need_to_update_rating = request.user != question.author
+    QuestionLike.like(question, user, need_to_update_rating)
     question.refresh_from_db()
     return JsonResponse({'count': question.rating, 'message': 'ok.'}, status=200)
 
@@ -79,7 +80,8 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     if answer is None:
         logger.error('%s tried to like answer (id=%s) which does not exist', request.user.username, answer_id)
         return JsonResponse({'message': 'This answer do not exist.'}, status=404)
-    AnswerLike.like(answer, user)
+    need_to_update_rating = request.user != answer.author
+    AnswerLike.like(answer, user, need_to_update_rating)
     answer.refresh_from_db()
     return JsonResponse({'count': answer.rating, 'message': 'ok.'}, status=200)
 

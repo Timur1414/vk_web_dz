@@ -66,7 +66,7 @@ class Like(models.Model):
         raise NotImplementedError()
 
     @staticmethod
-    def like(obj, user: User):
+    def like(obj, user: User, need_to_update: bool):
         raise NotImplementedError()
 
     @staticmethod

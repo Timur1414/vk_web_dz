@@ -355,7 +355,7 @@ class QuestionLike(Like):
             tag.update_rating()
 
     @staticmethod
-    def like(question: Question, user: User) -> Optional[QuestionLike]:
+    def like(question: Question, user: User, need_update_rating: bool) -> Optional[QuestionLike]:
         if user.is_anonymous:
             return None
         logger.debug('like question (id=%s)', question.id)
@@ -364,7 +364,8 @@ class QuestionLike(Like):
             if not created:
                 like.is_active = not like.is_active
                 like.save()
-            like.update_ratings()
+            if need_update_rating:
+                like.update_ratings()
         return like
 
     @staticmethod
@@ -413,7 +414,7 @@ class AnswerLike(Like):
         self.answer.author.profile.update_rating()
 
     @staticmethod
-    def like(answer: Answer, user: User) -> Optional[AnswerLike]:
+    def like(answer: Answer, user: User, need_to_update: bool) -> Optional[AnswerLike]:
         if user.is_anonymous:
             return None
         logger.debug('like answer (id=%s)', answer.id)
@@ -422,7 +423,8 @@ class AnswerLike(Like):
             if not created:
                 like.is_active = not like.is_active
                 like.save()
-            like.update_ratings()
+            if need_to_update:
+                like.update_ratings()
         return like
 
     @staticmethod
