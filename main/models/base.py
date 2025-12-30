@@ -41,6 +41,9 @@ class RatingModel(models.Model):
         self.rating -= 1
         self.save()
 
+    def update_rating(self):
+        raise NotImplementedError()
+
 
 class Like(models.Model):
     """

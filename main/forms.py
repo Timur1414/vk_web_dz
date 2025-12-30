@@ -70,15 +70,16 @@ class AskForm(forms.ModelForm):
                 raise forms.ValidationError('Tag too long')
         return ','.join(tags_words)
 
-    def save(self, commit=True):
+    def save(self, commit=True) -> Question:
         with transaction.atomic():
-            question = super().save(commit=commit)
+            question = super().save()
             tags_words = self.cleaned_data['tags'].split(',')
             existing_tags_names = Tag.objects.filter(text__in=tags_words).values_list('text', flat=True)
             new_tags = [Tag(text=tag_text) for tag_text in tags_words if tag_text not in existing_tags_names]
             Tag.bulk_create_with_color(new_tags)
             tags = Tag.objects.filter(text__in=tags_words)
             question.add_tags(tags)
+            return question
 
 
 class SettingsForm(forms.ModelForm):
@@ -102,7 +103,7 @@ class SettingsForm(forms.ModelForm):
         model = User
         fields = ['username', 'email']
 
-    def save(self, commit=True):
+    def save(self, commit=True) -> User:
         user = super().save(commit=commit)
         if commit:
             user.save()

@@ -209,7 +209,7 @@ class AskPage(LoginRequiredMixin, CreateView):
     form_class = AskForm
 
     def get_success_url(self):
-        return reverse_lazy('index')
+        return reverse_lazy('question', kwargs={'id': self.object.pk})
 
     def form_valid(self, form):
         form.instance.author = self.request.user

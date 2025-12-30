@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import io
 import logging
 import os
@@ -77,6 +76,13 @@ class Tag(RatingModel):
         for tag in tags:
             tag.color = choice([color[0] for color in Tag.COLORS])
         return cls.objects.bulk_create(tags)
+
+    def update_rating(self):
+        new_rating = 0
+        for question in Question.get_questions_by_tag(self.text):
+            new_rating += question.rating
+        self.rating = new_rating
+        self.save(update_fields=['rating'])
 
     def __str__(self):
         return self.text
@@ -167,6 +173,10 @@ class Question(RatingModel):
         return (Question.objects.filter(tags__text__contains=tag).order_by('-rating').distinct()
                 .select_related('author', 'author__profile').prefetch_related('tags'))
 
+    def update_rating(self):
+        self.rating = QuestionLike.objects.filter(question=self, is_active=True).count()
+        self.save(update_fields=['rating'])
+
 
 class Answer(RatingModel):
     """
@@ -192,7 +202,7 @@ class Answer(RatingModel):
 
     class Meta:
         indexes = [
-            models.Index(fields=['-rating', '-is_correct', '-created_at'], name='answer_rating_created_at_desc'),
+            models.Index(fields=['-is_correct', '-rating', '-created_at'], name='answer_rating_created_at_desc'),
         ]
 
     def save(self, *args, **kwargs):
@@ -229,9 +239,13 @@ class Answer(RatingModel):
     def get_answers_by_question(question: Question) -> QuerySet:
         logger.debug('get answers by question=%s', question.id)
         return (Answer.objects.filter(question=question)
-                .order_by('-rating', '-is_correct', '-created_at')
+                .order_by('-is_correct', '-rating', '-created_at')
                 .select_related('author', 'author__profile')
                 .prefetch_related('answerlike_set'))
+
+    def update_rating(self):
+        self.rating = AnswerLike.objects.filter(answer=self, is_active=True).count()
+        self.save(update_fields=['rating'])
 
 
 class Profile(RatingModel):
@@ -302,6 +316,13 @@ class Profile(RatingModel):
         if need_to_thumbnail:
             self.thumbnail()
 
+    def update_rating(self):
+        new_rating = 0
+        for question in Question.get_questions_by_author(self.user):
+            new_rating += question.rating
+        self.rating = new_rating
+        self.save(update_fields=['rating'])
+
     def __str__(self):
         return self.nickname
 
@@ -328,16 +349,10 @@ class QuestionLike(Like):
 
     def update_ratings(self):
         logger.debug('update ratings of question (id=%s) and components', self.question.id)
-        if self.is_active:
-            self.question.increase_rating()
-            self.author.profile.increase_rating()
-            for tag in self.question.tags.all():
-                tag.increase_rating()
-        else:
-            self.question.decrease_rating()
-            self.author.profile.decrease_rating()
-            for tag in self.question.tags.all():
-                tag.decrease_rating()
+        self.question.update_rating()
+        self.question.author.profile.update_rating()
+        for tag in self.question.tags.all():
+            tag.update_rating()
 
     @staticmethod
     def like(question: Question, user: User) -> Optional[QuestionLike]:
@@ -394,14 +409,8 @@ class AnswerLike(Like):
 
     def update_ratings(self):
         logger.debug('update ratings of answer (id=%s) and components', self.answer.id)
-        if self.is_active:
-            self.answer.rating += 1
-            self.author.profile.rating += 1
-        else:
-            self.answer.rating -= 1
-            self.author.profile.rating -= 1
-        self.answer.save()
-        self.author.profile.save()
+        self.answer.update_rating()
+        self.answer.author.profile.update_rating()
 
     @staticmethod
     def like(answer: Answer, user: User) -> Optional[AnswerLike]:
