@@ -5,9 +5,9 @@
 
 {% block extra_css %}
     <style>
-        .image img {
-            width: 100%; !important;
-            height: 100%; !important;
+        .image img, .image_resized {
+            object-fit: contain;
+            height: auto;
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/question_card.css' %}">
