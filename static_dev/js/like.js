@@ -1,19 +1,3 @@
-function get_cookie(name) {
-    let cookie_value = null
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';')
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim()
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookie_value = decodeURIComponent(cookie.substring(name.length + 1))
-                break
-            }
-        }
-    }
-    return cookie_value;
-}
-
-
 let is_question_liked = false
 if (is_liked.innerText === 'True')
     is_question_liked = true
@@ -24,7 +8,7 @@ async function question_like(question_id) {
         method: 'POST',
         headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': get_cookie('csrftoken'),
+                'X-CSRFToken': api_app.get_cookie('csrftoken'),
         },
     })
     let data = await response.json()
@@ -52,7 +36,7 @@ async function answer_like(answer_id) {
         method: 'POST',
         headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': get_cookie('csrftoken'),
+                'X-CSRFToken': api_app.get_cookie('csrftoken'),
         },
     })
     let data = await response.json()

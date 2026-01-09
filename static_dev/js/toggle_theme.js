@@ -8,28 +8,13 @@ theme_btn.addEventListener('click', async function () {
     localStorage.setItem('theme', current_theme)
 });
 
-function get_cookie(name) {
-    let cookie_value = null
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';')
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim()
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookie_value = decodeURIComponent(cookie.substring(name.length + 1))
-                break
-            }
-        }
-    }
-    return cookie_value;
-}
-
 async function save_theme_on_server(theme) {
     try {
         await fetch('/api/toggle_theme/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': get_cookie('csrftoken'),
+                'X-CSRFToken': api_app.get_cookie('csrftoken'),
             },
             body: JSON.stringify({theme: theme})
         });
