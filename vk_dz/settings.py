@@ -46,12 +46,18 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'csp',
     'django.contrib.humanize',
+    'axes',
     'main',
 ]
 
 INTERNAL_IPS = [
     '127.0.0.1',
     'localhost',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +70,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'csp.middleware.CSPMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'vk_dz.urls'
@@ -298,3 +305,12 @@ ALLOWED_ATTRIBUTES = {
 }
 ALLOWED_STYLES = ['color', 'background-color', 'font-weight', 'font-family', 'font-size', 'text-align', 'aspect-ratio',
                   'width']
+
+# Django-axes config
+AXES_FAILURE_LIMIT = 10
+AXES_COOLOFF_TIME = 0.25  # 15 min
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
+AXES_USE_USER_AGENT = False
+AXES_IPWARE_META_PRECEDENCE_ORDER = ['HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR']
+AXES_IPWARE_PROXY_COUNT = 1
