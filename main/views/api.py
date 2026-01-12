@@ -60,7 +60,6 @@ def question_like(request: WSGIRequest) -> JsonResponse:
         return JsonResponse({'message': 'This question do not exist.'}, status=404)
     need_to_update_rating = user != question.author
     QuestionLike.like(question, user, need_to_update_rating)
-    question.refresh_from_db()
     return JsonResponse({'count': question.rating, 'message': 'ok.'}, status=200)
 
 
@@ -84,7 +83,6 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
         return JsonResponse({'message': 'This answer do not exist.'}, status=404)
     need_to_update_rating = user != answer.author
     AnswerLike.like(answer, user, need_to_update_rating)
-    answer.refresh_from_db()
     return JsonResponse({'count': answer.rating, 'message': 'ok.'}, status=200)
 
 

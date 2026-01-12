@@ -347,11 +347,12 @@ class QuestionLike(Like):
             )
         ]
 
-    def update_ratings(self):
-        logger.debug('update ratings of question (id=%s) and components', self.question.id)
-        self.question.update_rating()
-        self.question.author.profile.update_rating()
-        for tag in self.question.tags.all():
+    @staticmethod
+    def update_ratings(question: Question):
+        logger.debug('update ratings of question (id=%s) and components', question.id)
+        question.update_rating()
+        question.author.profile.update_rating()
+        for tag in question.tags.all():
             tag.update_rating()
 
     @staticmethod
@@ -365,7 +366,7 @@ class QuestionLike(Like):
                 like.is_active = not like.is_active
                 like.save()
             if need_update_rating:
-                like.update_ratings()
+                QuestionLike.update_ratings(question)
         return like
 
     @staticmethod
@@ -408,10 +409,11 @@ class AnswerLike(Like):
             return False
         return AnswerLike.objects.filter(answer=answer, author=user, is_active=True).exists()
 
-    def update_ratings(self):
-        logger.debug('update ratings of answer (id=%s) and components', self.answer.id)
-        self.answer.update_rating()
-        self.answer.author.profile.update_rating()
+    @staticmethod
+    def update_ratings(answer: Answer):
+        logger.debug('update ratings of answer (id=%s) and components', answer.id)
+        answer.update_rating()
+        answer.author.profile.update_rating()
 
     @staticmethod
     def like(answer: Answer, user: User, need_to_update: bool) -> Optional[AnswerLike]:
@@ -424,7 +426,7 @@ class AnswerLike(Like):
                 like.is_active = not like.is_active
                 like.save()
             if need_to_update:
-                like.update_ratings()
+                AnswerLike.update_ratings(answer)
         return like
 
     @staticmethod

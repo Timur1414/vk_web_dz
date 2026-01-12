@@ -62,7 +62,8 @@ class Like(models.Model):
     class Meta:
         abstract = True
 
-    def update_ratings(self):
+    @staticmethod
+    def update_ratings(obj):
         raise NotImplementedError()
 
     @staticmethod
