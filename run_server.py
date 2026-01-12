@@ -20,7 +20,8 @@ def application(environ, response):
         content_length = int(environ.get('CONTENT_LENGTH', 0))
         if content_length > 0:
             data = environ['wsgi.input'].read(content_length).decode()
-            if data[0] == '{' and data[-1] == '}':
+            content_type = environ.get('CONTENT_TYPE', '')
+            if 'json' in content_type:
                 post_params = json.loads(data)
             else:
                 pairs = data.split('&')
