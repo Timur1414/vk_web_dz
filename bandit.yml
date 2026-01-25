@@ -1,0 +1,12 @@
+exclude_dirs:
+  - "*/migrations/*"
+  - "*/tests/*"
+  - "tests.py"
+  - "*/static/*"
+  - "*/media/*"
+  - "*/docs/*"
+  - "*/.venv/*"
+  - "*/.wsl_venv/*"
+  - "*.env"
+  - "manage.py"
+  - "*/settings/*.py"

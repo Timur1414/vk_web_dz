@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% load custom_filters %}
+{% load static %}
+
+{% block extra_css %}
+    <style>
+        .image img, .image_resized {
+            object-fit: contain;
+            height: auto;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/question_card.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ckeditor-themes.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div>
+        <div class="container">
+            <p class="text-secondary">
+                Author: <a class="link-secondary" href="{% url 'profile' id=question.author.id %}">{{ question.author.profile }}</a> |
+                Date: {{ question.created_at.astimezone|date:"d.m.Y" }}
+            </p>
+            <div class="row">
+                <div class="col-md-auto">
+                    <img class="img-fluid rounded" style="max-width: 100px; max-height: 100px;" src="{{ question.author.profile.thumbnail_avatar.url }}" alt="avatar">
+                    {% if request.user.is_authenticated %}
+                        <button id="like_btn"
+                                class="btn {% if is_question_liked %} btn-success {% else %} btn-outline-secondary {% endif %} my-0 d-block my-2"
+                                onclick="question_like({{ question.id }})">👍: {{ question.rating }}</button>
+                    {% else %}
+                        <p>👍: {{ question.rating }}</p>
+                    {% endif %}
+                    <p id="is_liked" class="d-none">{{ is_question_liked }}</p>
+                </div>
+                <div class="col">
+                    <p class="fs-3 text-break">{{ question.title }}</p>
+                    <div class="text-break">{{ question.text|safe }}</div>
+                    <p class="mb-0"><span class="fw-semibold">Tags:</span>
+                        {% for tag in question.tags.all %}
+                            <a class="tag rounded px-1 link-{{ tag.color }}" href="{% url 'tag' tag=tag.text %}">{{ tag.text }}</a>
+                        {% empty %}
+                            <span>no tags...</span>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div id="answers_div">
+            {% for answer in answers %}
+                {% include "question/answer.html" %}
+            {% empty %}
+                <p>nothing...</p>
+            {% endfor %}
+        </div>
+        <hr>
+        {% if request.user.is_authenticated %}
+            <form method="POST" enctype="multipart/form-data" onsubmit="disable_btn()">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form.text }}
+                {% if form.text.errors %}
+                    <div class="alert alert-danger mt-2">
+                        {% for error in form.text.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% for field in form.hidden_fields %}
+                    {{ field }}
+                {% endfor %}
+                <input id="answer_btn" class="btn btn-info my-2" type="submit" value="Answer">
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/get_cookie.js' %}"></script>
+    <script src="{% static 'js/like.js' %}"></script>
+    <script src="{% static 'js/mark_answer.js' %}"></script>
+    <script src="{% static 'js/cdn_centrifuge.js' %}"></script>
+    <script src="{% static 'js/centrifugo.js' %}"></script>
+{% endblock %}

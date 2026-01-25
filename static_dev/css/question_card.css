@@ -1,0 +1,13 @@
+.image img {
+    width: 100%; !important;
+    height: 100%; !important;
+}
+
+.question_card:hover {
+    cursor: pointer;
+    box-shadow: 3px 3px 10px 0 cornflowerblue;
+}
+
+.tag:hover {
+    border: 3px solid rgba(205, 206, 255, 1);
+}

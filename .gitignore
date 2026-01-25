@@ -13,7 +13,7 @@ media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
-# <django-project-name>/staticfiles/
+/static/
 
 ### Django.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -405,3 +405,9 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,pycharm+all,venv,linux,windows
+/uploads/uploads/*
+/centrifugo_config.json
+/uploads/*
+/.wsl_venv/*
+/pylint_report.txt
+/bandit_report.txt

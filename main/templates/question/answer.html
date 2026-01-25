@@ -1,0 +1,33 @@
+{% load custom_filters %}
+<div class="border rounded {% if answer.is_correct %} border-success border-3 {% else %} border-secondary border-2 {% endif %} container row mb-2 mx-0 py-1 px-0" style="overflow: hidden">
+    <p class="text-secondary">
+        Author: <a class="link-secondary" href="{% url 'profile' id=answer.author.id %}">{{ answer.author.profile }}</a> |
+        Date: {{ answer.created_at.astimezone|date:"d.m.Y" }}
+    </p>
+    <div class="col">
+        <img class="img-fluid rounded" style="max-width: 100px; max-height: 100px;" src="{{ answer.author.profile.thumbnail_avatar.url }}" alt="avatar">
+        {% if request.user.is_authenticated %}
+            <button id="answer_like_btn_{{ answer.id }}"
+                    class="btn {% if answer.is_liked %} btn-success {% else %} btn-outline-secondary {% endif %} d-block my-2"
+                    onclick="answer_like({{ answer.id }})">👍: {{ answer.rating }}</button>
+        {% else %}
+            <p>👍: {{ answer.rating }}</p>
+        {% endif %}
+    </div>
+    <div class="col-10">
+        <div class="text-break">{{ answer.text|safe }}</div>
+        {% if is_author %}
+            <div class="form-check">
+                <label class="form-check-label" for="correct">
+                    Correct
+                </label>
+                <input id="answer_input_{{ answer.id }}" class="form-check-input" type="checkbox" value="" id="correct"
+                       {% if answer.is_correct %}checked{% endif %} onclick="correct({{ answer.id }})">
+            </div>
+        {% else %}
+            {% if answer.is_correct %}
+                <p class="text-success mb-1">Correct</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

@@ -9,24 +9,29 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-12(3d47@nht6rp5(7plv67=wj5#99bxaf=28(1n^o0#3n@+mk5'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False if os.environ.get('DEBUG', 'True') == 'False' else True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'django_app',
+    'localhost',
+    '127.0.0.1',
+    'temirov',
+]
 
 # Application definition
 
@@ -36,7 +41,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
+    'django_crontab',
+    'django_ckeditor_5',
+    'csp',
+    'django.contrib.humanize',
+    'axes',
     'main',
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +68,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'csp.middleware.CSPMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'vk_dz.urls'
@@ -69,17 +93,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'vk_dz.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'lite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'main': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
+        'CONN_MAX_AGE': 300,
     }
 }
-
+DATABASES['default'] = DATABASES[os.environ.get('DB_TYPE', 'lite')]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -99,11 +131,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 
@@ -111,13 +142,175 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static_dev',
+]
+STATIC_ROOT = BASE_DIR / 'static'
+MEDIA_URL = 'uploads/'
+MEDIA_ROOT = BASE_DIR / 'uploads'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MAX_UPLOAD_SIZE = 5242880  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE
+
+# Login and registration
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+REGISTRATION_OPEN = True
+
+# Centrifugo
+CENTRIFUGO_URL = os.environ.get('CENTRIFUGO_URL')
+CENTRIFUGO_WS_URL = os.environ.get('CENTRIFUGO_WS_URL')
+CENTRIFUGO_SECRET = os.environ.get('CENTRIFUGO_SECRET')
+CENTRIFUGO_API_KEY = os.environ.get('CENTRIFUGO_API_KEY')
+
+# Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
+    }
+}
+
+# Cron
+CRONTAB_COMMAND_SUFFIX = '2>&1'
+CRONJOBS = [
+    ('0 0 * * 1', 'main.management.commands.update_cache.Command', '>> /var/log/update_cache.log'),
+]
+
+# Django-ckeditor for safety style questions and answers
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'fontSize', 'fontFamily', 'fontColor', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'link', 'blockQuote', 'codeBlock', '|',
+            'bulletedList', 'numberedList', '|',
+            'outdent', 'indent', '|',
+            'imageUpload', '|',
+            'undo', 'redo'
+        ],
+        'image': {
+            'toolbar': [
+                'imageStyle:inline', 'imageStyle:block', 'imageStyle:side'
+            ]
+        },
+        'link': {
+            'addTargetToExternalLinks': True,
+        },
+        'codeBlock': {
+            'languages': [
+                {'language': 'python', 'label': 'Python'},
+                {'language': 'javascript', 'label': 'JavaScript'},
+                {'language': 'html', 'label': 'HTML'},
+                {'language': 'css', 'label': 'CSS'},
+                {'language': 'php', 'label': 'PHP'},
+                {'language': 'java', 'label': 'Java'},
+                {'language': 'cpp', 'label': 'C++'},
+                {'language': 'sql', 'label': 'SQL'},
+                {'language': 'bash', 'label': 'Bash'},
+                {'language': 'json', 'label': 'JSON'},
+                {'language': 'xml', 'label': 'XML'},
+                {'language': 'yaml', 'label': 'YAML'},
+                {'language': 'markdown', 'label': 'Markdown'},
+            ]
+        },
+        'fontSize': {
+            'options': [10, 12, 14, 18, 20, 22]
+        },
+        'language': 'ru',
+        'removePlugins': ['WordCount'],
+    }
+}
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp',]
+CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'authenticated'
+CKEDITOR_5_MAX_UPLOAD_FILE_SIZE = 5  # MB
+CKEDITOR_5_MAX_FILE_SIZE = 5  # MB
+CKEDITOR_5_FILE_STORAGE = 'vk_dz.storage.CustomStorage'
+
+# CSP settings
+CONTENT_SECURITY_POLICY = {
+    'DIRECTIVES': {
+        'default-src': ["'self'"],
+        'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        'style-src': ["'self'", "'unsafe-inline'",],
+        'img-src': ["'self'", "data:", "https:", "blob:"],
+        'font-src': ["'self'",],
+        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001",],
+        'frame-src': ["'self'"],
+        'media-src': ["'self'", "blob:"],
+
+        'object-src': ["'none'"],
+        'base-uri': ["'self'"],
+        'frame-ancestors': ["'none'"],
+        'form-action': ["'self'"],
+        'report-uri': '/csp/'
+    }
+}
+
+# Logging options
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'base': {
+            'format': '[{levelname}] {asctime} {module} (line:{lineno}) | message: {message}',
+            'style': '{',
+        },
+        'with_funcName': {
+            'format': '[{levelname}] {asctime} {module}.{funcName} (line:{lineno}) | message: {message}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+        'file': {
+            'formatter': 'base',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'base',
+        },
+    },
+    'loggers': {
+        'custom_django': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'default': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+    },
+}
+
+# Bleach allowed tags and attributes
+ALLOWED_TAGS = ['p', 'span', 'br', 'strong', 'i', 's', 'u', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a',
+                'img', 'blockquote', 'code', 'pre', 'figure']
+ALLOWED_ATTRIBUTES = {
+    'a': ['href', 'title', 'target', 'class'],
+    'img': ['src', 'alt', 'width', 'height', 'style', 'class'],
+    '*': ['style', 'class']
+}
+ALLOWED_STYLES = ['color', 'background-color', 'font-weight', 'font-family', 'font-size', 'text-align', 'aspect-ratio',
+                  'width']
+
+# Django-axes config
+AXES_FAILURE_LIMIT = 10
+AXES_COOLOFF_TIME = 0.25  # 15 min
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
+AXES_USE_USER_AGENT = False
+AXES_IPWARE_META_PRECEDENCE_ORDER = ['HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR']
+AXES_IPWARE_PROXY_COUNT = 1

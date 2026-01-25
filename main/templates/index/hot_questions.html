@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/question_card.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div>
+        <div>
+            <a class="fs-4" href="{% url 'index' %}">New Questions</a>
+            <p class="fs-3 mx-2 d-inline-flex">Hot Questions</p>
+        </div>
+        {% for question in questions %}
+            {% include "question/card.html" %}
+        {% empty %}
+            <p>nothing...</p>
+        {% endfor %}
+        {% include "includes/pagination_nav.html" %}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/question_card.js' %}"></script>
+{% endblock %}
