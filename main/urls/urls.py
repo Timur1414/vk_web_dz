@@ -1,6 +1,5 @@
 from django.urls import path
 from main import views
-from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('', views.IndexPage.as_view(), name='index'),

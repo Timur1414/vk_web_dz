@@ -1,12 +1,12 @@
 import logging
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordChangeDoneView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
 from django.db import transaction
-from django.db.models import Count, QuerySet
-from django.contrib import messages
+from django.db.models import Exists, OuterRef, Value
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import logout
@@ -15,7 +15,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, DetailView, CreateView, UpdateView
 from django_registration.backends.one_step.views import RegistrationView
 from main.forms import AskForm, SettingsForm, CreateAnswerForm, RegistrationForm
-from main.models import Profile, Question, Answer, QuestionLike, Tag
+from main.models import Profile, Question, Answer, QuestionLike, Tag, AnswerLike
 from main.paginators import paginate
 from main.views.api import publish_answer
 from main.views.base import create_base_context, create_context, get_paginated_nav_context
@@ -169,7 +169,12 @@ class QuestionPage(DetailView):
         question = self.object
         context['is_author'] = self.request.user == question.author
         context['is_question_liked'] = QuestionLike.is_liked(question, self.request.user)
-        context['answers'] = Answer.get_answers_by_question(question)
+        if self.request.user.is_authenticated:
+            context['answers'] = Answer.get_answers_by_question(question).annotate(is_liked=Exists(
+                AnswerLike.objects.filter(answer=OuterRef('pk'), author=self.request.user)
+            ))
+        else:
+            context['answers'] = Answer.get_answers_by_question(question).annotate(is_liked=Value(False))
         context['form'] = CreateAnswerForm()
         return context
 
@@ -204,7 +209,7 @@ class AskPage(LoginRequiredMixin, CreateView):
     form_class = AskForm
 
     def get_success_url(self):
-        return reverse_lazy('index')
+        return reverse_lazy('question', kwargs={'id': self.object.pk})
 
     def form_valid(self, form):
         form.instance.author = self.request.user

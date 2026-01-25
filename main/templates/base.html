@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>AskPupkin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/cdn_bootstrap.css' %}">
     <style>
         body {
             display: grid;
@@ -27,7 +26,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            {#let currentTheme = document.getElementById('color_theme').value#}
             let currentTheme = localStorage.getItem('theme') || 'light'
             document.documentElement.setAttribute('data-bs-theme', currentTheme)
             switchCkEditorTheme(currentTheme)
@@ -43,7 +41,6 @@
     </script>
 </head>
 <body>
-{#<input id="color_theme" type="hidden" value="{{ color_theme }}">#}
 <header class="p-2">
     <nav class="navbar p-0">
         <div class="d-flex justify-content-between" style="width: 100%">
@@ -57,7 +54,7 @@
                                oninput="search()">
                         <a class="btn btn-primary" href="{% url 'ask' %}">Ask!</a>
                     </p>
-                    <div id="search_datalist" class="collapse position-absolute p-2" style="max-width: 20rem; overflow: hidden">
+                    <div id="search_datalist" class="collapse position-absolute p-2" style="max-width: 20rem; overflow: hidden; z-index: 3">
                         {# place to generate search results #}
                     </div>
                 </form>
@@ -66,7 +63,7 @@
                 {% if request.user.is_authenticated %}
                     <div class="col profile_block p-0 mx-3">
                         <img onclick="open_profile({{ request.user.id }})" class="img-fluid rounded" style="max-width: 100px; max-height: 100px;"
-                             src="{{ profile.avatar.url }}" alt="avatar">
+                             src="{{ profile.thumbnail_avatar.url }}" alt="avatar">
                         <p class="text-center m-0">{{ profile.nickname }}</p>
                     </div>
                     <div class="col">
@@ -125,9 +122,7 @@
     <p><span class="fw-semibold">Темиров Тимур</span> (Web-11). Contacts: telegram: @ttemirov14, vk:
         <a class="link-info" href="https://vk.com/ttemirov14" target="_blank">ttemirov14</a></p>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+<script src="{% static 'js/cdn_bootstrap.js' %}"></script>
 <script src="{% static 'js/search.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>

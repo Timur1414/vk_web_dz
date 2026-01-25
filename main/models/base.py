@@ -41,6 +41,9 @@ class RatingModel(models.Model):
         self.rating -= 1
         self.save()
 
+    def update_rating(self):
+        raise NotImplementedError()
+
 
 class Like(models.Model):
     """
@@ -59,11 +62,12 @@ class Like(models.Model):
     class Meta:
         abstract = True
 
-    def update_ratings(self):
+    @staticmethod
+    def update_ratings(obj):
         raise NotImplementedError()
 
     @staticmethod
-    def like(obj, user: User):
+    def like(obj, user: User, need_to_update: bool):
         raise NotImplementedError()
 
     @staticmethod

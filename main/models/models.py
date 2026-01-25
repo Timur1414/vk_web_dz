@@ -1,4 +1,5 @@
 from __future__ import annotations
+import io
 import logging
 import os
 
@@ -7,12 +8,13 @@ from PIL import Image
 from bleach.css_sanitizer import CSSSanitizer
 from typing import Optional
 
+from django.core.files.base import ContentFile
 from django.core.validators import MaxLengthValidator
 
 from vk_dz import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from django.db.models import QuerySet, Q
 from random import choice
 from main.models.managers import NewManager
@@ -74,6 +76,13 @@ class Tag(RatingModel):
         for tag in tags:
             tag.color = choice([color[0] for color in Tag.COLORS])
         return cls.objects.bulk_create(tags)
+
+    def update_rating(self):
+        new_rating = 0
+        for question in Question.get_questions_by_tag(self.text):
+            new_rating += question.rating
+        self.rating = new_rating
+        self.save(update_fields=['rating'])
 
     def __str__(self):
         return self.text
@@ -164,6 +173,10 @@ class Question(RatingModel):
         return (Question.objects.filter(tags__text__contains=tag).order_by('-rating').distinct()
                 .select_related('author', 'author__profile').prefetch_related('tags'))
 
+    def update_rating(self):
+        self.rating = QuestionLike.objects.filter(question=self, is_active=True).count()
+        self.save(update_fields=['rating'])
+
 
 class Answer(RatingModel):
     """
@@ -189,7 +202,7 @@ class Answer(RatingModel):
 
     class Meta:
         indexes = [
-            models.Index(fields=['-rating', '-is_correct', '-created_at'], name='answer_rating_created_at_desc'),
+            models.Index(fields=['-is_correct', '-rating', '-created_at'], name='answer_rating_created_at_desc'),
         ]
 
     def save(self, *args, **kwargs):
@@ -226,14 +239,19 @@ class Answer(RatingModel):
     def get_answers_by_question(question: Question) -> QuerySet:
         logger.debug('get answers by question=%s', question.id)
         return (Answer.objects.filter(question=question)
-                .order_by('-rating', '-is_correct', '-created_at')
+                .order_by('-is_correct', '-rating', '-created_at')
                 .select_related('author', 'author__profile')
                 .prefetch_related('answerlike_set'))
+
+    def update_rating(self):
+        self.rating = AnswerLike.objects.filter(answer=self, is_active=True).count()
+        self.save(update_fields=['rating'])
 
 
 class Profile(RatingModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(default='default.png', upload_to='uploads/')
+    avatar = models.ImageField(default='default.png', upload_to='avatars/')
+    thumbnail_avatar = models.ImageField(default='default.png', upload_to='thumbnails/')
     nickname = models.CharField(max_length=50, unique=True)
 
     @staticmethod
@@ -274,16 +292,36 @@ class Profile(RatingModel):
             logger.error('no profile with user=%s', user.id)
             return None
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    def thumbnail(self):
         image = Image.open(self.avatar.path)
-        original_path = self.avatar.name
-        name, ext = os.path.splitext(original_path)
-        thumbnail_path = f'uploads/{name}_thumbnail{ext}'
-        if image.height > 300 or image.width > 300:
-            image.thumbnail((300, 300))
-            image.save(self.avatar.path)
-            # image.save(f'{thumbnail_path}')
+        thumbnail_path = f'{self.avatar.name}'
+        file_extension = image.format
+        image.thumbnail((100, 100))
+        img_io = io.BytesIO()
+        image.save(img_io, format=file_extension)
+        self.thumbnail_avatar.save(thumbnail_path, ContentFile(img_io.getvalue()))
+
+    def save(self, *args, **kwargs):
+        need_to_thumbnail = False
+        if self.id:
+            try:
+                old_instance = Profile.objects.get(id=self.id)
+                if old_instance.avatar != self.avatar:
+                    need_to_thumbnail = True
+            except Profile.DoesNotExist:
+                need_to_thumbnail = True
+        else:
+            need_to_thumbnail = True
+        super().save(*args, **kwargs)
+        if need_to_thumbnail:
+            self.thumbnail()
+
+    def update_rating(self):
+        new_rating = 0
+        for question in Question.get_questions_by_author(self.user):
+            new_rating += question.rating
+        self.rating = new_rating
+        self.save(update_fields=['rating'])
 
     def __str__(self):
         return self.nickname
@@ -309,31 +347,26 @@ class QuestionLike(Like):
             )
         ]
 
-    def update_ratings(self):
-        logger.debug('update ratings of question (id=%s) and components', self.question.id)
-        if self.is_active:
-            self.question.rating += 1
-            self.author.profile.rating += 1
-            for tag in self.question.tags.all():
-                tag.increase_rating()
-        else:
-            self.question.rating -= 1
-            self.author.profile.rating -= 1
-            for tag in self.question.tags.all():
-                tag.decrease_rating()
-        self.question.save()
-        self.author.profile.save()
+    @staticmethod
+    def update_ratings(question: Question):
+        logger.debug('update ratings of question (id=%s) and components', question.id)
+        question.update_rating()
+        question.author.profile.update_rating()
+        for tag in question.tags.all():
+            tag.update_rating()
 
     @staticmethod
-    def like(question: Question, user: User) -> Optional[QuestionLike]:
+    def like(question: Question, user: User, need_update_rating: bool) -> Optional[QuestionLike]:
         if user.is_anonymous:
             return None
         logger.debug('like question (id=%s)', question.id)
-        like, created = QuestionLike.create(user, question)
-        if not created:
-            like.is_active = not like.is_active
-            like.save()
-        like.update_ratings()
+        with transaction.atomic():
+            like, created = QuestionLike.create(user, question)
+            if not created:
+                like.is_active = not like.is_active
+                like.save()
+            if need_update_rating:
+                QuestionLike.update_ratings(question)
         return like
 
     @staticmethod
@@ -376,27 +409,24 @@ class AnswerLike(Like):
             return False
         return AnswerLike.objects.filter(answer=answer, author=user, is_active=True).exists()
 
-    def update_ratings(self):
-        logger.debug('update ratings of answer (id=%s) and components', self.answer.id)
-        if self.is_active:
-            self.answer.rating += 1
-            self.author.profile.rating += 1
-        else:
-            self.answer.rating -= 1
-            self.author.profile.rating -= 1
-        self.answer.save()
-        self.author.profile.save()
+    @staticmethod
+    def update_ratings(answer: Answer):
+        logger.debug('update ratings of answer (id=%s) and components', answer.id)
+        answer.update_rating()
+        answer.author.profile.update_rating()
 
     @staticmethod
-    def like(answer: Answer, user: User) -> Optional[AnswerLike]:
+    def like(answer: Answer, user: User, need_to_update: bool) -> Optional[AnswerLike]:
         if user.is_anonymous:
             return None
         logger.debug('like answer (id=%s)', answer.id)
-        like, created = AnswerLike.create(user, answer)
-        if not created:
-            like.is_active = not like.is_active
-            like.save()
-        like.update_ratings()
+        with transaction.atomic():
+            like, created = AnswerLike.create(user, answer)
+            if not created:
+                like.is_active = not like.is_active
+                like.save()
+            if need_to_update:
+                AnswerLike.update_ratings(answer)
         return like
 
     @staticmethod

@@ -5,11 +5,10 @@
         Date: {{ answer.created_at.astimezone|date:"d.m.Y" }}
     </p>
     <div class="col">
-        <img class="img-fluid rounded" style="max-width: 100px; max-height: 100px;" src="{{ answer.author.profile.avatar.url }}"
-             alt="avatar">
+        <img class="img-fluid rounded" style="max-width: 100px; max-height: 100px;" src="{{ answer.author.profile.thumbnail_avatar.url }}" alt="avatar">
         {% if request.user.is_authenticated %}
             <button id="answer_like_btn_{{ answer.id }}"
-                    class="btn {% if answer|is_answer_liked:request.user %} btn-success {% else %} btn-outline-secondary {% endif %} d-block my-2"
+                    class="btn {% if answer.is_liked %} btn-success {% else %} btn-outline-secondary {% endif %} d-block my-2"
                     onclick="answer_like({{ answer.id }})">👍: {{ answer.rating }}</button>
         {% else %}
             <p>👍: {{ answer.rating }}</p>

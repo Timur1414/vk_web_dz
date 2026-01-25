@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     'django_app',
     'localhost',
     '127.0.0.1',
+    'temirov',
 ]
 
 # Application definition
@@ -45,12 +46,18 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'csp',
     'django.contrib.humanize',
+    'axes',
     'main',
 ]
 
 INTERNAL_IPS = [
     '127.0.0.1',
     'localhost',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +70,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'csp.middleware.CSPMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'vk_dz.urls'
@@ -103,7 +111,7 @@ DATABASES = {
         'CONN_MAX_AGE': 300,
     }
 }
-DATABASES['default'] = DATABASES['lite']
+DATABASES['default'] = DATABASES[os.environ.get('DB_TYPE', 'lite')]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -226,17 +234,17 @@ CKEDITOR_5_UPLOAD_FILE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp',]
 CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'authenticated'
 CKEDITOR_5_MAX_UPLOAD_FILE_SIZE = 5  # MB
 CKEDITOR_5_MAX_FILE_SIZE = 5  # MB
+CKEDITOR_5_FILE_STORAGE = 'vk_dz.storage.CustomStorage'
 
 # CSP settings
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'default-src': ["'self'"],
-        'script-src': ["'self'", "unpkg.com", "cdnjs.cloudflare.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net",
-                       "'unsafe-inline'", "'unsafe-eval'"],
-        'style-src': ["'self'", "'unsafe-inline'", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
+        'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        'style-src': ["'self'", "'unsafe-inline'",],
         'img-src': ["'self'", "data:", "https:", "blob:"],
-        'font-src': ["'self'", "cdnjs.cloudflare.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net"],
-        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001", "cdn.jsdelivr.net", "unpkg.com"],
+        'font-src': ["'self'",],
+        'connect-src': ["'self'", "ws:", "wss:", "127.0.0.1:8001",],
         'frame-src': ["'self'"],
         'media-src': ["'self'", "blob:"],
 
@@ -297,3 +305,12 @@ ALLOWED_ATTRIBUTES = {
 }
 ALLOWED_STYLES = ['color', 'background-color', 'font-weight', 'font-family', 'font-size', 'text-align', 'aspect-ratio',
                   'width']
+
+# Django-axes config
+AXES_FAILURE_LIMIT = 10
+AXES_COOLOFF_TIME = 0.25  # 15 min
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
+AXES_USE_USER_AGENT = False
+AXES_IPWARE_META_PRECEDENCE_ORDER = ['HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR']
+AXES_IPWARE_PROXY_COUNT = 1

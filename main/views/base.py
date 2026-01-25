@@ -1,8 +1,10 @@
 import logging
 from typing import Any, Optional
 from django.core.paginator import EmptyPage, Page
+from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpRequest
 from main.models import Profile, Question, Answer
+from django.http import JsonResponse
 from main.cached_data_service import CachedDataService
 
 
@@ -116,3 +118,13 @@ def check_received_answer(answer_id: str) -> Optional[Answer]:
     except ValueError:
         return None
     return answer
+
+
+def api_login_required(function):
+    def wrapper(request: WSGIRequest):
+        user = request.user
+        if not user.is_authenticated:
+            logger.error('anonymous user tried to use function %s', function.__name__)
+            return JsonResponse({'message': 'Log in to use it.'}, status=401)
+        return function(request)
+    return wrapper

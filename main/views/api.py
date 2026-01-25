@@ -8,9 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
 from main.models import Question, QuestionLike, AnswerLike, Answer
-from main.views.base import check_received_question, check_received_answer
+from main.views.base import check_received_question, check_received_answer, api_login_required
 from vk_dz import settings
 from django.http import HttpResponse
 from vk_dz.centrifugo import generate_centrifugo_token
@@ -41,6 +40,8 @@ def search_questions(request: WSGIRequest) -> JsonResponse:
     }, status=200)
 
 
+@require_POST
+@api_login_required
 def question_like(request: WSGIRequest) -> JsonResponse:
     """
     Returns a JSON response containing no content.
@@ -53,17 +54,17 @@ def question_like(request: WSGIRequest) -> JsonResponse:
     """
     user = request.user
     question_id = request.GET.get('question_id')
-    if not user.is_authenticated:
-        logger.error('anonymous user tried to like')
-        return JsonResponse({}, status=401)
     question = check_received_question(question_id)
     if question is None:
         logger.error('%s tried to like question (id=%s) which does not exist', request.user.username, question_id)
-        return JsonResponse({}, status=404)
-    QuestionLike.like(question, user)
-    return JsonResponse({}, status=200)
+        return JsonResponse({'message': 'This question do not exist.'}, status=404)
+    need_to_update_rating = user != question.author
+    QuestionLike.like(question, user, need_to_update_rating)
+    return JsonResponse({'count': question.rating, 'message': 'ok.'}, status=200)
 
 
+@require_POST
+@api_login_required
 def answer_like(request: WSGIRequest) -> JsonResponse:
     """
     Returns a JSON response containing no content.
@@ -76,17 +77,17 @@ def answer_like(request: WSGIRequest) -> JsonResponse:
     """
     user = request.user
     answer_id = request.GET.get('answer_id')
-    if not user.is_authenticated:
-        logger.error('anonymous user tried to like')
-        return JsonResponse({}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
         logger.error('%s tried to like answer (id=%s) which does not exist', request.user.username, answer_id)
-        return JsonResponse({}, status=404)
-    AnswerLike.like(answer, user)
-    return JsonResponse({}, status=200)
+        return JsonResponse({'message': 'This answer do not exist.'}, status=404)
+    need_to_update_rating = user != answer.author
+    AnswerLike.like(answer, user, need_to_update_rating)
+    return JsonResponse({'count': answer.rating, 'message': 'ok.'}, status=200)
 
 
+@require_POST
+@api_login_required
 def mark_answer(request: WSGIRequest) -> JsonResponse:
     """
     Make an answer as correct/incorrect.
@@ -96,17 +97,14 @@ def mark_answer(request: WSGIRequest) -> JsonResponse:
     """
     user = request.user
     answer_id = request.GET.get('answer_id')
-    if not user.is_authenticated:
-        logger.error('anonymous user tried to make answer correct/incorrect')
-        return JsonResponse({}, status=401)
     answer = check_received_answer(answer_id)
     if answer is None:
-        return JsonResponse({}, status=404)
+        return JsonResponse({'message': 'This answer do not exist.'}, status=404)
     if user != answer.question.author:
         logger.error('%s not author of question', request.user.username)
-        return JsonResponse({}, status=403)
+        return JsonResponse({'message': 'Only author can mark answer.'}, status=403)
     answer.change_correct()
-    return JsonResponse({}, status=200)
+    return JsonResponse({'message': 'ok.'}, status=200)
 
 
 def publish_answer(request: WSGIRequest, answer: Answer, is_author: bool):
