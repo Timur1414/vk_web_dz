@@ -1,0 +1,227 @@
+/* static/css/ckeditor-plugins-theme.css */
+
+/* Базовые стили которые уже работают */
+.ck.ck-editor__editable {
+    background: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+
+.ck.ck-toolbar {
+    background: var(--bs-tertiary-bg) !important;
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
+    border-bottom: none !important;
+}
+
+/* Стили для плагина кода (Code Block) */
+.ck.ck-code-block {
+    background: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+    border: 1px solid var(--bs-gray-700) !important;
+}
+
+.ck.ck-code-block-dropdown .ck-dropdown__panel {
+    background: var(--bs-body-bg) !important;
+    border: 1px solid var(--bs-border-color) !important;
+}
+
+.ck.ck-code-block-dropdown .ck-button {
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-code-block-dropdown .ck-button:hover {
+    background: var(--bs-secondary-bg) !important;
+}
+
+/* Стили для всех выпадающих меню */
+.ck.ck-dropdown__panel {
+    background: var(--bs-body-bg) !important;
+    border: 1px solid var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-dropdown__panel .ck-button {
+    color: var(--bs-body-color) !important;
+    background: transparent !important;
+}
+
+.ck.ck-dropdown__panel .ck-button:hover {
+    background: var(--bs-secondary-bg) !important;
+}
+
+/* Стили для списков в выпадающих меню */
+.ck.ck-list {
+    background: var(--bs-body-bg) !important;
+}
+
+.ck.ck-list__item {
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-list__item .ck-button {
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-list__item .ck-button:hover {
+    background: var(--bs-secondary-bg) !important;
+}
+
+/* Стили для диалоговых окон */
+.ck.ck-dialog {
+    background: var(--bs-body-bg) !important;
+    border: 1px solid var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-dialog .ck-dialog__header {
+    background: var(--bs-tertiary-bg) !important;
+    border-bottom: 1px solid var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-dialog .ck-dialog__title {
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-dialog .ck-dialog__body {
+    background: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-dialog .ck-dialog__footer {
+    background: var(--bs-tertiary-bg) !important;
+    border-top: 1px solid var(--bs-border-color) !important;
+}
+
+/* Стили для форм в диалогах */
+.ck.ck-form__header {
+    background: var(--bs-tertiary-bg) !important;
+    border-bottom: 1px solid var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-labeled-field-view .ck-labeled-field-view__label {
+    color: var(--bs-body-color) !important;
+}
+
+/* Стили для input полей */
+.ck.ck-input {
+    background: var(--bs-body-bg) !important;
+    border: 1px solid var(--bs-border-color) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-input:focus {
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.25) !important;
+}
+
+/* Стили для кнопок в диалогах */
+.ck.ck-button:not(.ck-disabled):hover {
+    background: var(--bs-secondary-bg) !important;
+}
+
+.ck.ck-button.ck-on {
+    background: var(--bs-primary) !important;
+    color: white !important;
+}
+
+/* Стили для тултипов */
+.ck.ck-tooltip .ck-tooltip__text {
+    background: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+}
+
+/* Стили для панели с выбором языков программирования */
+.ck.ck-language-text {
+    background: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-language-text .ck-input {
+    background: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
+/* Специфичные стили для плагина Source Editing (исходный код) */
+.ck-source-editing-area {
+    background: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+}
+
+.ck-source-editing-area textarea {
+    background: var(--bs-dark) !important;
+    color: var(--bs-light) !important;
+    border: 1px solid var(--bs-gray-700) !important;
+}
+
+/* static/css/ckeditor-icons-theme.css */
+
+/* Основные стили для иконок */
+.ck.ck-icon :not([fill]) {
+    fill: var(--bs-body-color) !important;
+}
+
+.ck.ck-icon {
+    color: var(--bs-body-color) !important;
+}
+
+/* Иконки в кнопках */
+.ck.ck-button .ck-icon {
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-button:hover .ck-icon {
+    color: var(--bs-body-color) !important;
+}
+
+/* Иконки в выпадающих меню */
+.ck.ck-dropdown__panel .ck-icon {
+    color: var(--bs-body-color) !important;
+}
+
+.ck.ck-list__item .ck-button .ck-icon {
+    color: var(--bs-body-color) !important;
+}
+
+/* Специфичные иконки */
+.ck.ck-button__label {
+    color: var(--bs-body-color) !important;
+}
+
+/* Иконки в активном состоянии */
+.ck.ck-button.ck-on .ck-icon {
+    color: white !important;
+}
+
+.ck.ck-button.ck-on {
+    background: var(--bs-primary) !important;
+    color: white !important;
+}
+
+.ck.ck-button.ck-on .ck-icon {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* Иконки при наведении */
+.ck.ck-button:not(.ck-disabled):hover .ck-icon {
+    color: var(--bs-body-color) !important;
+}
+
+/* Разделители */
+.ck.ck-toolbar__separator {
+    background: var(--bs-border-color) !important;
+}
+
+/* SVG иконки */
+.ck.ck-icon * {
+    fill: var(--bs-body-color) !important;
+}
+
+.ck svg path {
+    fill: var(--bs-body-color) !important;
+}
+
+.ck svg {
+    color: var(--bs-body-color) !important;
+}

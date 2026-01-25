@@ -1,0 +1,18 @@
+[MASTER]
+ignore=
+
+[MESSAGES CONTROL]
+disable=C0114,      # missing-module-docstring
+          C0116,    # missing-function-docstring
+          C0115,    # missing-class-docstring
+          R0901,    # too-many-ancestors
+          C0415,    # import-outside-toplevel
+
+[BASIC]
+max-line-length=120
+
+[DESIGN]
+min-public-methods=0
+
+[FORMAT]
+max-module-lines=1000

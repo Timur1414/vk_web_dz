@@ -1,29 +1,30 @@
 {% extends "base.html" %}
 
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/question_card.css' %}">
+{% endblock %}
+
 {% block content %}
     <div>
-        <p class="fs-3">Tag: <span class="fw-semibold">{{ tag }}</span></p>
+        {% if tag %}
+        <div>
+            <p class="fs-3">Tag: <span class="fw-semibold text-{{ tag.color }}">{{ tag.text }}</span></p>
+        </div>
         {% for question in questions %}
             {% include "question/card.html" %}
         {% empty %}
             <p>nothing...</p>
         {% endfor %}
-        <nav>
-            <ul class="pagination">
-                <li class="page-item">
-                    <a class="page-link link-dark" href="#">
-                        <span>&laquo;</span>
-                    </a>
-                </li>
-                <li class="page-item"><a class="page-link link-dark" href="#">1</a></li>
-                <li class="page-item"><a class="page-link link-dark" href="#">2</a></li>
-                <li class="page-item"><a class="page-link link-dark" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link link-dark" href="#">
-                        <span>&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        {% include "includes/pagination_nav.html" %}
+        {% else %}
+            <p class="fs-3">Tag: <span class="fw-semibold">{{ tag_text }}</span></p>
+            <p>nothing...</p>
+        {% endif %}
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/question_card.js' %}"></script>
 {% endblock %}

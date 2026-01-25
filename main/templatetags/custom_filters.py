@@ -1,8 +1,19 @@
 from django import template
-from main.models import Answer
 
 register = template.Library()
 
+
 @register.filter
-def count_answers_of_question(question_id):
-    return len(Answer.get_answers_by_question(question_id))
+def add_class(field, css_class):
+    """
+    Adds the given css class to the given field.
+    """
+    return field.as_widget(attrs={"class": css_class})
+
+
+@register.filter
+def get_item(dictionary, key):
+    """
+    Returns value from dictionary by key.
+    """
+    return dictionary.get(key)

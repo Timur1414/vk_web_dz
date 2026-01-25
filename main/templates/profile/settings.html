@@ -1,52 +1,55 @@
 {% extends "base.html" %}
 
+{% load static %}
+{% load custom_filters %}
+
 {% block content %}
     <div>
         <p class="fs-3">Settings: <span>{{ profile.nickname }}</span></p>
-        {% if form.errors %}
+        {% if form.non_field_errors %}
             <ul>
-                {% for field, error in form.errors.items %}
-                    <li>{{ field }}: {{ error }}</li>
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
-        <form>
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="container text-center">
-                <div class="row my-2">
-                    <label class="col" for="login">
-                        Login
-                    </label>
-                    <div class="col-10">
-                        <input id="login" class="form-control" type="text" value="{{ user.username }}">
+                {% for field in form %}
+                    <div class="row my-2">
+                        <label class="col">
+                            {{ field.label }}
+                        </label>
+                        <div class="col-10">
+                            {% if field.errors %}
+                                {{ field|add_class:"is-invalid form-control" }}
+                                <div class="invalid-feedback text-start">
+                                    {% for error in field.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-                <div class="row my-2">
-                    <label class="col" for="email">
-                        Email
-                    </label>
-                    <div class="col-10">
-                        <input id="email" class="form-control" type="text" value="{{ user.email }}">
-                    </div>
-                </div>
-                <div class="row my-2">
-                    <label class="col" for="nickname">
-                        NickName
-                    </label>
-                    <div class="col-10">
-                        <input id="nickname" class="form-control" type="text" value="{{ profile.nickname }}">
-                    </div>
-                </div>
-                <div class="row my-2">
-                    <label class="col" for="avatar">
-                        <img src="{{ profile.avatar.url }}" alt="avatar">
-                    </label>
-                    <div class="col-10 align-self-center">
-                        <input id="avatar" class="form-control" type="image" alt="avatar">
-                    </div>
-                </div>
+                {% endfor %}
             </div>
-            <input class="btn btn-secondary" type="submit" value="Save">
+            <input class="btn btn-primary" type="submit" value="Save">
         </form>
+        {% if color_theme == 'light' %}
+            <button id="theme_btn" class="btn btn-dark">Тёмная тема</button>
+        {% else %}
+            <button id="theme_btn" class="btn btn-light">Светлая тема</button>
+        {% endif %}
+        <br>
+        <a class="btn btn-info mt-4" href="{% url 'password_change' %}">Change password</a> <br>
+        <a class="btn btn-info mt-1" href="{% url 'profile' id=request.user.id %}">My profile</a>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/get_cookie.js' %}"></script>
+    <script src="{% static 'js/toggle_theme.js' %}"></script>
 {% endblock %}

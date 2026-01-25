@@ -1,44 +1,50 @@
 {% extends "base.html" %}
 
+{% load static %}
+{% load custom_filters %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/ckeditor-themes.css' %}">
+{% endblock %}
+
 {% block content %}
     <div>
         <p class="fs-3">New Question</p>
-        {% if form.errors %}
+        {% if form.non_field_errors %}
             <ul>
-                {% for field, error in form.errors.items %}
-                    <li>{{ field }}: {{ error }}</li>
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
                 {% endfor %}
             </ul>
         {% endif %}
-        <form>
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            {{ form.media }}
             <div class="container text-center">
-                <div class="row my-2">
-                    <label class="col" for="title">
-                        Title
-                    </label>
-                    <div class="col-10">
-                        <input id="title" class="form-control" type="text">
+                {% for field in form.visible_fields %}
+                    <div class="row my-2">
+                        <label class="col">
+                            {{ field.label }}
+                        </label>
+                        <div class="col-10">
+                            {% if field.errors %}
+                                {{ field|add_class:"is-invalid form-control" }}
+                                <div class="invalid-feedback text-start">
+                                    {% for error in field.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ field }}
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-                <div class="row my-2">
-                    <label class="col" for="text">
-                        Text
-                    </label>
-                    <div class="col-10">
-                        <textarea id="text" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="row my-2">
-                    <label class="col" for="tags">
-                        Tags
-                    </label>
-                    <div class="col-10">
-                        <input id="tags" class="form-control" type="text">
-                    </div>
-                </div>
+                {% endfor %}
+                {% for field in form.hidden_fields %}
+                    {{ field }}
+                {% endfor %}
             </div>
-            <input class="btn btn-secondary" type="submit" value="Ask!">
+            <input class="btn btn-primary" type="submit" value="Ask!">
         </form>
     </div>
 {% endblock %}
